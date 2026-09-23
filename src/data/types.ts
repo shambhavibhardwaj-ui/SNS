@@ -41,7 +41,22 @@ export interface District {
   /** Cuisines this district is known for. FK -> cuisines.id */
   cuisineIds: ID[];
   theme: DistrictTheme;
+  /**
+   * Which architecture the district's restaurants are built from.
+   * Maps to cuisineBuildingStyles in components/foodcity/buildings.
+   */
+  buildingKind: BuildingKind;
 }
+
+/** Keep in step with CuisineKind in components/foodcity/buildings/buildingStyles.ts. */
+export type BuildingKind =
+  | 'dessert'
+  | 'indian'
+  | 'italian'
+  | 'asian'
+  | 'mexican'
+  | 'burger'
+  | 'healthy';
 
 export interface DistrictTheme {
   /** Wall / facade colour. */
@@ -52,13 +67,9 @@ export interface DistrictTheme {
   awning: string;
   /** Small highlights: lanterns, bunting, trim. */
   accent: string;
-  /** Ground tint under the cluster. */
+  /** Ground tint under the block. */
   ground: string;
-  /** Silhouette style, so each district reads differently from across the map. */
-  roofStyle: RoofStyle;
 }
-
-export type RoofStyle = 'pagoda' | 'gable' | 'dome' | 'scallop' | 'flat' | 'clay' | 'terrace';
 
 /** table: restaurants */
 export interface Restaurant {

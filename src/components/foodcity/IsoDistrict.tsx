@@ -1,6 +1,6 @@
 import type { Restaurant } from '../../data/types';
 import type { DistrictSummary } from '../../services/restaurantService';
-import { IsoBuilding } from './art/IsoBuilding';
+import { RestaurantBuilding } from './buildings/RestaurantBuilding';
 import {
   IsoLamp,
   IsoParasol,
@@ -119,12 +119,12 @@ export function IsoDistrict({
       {/* Buildings, back to front. */}
       {slots.map((slot) => (
         <g key={slot.restaurant.id} className="fc-shop">
-          <IsoBuilding
+          <RestaurantBuilding
+            restaurant={slot.restaurant}
+            kind={district.buildingKind}
             gx={slot.gx}
             gy={slot.gy}
             h={slot.h}
-            theme={theme}
-            emblem={slot.restaurant.storefront.emblem}
             variant={slot.variant}
           />
           {slot.variant === 1 ? (

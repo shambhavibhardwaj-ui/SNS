@@ -17,13 +17,13 @@ export const districts: District[] = [
     description:
       'Aromatic alleys of simmering copper degchis and clay tandoors, where the bread comes off the wall still blistering.',
     cuisineIds: ['cui-north-indian', 'cui-south-indian', 'cui-mughlai', 'cui-street-chaat'],
+    buildingKind: 'indian',
     theme: {
       wall: '#FBF3DE',
       roof: brand.salmon,
       awning: brand.butter,
       accent: brand.magenta,
       ground: '#C8D5D0',
-      roofStyle: 'dome',
     },
   },
   {
@@ -35,13 +35,13 @@ export const districts: District[] = [
     description:
       'Paper lanterns strung low over clattering woks, tonkotsu cauldrons and stacked bamboo steamers.',
     cuisineIds: ['cui-chinese', 'cui-thai', 'cui-japanese', 'cui-korean'],
+    buildingKind: 'asian',
     theme: {
       wall: '#FAF1E2',
       roof: brand.teal900,
       awning: brand.magenta,
       accent: brand.butter,
       ground: '#C8D5D0',
-      roofStyle: 'pagoda',
     },
   },
   {
@@ -53,13 +53,13 @@ export const districts: District[] = [
     description:
       'Sun-warmed terracotta, checked tablecloths on the kerb and the smell of a crust catching in the oven.',
     cuisineIds: ['cui-italian', 'cui-pizza'],
+    buildingKind: 'italian',
     theme: {
       wall: '#FCF5E4',
       roof: brand.teal700,
       awning: brand.butter,
       accent: brand.salmon,
       ground: '#C9D6D1',
-      roofStyle: 'gable',
     },
   },
   {
@@ -71,13 +71,13 @@ export const districts: District[] = [
     description:
       'Painted stucco fronts, papel picado swaying overhead and a comal that never quite cools down.',
     cuisineIds: ['cui-mexican', 'cui-tex-mex'],
+    buildingKind: 'mexican',
     theme: {
       wall: '#FBF2DC',
       roof: brand.teal600,
       awning: brand.salmon,
       accent: brand.butter,
       ground: '#C7D4CF',
-      roofStyle: 'clay',
     },
   },
   {
@@ -89,13 +89,13 @@ export const districts: District[] = [
     description:
       'Steel counters, a griddle running all day and booths that fill the moment the shift boards empty.',
     cuisineIds: ['cui-burgers', 'cui-bbq'],
+    buildingKind: 'burger',
     theme: {
       wall: '#F7F0E0',
       roof: brand.slate,
       awning: brand.butter,
       accent: brand.magenta,
       ground: '#C5D1CC',
-      roofStyle: 'flat',
     },
   },
   {
@@ -107,13 +107,13 @@ export const districts: District[] = [
     description:
       'Powder-pink shopfronts, hand-whipped frosting and trays of barfi cut to order at the counter.',
     cuisineIds: ['cui-desserts', 'cui-bakery', 'cui-ice-cream'],
+    buildingKind: 'dessert',
     theme: {
       wall: '#FFF7F3',
       roof: brand.pink,
       awning: brand.butter,
       accent: brand.magenta,
       ground: '#CDD8D3',
-      roofStyle: 'scallop',
     },
   },
   {
@@ -125,13 +125,13 @@ export const districts: District[] = [
     description:
       'Timber-and-glass pavilions set among raised beds, where most of the menu is cut a few steps from the pass.',
     cuisineIds: ['cui-salads', 'cui-vegan', 'cui-juices'],
+    buildingKind: 'healthy',
     theme: {
       wall: '#F6F5E4',
       roof: brand.teal800,
       awning: brand.butter,
       accent: brand.pink,
       ground: '#C6D4CD',
-      roofStyle: 'terrace',
     },
   },
 ];
