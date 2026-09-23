@@ -2,60 +2,869 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  html {
-    scroll-behavior: smooth;
+/*
+ * Tailwind provides the reset and stays available for the card-heavy screens
+ * that come later (restaurant page, cart). The city itself is bespoke
+ * illustration, so its styles are written as named component classes here
+ * rather than as utility soup on SVG nodes.
+ */
+
+:root {
+  /* paper & ink */
+  --paper: #fdf6e9;
+  --paper-warm: #f6e8cf;
+  --paper-edge: #e6d4b4;
+  --ink: #33261b;
+  --ink-soft: #7a6250;
+  --ink-faint: #a08a72;
+
+  /* city palette */
+  --flame: #c4543f;
+  --saffron: #e8a33d;
+  --herb: #5e8c6a;
+  --crust: #8a6141;
+  --sky: #cfe0e3;
+
+  --radius: 16px;
+  --ease-camera: cubic-bezier(0.62, 0.04, 0.24, 1);
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--paper-warm);
+  -webkit-font-smoothing: antialiased;
+}
+
+.fc-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+.fc-shell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------- topbar -- */
+
+.fc-topbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 26px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--paper-edge);
+  z-index: 3;
+}
+
+.fc-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.fc-brand-mark {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  filter: drop-shadow(0 2px 4px rgb(122 98 80 / 0.3));
+}
+
+.fc-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.fc-brand-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+.fc-brand-sub {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.fc-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 440px;
+  width: 100%;
+  justify-self: center;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: var(--paper-warm);
+  border: 1px solid var(--paper-edge);
+  color: var(--ink-faint);
+}
+
+.fc-search svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.fc-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--ink);
+  outline: none;
+}
+
+.fc-search input::placeholder {
+  color: var(--ink-faint);
+}
+
+.fc-search input:disabled {
+  cursor: not-allowed;
+}
+
+.fc-profile {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 15px 7px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--paper-edge);
+  background: var(--paper-warm);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: not-allowed;
+}
+
+.fc-profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 15px;
+}
+
+/* ---------------------------------------------------------------- stage -- */
+
+.fc-stage {
+  display: grid;
+  grid-template-columns: 372px 1fr;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fc-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 26px 24px 22px;
+  background: var(--paper);
+  border-right: 1px solid var(--paper-edge);
+  overflow-y: auto;
+  z-index: 2;
+}
+
+.fc-guide {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ----------------------------------------------------------------- hero -- */
+
+.fc-hero-eyebrow {
+  margin: 0 0 10px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--flame);
+}
+
+.fc-hero-title {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(42px, 4.2vw, 58px);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.fc-hero-title span {
+  display: block;
+  color: var(--flame);
+}
+
+.fc-hero-sub {
+  margin: 16px 0 0;
+  max-width: 30ch;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.fc-rail-heading {
+  margin: 26px 0 12px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* ----------------------------------------------------------------- rail -- */
+
+.fc-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fc-rail-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.fc-rail-item:hover,
+.fc-rail-item[data-hot] {
+  background: var(--paper-warm);
+  border-color: var(--paper-edge);
+  transform: translateX(3px);
+}
+
+.fc-rail-item:focus-visible {
+  outline: 2px solid var(--flame);
+  outline-offset: 2px;
+}
+
+.fc-rail-emoji {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--chip) 14%, var(--paper-warm));
+  font-size: 17px;
+}
+
+.fc-rail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.fc-rail-name {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.fc-rail-meta {
+  font-size: 11.5px;
+  color: var(--ink-faint);
+}
+
+.fc-rail-chevron {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  color: var(--ink-faint);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.fc-rail-item:hover .fc-rail-chevron,
+.fc-rail-item[data-hot] .fc-rail-chevron {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--chip);
+}
+
+/* ---------------------------------------------------------------- panel -- */
+
+.fc-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  animation: fc-page-turn 420ms var(--ease-camera) both;
+}
+
+.fc-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 7px 14px 7px 9px;
+  margin-bottom: 20px;
+  border: 1px solid var(--paper-edge);
+  border-radius: 999px;
+  background: var(--paper-warm);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.fc-back:hover {
+  background: var(--paper-edge);
+}
+
+.fc-back:focus-visible {
+  outline: 2px solid var(--flame);
+  outline-offset: 2px;
+}
+
+.fc-back svg {
+  width: 15px;
+  height: 15px;
+}
+
+.fc-panel-eyebrow {
+  margin: 0 0 6px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.fc-panel-title {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+  color: var(--panel-accent);
+}
+
+.fc-panel-tagline {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.fc-panel-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 22px 0 0;
+  padding: 14px 4px;
+  border-top: 1px solid var(--paper-edge);
+  border-bottom: 1px solid var(--paper-edge);
+}
+
+.fc-panel-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fc-panel-stats dt {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.fc-panel-stats dd {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 22px;
+  color: var(--ink);
+}
+
+.fc-panel-cuisines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fc-panel-cuisines li {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--panel-accent) 11%, var(--paper-warm));
+  font-size: 12px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--panel-accent) 78%, var(--ink));
+}
+
+.fc-panel-next {
+  margin: auto 0 0;
+  padding: 13px 15px;
+  border-radius: 13px;
+  border: 1px dashed var(--paper-edge);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-faint);
+}
+
+@keyframes fc-page-turn {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+}
+
+/* ------------------------------------------------------------- foodieAI -- */
+
+.fc-ai-dock {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--paper-edge);
+}
+
+.fc-ai-button {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 4px 11px;
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid color-mix(in srgb, var(--saffron) 45%, var(--paper-edge));
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--saffron) 12%, var(--paper)),
+    var(--paper)
+  );
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+  cursor: not-allowed;
+}
+
+.fc-ai-spark {
+  font-size: 16px;
+}
+
+.fc-ai-label {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.fc-ai-hint {
+  grid-column: 2;
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ------------------------------------------------------------------ map -- */
+
+.fc-map-wrap {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--paper-warm);
+}
+
+.fc-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.fc-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 46%,
+    transparent 52%,
+    rgb(122 98 80 / 0.16) 100%
+  );
+}
+
+.fc-map-hint,
+.fc-escape-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--paper-edge);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.fc-escape-hint {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.fc-escape-hint:focus-visible,
+.fc-ai-button:focus-visible {
+  outline: 2px solid var(--flame);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------- camera -- */
+
+.fc-camera {
+  transform-origin: 0 0;
+  transition: transform 900ms var(--ease-camera);
+  will-change: transform;
+}
+
+/* ------------------------------------------------------------ districts -- */
+
+.fc-district {
+  cursor: pointer;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  transition:
+    opacity 600ms ease,
+    filter 600ms ease;
+}
+
+.fc-district:focus {
+  outline: none;
+}
+
+.fc-district:focus-visible .fc-signpost {
+  filter: drop-shadow(0 0 0 2px var(--flame));
+}
+
+.fc-district.is-dimmed {
+  opacity: 0.34;
+  filter: saturate(0.5);
+  pointer-events: none;
+}
+
+.fc-district.is-active {
+  cursor: default;
+}
+
+/* the paving tint only shows when the block is picked out */
+.fc-district-pad {
+  opacity: 0;
+  transition: opacity 320ms ease;
+}
+
+.fc-district.is-hovered .fc-district-pad,
+.fc-district.is-active .fc-district-pad {
+  opacity: 0.16;
+}
+
+/* buildings lift, one after another, when you look at a block */
+.fc-shop {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  transition: transform 340ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.fc-district.is-hovered .fc-shop {
+  transform: translateY(-7px);
+}
+
+/* signpost */
+.fc-signpost {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  transition:
+    transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1),
+    opacity 260ms ease;
+}
+
+.fc-district.is-hovered .fc-signpost {
+  opacity: 0;
+  transform: translateY(6px) scale(0.94);
+}
+
+.fc-sign-text {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+/* hover card */
+.fc-card {
+  opacity: 0;
+  pointer-events: none;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  transition:
+    opacity 260ms ease,
+    translate 320ms cubic-bezier(0.34, 1.4, 0.64, 1);
+  translate: 0 10px;
+  filter: drop-shadow(0 10px 18px rgb(74 59 46 / 0.22));
+}
+
+.fc-district.is-hovered .fc-card {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.fc-card-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+}
+
+.fc-card-meta {
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.fc-card-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+}
+
+/* --------------------------------------------------- ambient animation -- */
+
+@keyframes fc-steam-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scaleX(0.85);
+  }
+  35% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-22px) scaleX(1.25);
+  }
+}
+
+.fc-steam {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: fc-steam-rise 5.5s ease-in-out infinite;
+}
+
+@keyframes fc-sway {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+.fc-sway {
+  transform-box: fill-box;
+  transform-origin: center top;
+  animation: fc-sway 4.5s ease-in-out infinite;
+}
+
+@keyframes fc-glow {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.fc-lamp-glow {
+  animation: fc-glow 3.4s ease-in-out infinite;
+}
+
+@keyframes fc-stroll {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.fc-stroll {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: fc-stroll 1.6s ease-in-out infinite;
+}
+
+@keyframes fc-drive-east {
+  from {
+    translate: -80px 0;
+  }
+  to {
+    translate: 1540px 0;
+  }
+}
+
+@keyframes fc-drive-west {
+  from {
+    translate: 1540px 0;
+  }
+  to {
+    translate: -80px 0;
+  }
+}
+
+.fc-scooter--east {
+  animation: fc-drive-east 26s linear infinite;
+}
+
+.fc-scooter--west {
+  animation: fc-drive-west 34s linear infinite;
+  animation-delay: -12s;
+}
+
+.fc-stage[data-zoomed] .fc-scooter-lane {
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+/* ----------------------------------------------------------- responsive -- */
+
+@media (max-width: 1080px) {
+  .fc-stage {
+    grid-template-columns: 320px 1fr;
+  }
+}
+
+@media (max-width: 880px) {
+  .fc-shell {
+    overflow: auto;
   }
 
-  body {
-    background-color: #F7F4EB;
-    color: #2D2724;
-    overflow-x: hidden;
+  .fc-stage {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .fc-aside {
+    border-right: 0;
+    border-bottom: 1px solid var(--paper-edge);
+    overflow: visible;
+  }
+
+  .fc-map-wrap {
+    height: 62vh;
+    min-height: 380px;
+  }
+
+  .fc-topbar {
+    grid-template-columns: auto auto;
+    row-gap: 12px;
+  }
+
+  .fc-search {
+    grid-column: 1 / -1;
+    order: 3;
+    max-width: none;
   }
 }
 
-/* Custom delicate village scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+/* ------------------------------------------------------- reduced motion -- */
 
-::-webkit-scrollbar-track {
-  background: #F1ECE1;
-}
+@media (prefers-reduced-motion: reduce) {
+  .fc-camera {
+    transition-duration: 1ms;
+  }
 
-::-webkit-scrollbar-thumb {
-  background: #D9C9B4;
-  border-radius: 9999px;
-}
+  .fc-steam,
+  .fc-sway,
+  .fc-lamp-glow,
+  .fc-stroll,
+  .fc-scooter--east,
+  .fc-scooter--west {
+    animation: none;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #C4AF94;
-}
+  .fc-scooter--east,
+  .fc-scooter--west {
+    translate: 700px 0;
+  }
 
-/* Gentle paper / card shadows */
-.shadow-cozy {
-  box-shadow: 0 4px 20px -2px rgba(60, 40, 20, 0.08), 0 2px 6px -1px rgba(60, 40, 20, 0.04);
-}
-
-.shadow-cozy-lg {
-  box-shadow: 0 10px 30px -4px rgba(60, 40, 20, 0.12), 0 4px 10px -2px rgba(60, 40, 20, 0.06);
-}
-
-.shadow-storefront {
-  box-shadow: 0 8px 0px 0px rgba(70, 40, 20, 0.12), 0 16px 24px -4px rgba(70, 40, 20, 0.10);
-}
-
-/* Roof scallop / tile pattern */
-.bg-roof-tiles {
-  background-image: radial-gradient(circle at 50% 100%, transparent 6px, currentColor 7px);
-  background-size: 14px 10px;
-}
-
-/* Cobblestone roadway pattern */
-.bg-cobblestone {
-  background-color: #ECE5D8;
-  background-image: radial-gradient(#D6CABA 1px, transparent 1px), radial-gradient(#D6CABA 1px, #ECE5D8 1px);
-  background-size: 16px 16px;
-  background-position: 0 0, 8px 8px;
+  .fc-shop,
+  .fc-card,
+  .fc-signpost,
+  .fc-rail-item,
+  .fc-panel {
+    transition-duration: 1ms;
+    animation-duration: 1ms;
+  }
 }
