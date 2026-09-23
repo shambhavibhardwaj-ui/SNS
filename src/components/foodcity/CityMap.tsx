@@ -1,80 +1,111 @@
+import { forwardRef } from 'react';
 import type { Restaurant } from '../../data/types';
 import type { DistrictSummary } from '../../services/restaurantService';
-import { CityGround } from './art/CityGround';
-import { Scooter } from './art/Scenery';
-import { CuisineDistrict } from './CuisineDistrict';
-import { BOULEVARD_Y, clusterBands, MAP_HEIGHT, MAP_WIDTH } from './mapLayout';
+import { IsoGround } from './art/IsoGround';
+import { IsoScooter } from './art/IsoScenery';
+import { DistrictLabels } from './DistrictLabels';
+import { IsoDistrict } from './IsoDistrict';
+import { depthOf, districtPlots, iso, MAP_H, MAP_W } from './iso';
 
 interface CityMapProps {
   summaries: DistrictSummary[];
   restaurantsByDistrict: Record<string, Restaurant[]>;
   hoveredId: string | null;
   activeId: string | null;
-  /** SVG transform for the current camera position. */
   cameraTransform: string;
   onHover: (districtId: string | null) => void;
   onSelect: (districtId: string) => void;
 }
 
 /**
- * The illustrated city itself.
+ * The isometric city.
  *
- * The whole scene lives inside one transformed group, so opening a district is a
- * real camera move — pan and zoom over the same artwork — rather than a swap to
- * a different screen.
+ * Two nested transform groups: `fc-camera` carries the pan/zoom move, and
+ * `fc-parallax` inside it carries the small pointer-driven offset. Keeping them
+ * separate means a parallax nudge never fights the camera transition.
+ *
+ * Blocks render back to front by grid depth (gx + gy), which is what lets
+ * near buildings overlap far ones correctly.
  */
-export function CityMap({
-  summaries,
-  restaurantsByDistrict,
-  hoveredId,
-  activeId,
-  cameraTransform,
-  onHover,
-  onSelect,
-}: CityMapProps) {
+export const CityMap = forwardRef<SVGGElement, CityMapProps>(function CityMap(
+  {
+    summaries,
+    restaurantsByDistrict,
+    hoveredId,
+    activeId,
+    cameraTransform,
+    onHover,
+    onSelect,
+  },
+  parallaxRef,
+) {
+  const ordered = [...summaries].sort((a, b) => {
+    const pa = districtPlots[a.district.id];
+    const pb = districtPlots[b.district.id];
+    return depthOf(pa.gx, pa.gy) - depthOf(pb.gx, pb.gy);
+  });
+
   return (
     <svg
       className="fc-map"
-      viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+      viewBox={`0 0 ${MAP_W} ${MAP_H}`}
       preserveAspectRatio="xMidYMid meet"
       role="group"
-      aria-label="Map of Food City. Six cuisine districts."
+      aria-label="Isometric map of Food City. Seven cuisine districts."
     >
       <defs>
-        <radialGradient id="fc-ground" cx="50%" cy="42%" r="78%">
-          <stop offset="0%" stopColor="#FAEFD9" />
-          <stop offset="62%" stopColor="#F2E3C8" />
-          <stop offset="100%" stopColor="#E7D5B6" />
+        <filter id="fc-soft-shadow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="9" />
+        </filter>
+        <radialGradient id="fc-turf-light" cx="62%" cy="26%" r="78%">
+          <stop offset="0%" stopColor="#FFFBEA" stopOpacity="0.5" />
+          <stop offset="55%" stopColor="#FFFBEA" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="#7A6B45" stopOpacity="0.18" />
+        </radialGradient>
+        <radialGradient id="fc-sky" cx="50%" cy="18%" r="92%">
+          <stop offset="0%" stopColor="#FDF6E6" />
+          <stop offset="58%" stopColor="#F3E7D2" />
+          <stop offset="100%" stopColor="#E3D2B8" />
         </radialGradient>
       </defs>
 
+      <rect x={0} y={0} width={MAP_W} height={MAP_H} fill="url(#fc-sky)" />
+
       <g className="fc-camera" style={{ transform: cameraTransform }}>
-        <CityGround />
+        <g className="fc-parallax" ref={parallaxRef}>
+          <IsoGround />
 
-        {/* Delivery scooters doing the rounds. */}
-        <g className="fc-scooter-lane" aria-hidden="true">
-          <g className="fc-scooter fc-scooter--east" style={{ transform: `translateY(${BOULEVARD_Y - 12}px)` }}>
-            <Scooter color="#C4543F" />
+          {/* Delivery scooters working the two main streets. */}
+          <g className="fc-scooter-lane" aria-hidden="true">
+            <g transform={`translate(${iso(6, -1).x} ${iso(6, -1).y})`}>
+              <g className="fc-scooter fc-scooter--a">
+                <IsoScooter color="#C4543F" />
+              </g>
+            </g>
+            <g transform={`translate(${iso(-1, 6).x} ${iso(-1, 6).y})`}>
+              <g className="fc-scooter fc-scooter--b">
+                <IsoScooter color="#2E8B8B" />
+              </g>
+            </g>
           </g>
-          <g className="fc-scooter fc-scooter--west" style={{ transform: `translateY(${BOULEVARD_Y + 16}px)` }}>
-            <Scooter color="#2E8B8B" flip />
-          </g>
+
+          {ordered.map((summary) => (
+            <IsoDistrict
+              key={summary.district.id}
+              summary={summary}
+              plot={districtPlots[summary.district.id]}
+              restaurants={restaurantsByDistrict[summary.district.id] ?? []}
+              hovered={hoveredId === summary.district.id && activeId === null}
+              dimmed={activeId !== null && activeId !== summary.district.id}
+              active={activeId === summary.district.id}
+              onHover={onHover}
+              onSelect={onSelect}
+            />
+          ))}
+
+          <DistrictLabels summaries={summaries} hoveredId={hoveredId} activeId={activeId} />
         </g>
-
-        {summaries.map((summary) => (
-          <CuisineDistrict
-            key={summary.district.id}
-            summary={summary}
-            band={clusterBands[summary.district.id]}
-            restaurants={restaurantsByDistrict[summary.district.id] ?? []}
-            hovered={hoveredId === summary.district.id && activeId === null}
-            dimmed={activeId !== null && activeId !== summary.district.id}
-            active={activeId === summary.district.id}
-            onHover={onHover}
-            onSelect={onSelect}
-          />
-        ))}
       </g>
     </svg>
   );
-}
+});

@@ -193,21 +193,27 @@ body {
 }
 
 .fc-aside {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 14px;
   padding: 26px 24px 22px;
   background: var(--paper);
   border-right: 1px solid var(--paper-edge);
-  overflow-y: auto;
+  overflow: hidden;
   z-index: 2;
+}
+
+/* The list scrolls; the Foodie AI launcher stays pinned to the bottom. */
+.fc-guide,
+.fc-entering {
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: thin;
 }
 
 .fc-guide {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 0;
 }
 
 /* ----------------------------------------------------------------- hero -- */
@@ -245,7 +251,7 @@ body {
 }
 
 .fc-rail-heading {
-  margin: 26px 0 12px;
+  margin: 22px 0 10px;
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
   font-size: 10.5px;
   font-weight: 500;
@@ -267,7 +273,7 @@ body {
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 9px 12px;
+  padding: 8px 12px;
   border: 1px solid transparent;
   border-radius: 13px;
   background: transparent;
@@ -481,8 +487,7 @@ body {
 /* ------------------------------------------------------------- foodieAI -- */
 
 .fc-ai-dock {
-  margin-top: auto;
-  padding-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid var(--paper-edge);
 }
 
@@ -585,7 +590,13 @@ body {
 
 .fc-camera {
   transform-origin: 0 0;
-  transition: transform 900ms var(--ease-camera);
+  transition: transform 860ms var(--ease-camera);
+  will-change: transform;
+}
+
+/* Pointer parallax, nested inside the camera so the two never fight. */
+.fc-parallax {
+  transition: transform 420ms cubic-bezier(0.2, 0.7, 0.3, 1);
   will-change: transform;
 }
 
@@ -626,7 +637,7 @@ body {
 
 .fc-district.is-hovered .fc-district-pad,
 .fc-district.is-active .fc-district-pad {
-  opacity: 0.16;
+  opacity: 0.2;
 }
 
 /* buildings lift, one after another, when you look at a block */
@@ -637,7 +648,17 @@ body {
 }
 
 .fc-district.is-hovered .fc-shop {
-  transform: translateY(-7px);
+  transform: translateY(-10px);
+}
+
+.fc-district.is-hovered .fc-tree {
+  transform: translateY(-3px);
+}
+
+.fc-tree {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  transition: transform 340ms cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
 /* signpost */
@@ -652,6 +673,31 @@ body {
 .fc-district.is-hovered .fc-signpost {
   opacity: 0;
   transform: translateY(6px) scale(0.94);
+}
+
+.fc-labels {
+  pointer-events: none;
+}
+
+.fc-label.is-dimmed {
+  opacity: 0.3;
+  transition: opacity 600ms ease;
+}
+
+.fc-label .fc-signpost,
+.fc-label .fc-card {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.fc-label.is-hovered .fc-signpost {
+  opacity: 0;
+  transform: translateY(6px) scale(0.94);
+}
+
+.fc-label.is-hovered .fc-card {
+  opacity: 1;
+  translate: 0 0;
 }
 
 .fc-sign-text {
@@ -765,31 +811,31 @@ body {
   animation: fc-stroll 1.6s ease-in-out infinite;
 }
 
-@keyframes fc-drive-east {
+@keyframes fc-drive-a {
   from {
-    translate: -80px 0;
+    translate: 0 0;
   }
   to {
-    translate: 1540px 0;
+    translate: -651px 326px;
   }
 }
 
-@keyframes fc-drive-west {
+@keyframes fc-drive-b {
   from {
-    translate: 1540px 0;
+    translate: 0 0;
   }
   to {
-    translate: -80px 0;
+    translate: 651px 326px;
   }
 }
 
-.fc-scooter--east {
-  animation: fc-drive-east 26s linear infinite;
+.fc-scooter--a {
+  animation: fc-drive-a 24s linear infinite;
 }
 
-.fc-scooter--west {
-  animation: fc-drive-west 34s linear infinite;
-  animation-delay: -12s;
+.fc-scooter--b {
+  animation: fc-drive-b 31s linear infinite;
+  animation-delay: -11s;
 }
 
 .fc-stage[data-zoomed] .fc-scooter-lane {
@@ -816,9 +862,16 @@ body {
   }
 
   .fc-aside {
+    /* Let the column grow with its content instead of scrolling internally. */
+    grid-template-rows: auto auto;
     border-right: 0;
     border-bottom: 1px solid var(--paper-edge);
     overflow: visible;
+  }
+
+  .fc-guide,
+  .fc-entering {
+    overflow-y: visible;
   }
 
   .fc-map-wrap {
@@ -846,17 +899,11 @@ body {
   }
 
   .fc-steam,
-  .fc-sway,
   .fc-lamp-glow,
   .fc-stroll,
-  .fc-scooter--east,
-  .fc-scooter--west {
+  .fc-scooter--a,
+  .fc-scooter--b {
     animation: none;
-  }
-
-  .fc-scooter--east,
-  .fc-scooter--west {
-    translate: 700px 0;
   }
 
   .fc-shop,
@@ -866,5 +913,605 @@ body {
   .fc-panel {
     transition-duration: 1ms;
     animation-duration: 1ms;
+  }
+}
+
+/* ==========================================================================
+   DELIVERY APP
+   The second half of the product. Once the customer leaves the city the visual
+   language changes on purpose: no diorama, no warm parchment stage — just
+   photography-led cards, generous spacing and strong hierarchy.
+   ========================================================================== */
+
+:root {
+  --app-bg: #fbfaf7;
+  --app-surface: #ffffff;
+  --app-line: #e9e4db;
+  --app-line-soft: #f1ede6;
+  --app-ink: #211d19;
+  --app-ink-soft: #6c6357;
+  --app-ink-faint: #9a9185;
+  --app-veg: #2f8f5b;
+  --shadow-card: 0 1px 2px rgb(33 29 25 / 0.05), 0 12px 28px -12px rgb(33 29 25 / 0.16);
+  --shadow-card-hover: 0 2px 4px rgb(33 29 25 / 0.06), 0 22px 44px -16px rgb(33 29 25 / 0.26);
+}
+
+.fc-shell[data-view='listing'] {
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  background: var(--app-bg);
+}
+
+.rl-scroll {
+  overflow-y: auto;
+  background: var(--app-bg);
+  animation: rl-enter 460ms cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+@keyframes rl-enter {
+  from {
+    opacity: 0;
+    transform: scale(1.03) translateY(10px);
+  }
+}
+
+.fc-topbar[data-compact] {
+  background: var(--app-surface);
+  border-bottom-color: var(--app-line);
+}
+
+/* ------------------------------------------------------------------ hero -- */
+
+.rl {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 28px 72px;
+}
+
+.rl-hero {
+  padding: 26px 0 8px;
+}
+
+.rl-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px 8px 11px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  background: var(--app-surface);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--app-ink-soft);
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.rl-back:hover {
+  background: var(--app-ink);
+  border-color: var(--app-ink);
+  color: #fff;
+  transform: translateX(-2px);
+}
+
+.rl-back:focus-visible,
+.rl-empty-action:focus-visible,
+.rc-card:focus-visible,
+.fb-chip:focus-visible,
+.fb-reset:focus-visible,
+.fb-select select:focus-visible,
+.fb-search input:focus-visible {
+  outline: 2px solid var(--district-accent, var(--flame));
+  outline-offset: 2px;
+}
+
+.rl-hero-body {
+  padding: 30px 0 22px;
+}
+
+.rl-eyebrow {
+  margin: 0 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--district-accent) 12%, transparent);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--district-accent);
+}
+
+.rl-title {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(38px, 5vw, 60px);
+  line-height: 1;
+  letter-spacing: -0.038em;
+  color: var(--app-ink);
+}
+
+.rl-sub {
+  margin: 16px 0 0;
+  max-width: 62ch;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--app-ink-soft);
+}
+
+/* --------------------------------------------------------------- filters -- */
+
+.fb {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  padding: 16px 0 12px;
+  background: linear-gradient(var(--app-bg) 76%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.fb-search {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 17px;
+  border: 1px solid var(--app-line);
+  border-radius: 14px;
+  background: var(--app-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--app-ink-faint);
+}
+
+.fb-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  color: var(--app-ink);
+  outline: none;
+}
+
+.fb-search input::placeholder {
+  color: var(--app-ink-faint);
+}
+
+.fb-clear {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--app-line-soft);
+  color: var(--app-ink-soft);
+  cursor: pointer;
+}
+
+.fb-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.fb-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--app-ink-faint);
+}
+
+.fb-chip {
+  padding: 7px 14px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  background: var(--app-surface);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--app-ink-soft);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.fb-chip:hover {
+  border-color: var(--app-ink-faint);
+}
+
+.fb-chip[aria-pressed='true'] {
+  background: var(--app-ink);
+  border-color: var(--app-ink);
+  color: #fff;
+}
+
+.fb-chip.is-veg[aria-pressed='true'] {
+  background: var(--app-veg);
+  border-color: var(--app-veg);
+}
+
+.fb-select select {
+  appearance: none;
+  padding: 7px 30px 7px 14px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  background: var(--app-surface)
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5 L6 8 L9 4.5' fill='none' stroke='%239a9185' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E")
+    no-repeat right 12px center;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--app-ink-soft);
+  cursor: pointer;
+}
+
+.fb-sort {
+  margin-left: auto;
+}
+
+.fb-reset {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--district-accent, var(--flame));
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.fb-count {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--app-ink-faint);
+}
+
+/* ----------------------------------------------------------------- cards -- */
+
+.rl-section {
+  margin: 26px 0 16px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+  color: var(--app-ink);
+}
+
+.rl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(298px, 1fr));
+  gap: 22px;
+}
+
+.rc-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 1px solid var(--app-line);
+  border-radius: 18px;
+  background: var(--app-surface);
+  box-shadow: var(--shadow-card);
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.3, 1), box-shadow 260ms ease,
+    border-color 200ms ease;
+}
+
+.rc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: color-mix(in srgb, var(--district-accent) 34%, var(--app-line));
+}
+
+.rc-media {
+  position: relative;
+  aspect-ratio: 40 / 23;
+  overflow: hidden;
+  background: var(--app-line-soft);
+}
+
+.rc-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: transform 520ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.rc-card:hover .rc-image {
+  transform: scale(1.055);
+}
+
+.rc-closed {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(24 20 17 / 0.52);
+}
+
+.rc-closed span {
+  padding: 6px 15px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.94);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--app-ink);
+}
+
+.rc-badge {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.95);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--app-veg);
+  box-shadow: 0 2px 8px rgb(33 29 25 / 0.18);
+}
+
+.rc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 15px 17px 17px;
+}
+
+.rc-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rc-name {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 17.5px;
+  letter-spacing: -0.018em;
+  color: var(--app-ink);
+}
+
+.rc-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  padding: 3.5px 9px;
+  border-radius: 8px;
+  background: var(--app-veg);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.rc-rating.is-low {
+  background: #b8862f;
+}
+
+.rc-cuisines {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--district-accent, var(--app-ink-soft));
+}
+
+.rc-desc {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--app-ink-soft);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rc-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+  padding-top: 11px;
+  border-top: 1px solid var(--app-line-soft);
+  font-size: 12.5px;
+  color: var(--app-ink-soft);
+}
+
+.rc-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rc-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--app-ink-faint);
+}
+
+.rc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rc-tags li {
+  padding: 3.5px 9px;
+  border-radius: 6px;
+  background: var(--app-line-soft);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--app-ink-soft);
+}
+
+.rc-tags li.is-veg {
+  background: color-mix(in srgb, var(--app-veg) 13%, transparent);
+  color: var(--app-veg);
+}
+
+/* ----------------------------------------------------------------- empty -- */
+
+.rl-empty {
+  padding: 64px 24px;
+  text-align: center;
+  border: 1px dashed var(--app-line);
+  border-radius: 18px;
+}
+
+.rl-empty-title {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--app-ink);
+}
+
+.rl-empty-sub {
+  margin: 8px 0 18px;
+  font-size: 14px;
+  color: var(--app-ink-soft);
+}
+
+.rl-empty-action {
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--app-ink);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------- notice -- */
+
+.rl-notice {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 13px 15px 13px 19px;
+  border-radius: 14px;
+  background: var(--app-ink);
+  color: #fff;
+  font-size: 13.5px;
+  box-shadow: 0 18px 40px -14px rgb(33 29 25 / 0.55);
+  animation: rl-notice-in 260ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.rl-notice strong {
+  text-transform: capitalize;
+}
+
+.rl-notice button {
+  flex: none;
+  border: 0;
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
+  border-radius: 8px;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+@keyframes rl-notice-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px);
+  }
+}
+
+/* ------------------------------------------------------- entering a block -- */
+
+.fc-entering {
+  display: flex;
+  flex-direction: column;
+  animation: fc-page-turn 360ms var(--ease-camera) both;
+}
+
+.fc-entering-bar {
+  margin-top: 22px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--paper-edge);
+  overflow: hidden;
+}
+
+.fc-entering-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--panel-accent, var(--flame));
+  animation: fc-entering-fill 820ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes fc-entering-fill {
+  to {
+    width: 100%;
+  }
+}
+
+/* ------------------------------------------------------------ responsive -- */
+
+@media (max-width: 720px) {
+  .rl {
+    padding: 0 16px 56px;
+  }
+
+  .rl-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .fb-sort {
+    margin-left: 0;
+  }
+
+  .rl-hero-body {
+    padding: 22px 0 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rl-scroll,
+  .rl-notice,
+  .fc-entering {
+    animation-duration: 1ms;
+  }
+
+  .fc-parallax,
+  .rc-card,
+  .rc-image {
+    transition-duration: 1ms;
+  }
+
+  .fc-entering-bar span {
+    animation-duration: 820ms;
   }
 }

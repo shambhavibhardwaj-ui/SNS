@@ -18,6 +18,9 @@ export type DeliveryType = 'aggregator' | 'own_fleet';
 export interface Cuisine {
   id: ID;
   name: string;
+  /** One line of menu-board copy, shown on listing pages. */
+  description: string;
+  icon: string;
 }
 
 /**
@@ -33,6 +36,8 @@ export interface District {
   slug: string;
   emoji: string;
   tagline: string;
+  /** Longer copy for the listing page hero. */
+  description: string;
   /** Cuisines this district is known for. FK -> cuisines.id */
   cuisineIds: ID[];
   theme: DistrictTheme;
@@ -53,7 +58,7 @@ export interface DistrictTheme {
   roofStyle: RoofStyle;
 }
 
-export type RoofStyle = 'pagoda' | 'gable' | 'dome' | 'scallop' | 'flat' | 'clay';
+export type RoofStyle = 'pagoda' | 'gable' | 'dome' | 'scallop' | 'flat' | 'clay' | 'terrace';
 
 /** table: restaurants */
 export interface Restaurant {
@@ -67,7 +72,23 @@ export interface Restaurant {
   /** FK -> districts.id */
   districtId: ID;
   priceForTwo: number;
+  /** Delivery window shown on cards, in minutes. */
   etaMinutes: number;
+  etaMaxMinutes: number;
+  /** Rupee band, as displayed. */
+  priceRange: '\u20b9' | '\u20b9\u20b9' | '\u20b9\u20b9\u20b9';
+  /** Charged to the customer at checkout, in rupees. */
+  deliveryFee: number;
+  isOpen: boolean;
+  /** Drives the Veg filter on listing pages. */
+  isPureVeg: boolean;
+  /** Short scannable labels on the card, e.g. "Biryani", "Late night". */
+  tags: string[];
+  /**
+   * Cover art key. Real photography drops in here later as a URL; until then
+   * this selects one of the generated cuisine plates in ui/FoodPlate.
+   */
+  image: string;
   /** Stand-in for an image URL: drives the illustrated storefront. */
   storefront: Storefront;
 }

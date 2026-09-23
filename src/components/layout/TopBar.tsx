@@ -5,9 +5,9 @@
  * lands in its own step, and there is no auth yet. They are marked
  * `aria-disabled` rather than faked so the demo never implies working features.
  */
-export function TopBar() {
+export function TopBar({ compact = false }: { compact?: boolean }) {
   return (
-    <header className="fc-topbar">
+    <header className="fc-topbar" data-compact={compact || undefined}>
       <a className="fc-brand" href="#top">
         <svg className="fc-brand-mark" viewBox="0 0 40 40" aria-hidden="true">
           <circle cx="20" cy="20" r="19" fill="#C4543F" />
