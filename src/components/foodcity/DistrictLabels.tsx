@@ -1,4 +1,5 @@
 import type { DistrictSummary } from '../../services/restaurantService';
+import { brand } from '../../theme/brand';
 import { BLOCK, districtPlots, iso } from './iso';
 
 interface DistrictLabelsProps {
@@ -43,8 +44,8 @@ export function DistrictLabels({ summaries, hoveredId, activeId }: DistrictLabel
                 width={148}
                 height={30}
                 rx={9}
-                fill="#4A3B2E"
-                opacity={0.16}
+                fill={brand.teal900}
+                opacity={0.3}
               />
               <rect
                 x={centre.x - 76}
@@ -52,24 +53,24 @@ export function DistrictLabels({ summaries, hoveredId, activeId }: DistrictLabel
                 width={148}
                 height={30}
                 rx={9}
-                fill="#FFFBF2"
-                stroke={district.theme.roof}
-                strokeWidth={2.2}
+                fill={brand.butter}
+                stroke={brand.teal900}
+                strokeWidth={2}
               />
               <text
                 x={centre.x - 2}
                 y={centre.y - 179}
                 textAnchor="middle"
                 className="fc-sign-text"
-                fill={district.theme.roof}
+                fill={brand.teal900}
               >
                 {district.emoji} {district.name}
               </text>
             </g>
 
             <g className="fc-card" transform={`translate(${centre.x} ${centre.y - 250})`}>
-              <rect x={-138} y={-2} width={276} height={92} rx={16} fill="#4A3B2E" opacity={0.2} />
-              <rect x={-140} y={-6} width={276} height={92} rx={16} fill="#FFFBF2" />
+              <rect x={-138} y={-2} width={276} height={92} rx={16} fill={brand.teal900} opacity={0.34} />
+              <rect x={-140} y={-6} width={276} height={92} rx={16} fill={brand.cream} />
               <rect
                 x={-140}
                 y={-6}
@@ -77,21 +78,21 @@ export function DistrictLabels({ summaries, hoveredId, activeId }: DistrictLabel
                 height={92}
                 rx={16}
                 fill="none"
-                stroke={district.theme.roof}
+                stroke={brand.magenta}
                 strokeWidth={2}
-                opacity={0.45}
+                opacity={0.9}
               />
-              <text x={-120} y={24} className="fc-card-title" fill="#33261B">
+              <text x={-120} y={24} className="fc-card-title" fill={brand.teal900}>
                 {district.emoji} {district.name}
               </text>
-              <text x={-120} y={48} className="fc-card-meta" fill={district.theme.roof}>
+              <text x={-120} y={48} className="fc-card-meta" fill={brand.magenta}>
                 {restaurantCount} restaurants
                 {topRating !== null ? `  ·  ★ ${topRating.toFixed(1)} top rated` : ''}
               </text>
-              <text x={-120} y={69} className="fc-card-sub" fill="#7A6250">
+              <text x={-120} y={69} className="fc-card-sub" fill={brand.slate}>
                 {cuisineNames.slice(0, 3).join(' · ')}
               </text>
-              <polygon points="-10,86 10,86 0,99" fill="#FFFBF2" />
+              <polygon points="-10,86 10,86 0,99" fill={brand.cream} />
             </g>
           </g>
         );

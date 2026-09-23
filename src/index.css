@@ -10,20 +10,46 @@
  */
 
 :root {
-  /* paper & ink */
-  --paper: #fdf6e9;
-  --paper-warm: #f6e8cf;
-  --paper-edge: #e6d4b4;
-  --ink: #33261b;
-  --ink-soft: #7a6250;
-  --ink-faint: #a08a72;
+  /*
+   * Brand palette — mirrors src/theme/brand.ts, which the SVG art imports.
+   * Change a colour in both places together.
+   *
+   * Budget: ~60% deep teal + neutral surfaces, ~25% warm light surfaces,
+   * ~10% butter yellow, ~5% pink / magenta / salmon accents.
+   */
+  --teal-900: #04302f;
+  --teal-800: #075250;
+  --teal-700: #0a6a66;
+  --teal-600: #0e8480;
+  --teal-500: #14a09a;
+  --teal-300: #7fc6c2;
+  --teal-200: #a9dbd7;
 
-  /* city palette */
-  --flame: #c4543f;
-  --saffron: #e8a33d;
-  --herb: #5e8c6a;
-  --crust: #8a6141;
-  --sky: #cfe0e3;
+  --butter: #fff8b5;
+  --butter-deep: #f0de79;
+  --butter-shade: #c9b44e;
+
+  --pink: #fca5d1;
+  --magenta: #ff258e;
+  --salmon: #fc7494;
+
+  --slate: #374151;
+  --slate-deep: #252f3d;
+
+  --cream: #fffdf4;
+  --cream-warm: #fbf3de;
+  --cream-deep: #f1e6cc;
+
+  /* legacy aliases, kept so nothing is left unstyled mid-refactor */
+  --paper: var(--cream);
+  --paper-warm: var(--cream-warm);
+  --paper-edge: var(--cream-deep);
+  --ink: var(--slate-deep);
+  --ink-soft: var(--slate);
+  --ink-faint: #8a8f99;
+  --flame: var(--magenta);
+  --saffron: var(--butter-deep);
+  --herb: var(--teal-600);
 
   --radius: 16px;
   --ease-camera: cubic-bezier(0.62, 0.04, 0.24, 1);
@@ -78,9 +104,43 @@ body {
   align-items: center;
   gap: 24px;
   padding: 14px 26px;
-  background: var(--paper);
-  border-bottom: 1px solid var(--paper-edge);
+  background: var(--teal-900);
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  color: var(--cream);
   z-index: 3;
+  transition: background 420ms ease, color 420ms ease;
+}
+
+.fc-brand-name {
+  color: var(--cream);
+}
+
+.fc-brand-sub {
+  color: var(--teal-300);
+}
+
+.fc-topbar .fc-search {
+  background: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.12);
+  color: var(--teal-200);
+}
+
+.fc-topbar .fc-search input {
+  color: var(--cream);
+}
+
+.fc-topbar .fc-search input::placeholder {
+  color: var(--teal-300);
+}
+
+.fc-topbar .fc-profile {
+  background: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.12);
+  color: var(--cream);
+}
+
+.fc-topbar .fc-profile-avatar {
+  background: var(--teal-800);
 }
 
 .fc-brand {
@@ -197,8 +257,9 @@ body {
   grid-template-rows: minmax(0, 1fr) auto;
   gap: 14px;
   padding: 26px 24px 22px;
-  background: var(--paper);
-  border-right: 1px solid var(--paper-edge);
+  background: var(--teal-800);
+  border-right: 1px solid rgb(255 255 255 / 0.07);
+  color: var(--cream);
   overflow: hidden;
   z-index: 2;
 }
@@ -220,11 +281,11 @@ body {
 
 .fc-hero-eyebrow {
   margin: 0 0 10px;
+  color: var(--butter);
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
   font-size: 10.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--flame);
 }
 
 .fc-hero-title {
@@ -234,12 +295,12 @@ body {
   font-size: clamp(42px, 4.2vw, 58px);
   line-height: 0.92;
   letter-spacing: -0.035em;
-  color: var(--ink);
+  color: var(--cream);
 }
 
 .fc-hero-title span {
   display: block;
-  color: var(--flame);
+  color: var(--butter);
 }
 
 .fc-hero-sub {
@@ -247,7 +308,7 @@ body {
   max-width: 30ch;
   font-size: 14px;
   line-height: 1.55;
-  color: var(--ink-soft);
+  color: var(--teal-200);
 }
 
 .fc-rail-heading {
@@ -279,7 +340,7 @@ body {
   background: transparent;
   font: inherit;
   text-align: left;
-  color: var(--ink);
+  color: var(--cream);
   cursor: pointer;
   transition:
     background 180ms ease,
@@ -289,13 +350,19 @@ body {
 
 .fc-rail-item:hover,
 .fc-rail-item[data-hot] {
-  background: var(--paper-warm);
-  border-color: var(--paper-edge);
+  background: rgb(255 255 255 / 0.09);
+  border-color: rgb(255 255 255 / 0.14);
   transform: translateX(3px);
 }
 
+/* The open district is marked in magenta — selection is an accent job. */
+.fc-rail-item[aria-current] {
+  background: rgb(255 37 142 / 0.16);
+  border-color: var(--magenta);
+}
+
 .fc-rail-item:focus-visible {
-  outline: 2px solid var(--flame);
+  outline: 2px solid var(--butter);
   outline-offset: 2px;
 }
 
@@ -306,7 +373,7 @@ body {
   height: 34px;
   flex: none;
   border-radius: 10px;
-  background: color-mix(in srgb, var(--chip) 14%, var(--paper-warm));
+  background: var(--teal-900);
   font-size: 17px;
 }
 
@@ -327,14 +394,14 @@ body {
 
 .fc-rail-meta {
   font-size: 11.5px;
-  color: var(--ink-faint);
+  color: var(--teal-300);
 }
 
 .fc-rail-chevron {
   width: 15px;
   height: 15px;
   flex: none;
-  color: var(--ink-faint);
+  color: var(--teal-300);
   opacity: 0;
   transform: translateX(-4px);
   transition:
@@ -346,7 +413,7 @@ body {
 .fc-rail-item[data-hot] .fc-rail-chevron {
   opacity: 1;
   transform: translateX(0);
-  color: var(--chip);
+  color: var(--butter);
 }
 
 /* ---------------------------------------------------------------- panel -- */
@@ -393,11 +460,11 @@ body {
 
 .fc-panel-eyebrow {
   margin: 0 0 6px;
+  color: var(--teal-300);
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
   font-size: 10.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ink-faint);
 }
 
 .fc-panel-title {
@@ -407,14 +474,14 @@ body {
   font-size: 36px;
   line-height: 1.05;
   letter-spacing: -0.028em;
-  color: var(--panel-accent);
+  color: var(--butter);
 }
 
 .fc-panel-tagline {
   margin: 12px 0 0;
   font-size: 14px;
   line-height: 1.55;
-  color: var(--ink-soft);
+  color: var(--teal-200);
 }
 
 .fc-panel-stats {
@@ -488,7 +555,7 @@ body {
 
 .fc-ai-dock {
   padding-top: 14px;
-  border-top: 1px solid var(--paper-edge);
+  border-top: 1px solid rgb(255 255 255 / 0.12);
 }
 
 .fc-ai-button {
@@ -498,16 +565,12 @@ body {
   gap: 4px 11px;
   width: 100%;
   padding: 12px 15px;
-  border: 1px solid color-mix(in srgb, var(--saffron) 45%, var(--paper-edge));
+  border: 1px solid rgb(255 248 181 / 0.4);
   border-radius: 14px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--saffron) 12%, var(--paper)),
-    var(--paper)
-  );
+  background: rgb(255 248 181 / 0.1);
   font: inherit;
   text-align: left;
-  color: var(--ink);
+  color: var(--butter);
   cursor: not-allowed;
 }
 
@@ -524,7 +587,7 @@ body {
 .fc-ai-hint {
   grid-column: 2;
   font-size: 11.5px;
-  color: var(--ink-faint);
+  color: var(--teal-300);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -536,7 +599,7 @@ body {
   position: relative;
   min-width: 0;
   overflow: hidden;
-  background: var(--paper-warm);
+  background: var(--teal-900);
 }
 
 .fc-map {
@@ -551,13 +614,12 @@ body {
   pointer-events: none;
   background: radial-gradient(
     ellipse at 50% 46%,
-    transparent 52%,
-    rgb(122 98 80 / 0.16) 100%
+    transparent 48%,
+    rgb(4 48 47 / 0.42) 100%
   );
 }
 
-.fc-map-hint,
-.fc-escape-hint {
+.fc-map-hint {
   position: absolute;
   left: 50%;
   bottom: 18px;
@@ -565,11 +627,11 @@ body {
   margin: 0;
   padding: 7px 16px;
   border-radius: 999px;
-  border: 1px solid var(--paper-edge);
-  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  background: rgb(4 48 47 / 0.72);
   backdrop-filter: blur(6px);
   font-size: 12px;
-  color: var(--ink-soft);
+  color: var(--teal-200);
   white-space: nowrap;
 }
 
@@ -924,16 +986,62 @@ body {
    ========================================================================== */
 
 :root {
-  --app-bg: #fbfaf7;
+  /* Warm light surfaces — the 25% of the budget the ordering flow lives on. */
+  --app-bg: #fdfbf3;
   --app-surface: #ffffff;
-  --app-line: #e9e4db;
-  --app-line-soft: #f1ede6;
-  --app-ink: #211d19;
-  --app-ink-soft: #6c6357;
-  --app-ink-faint: #9a9185;
-  --app-veg: #2f8f5b;
-  --shadow-card: 0 1px 2px rgb(33 29 25 / 0.05), 0 12px 28px -12px rgb(33 29 25 / 0.16);
-  --shadow-card-hover: 0 2px 4px rgb(33 29 25 / 0.06), 0 22px 44px -16px rgb(33 29 25 / 0.26);
+  --app-line: #e8e4d6;
+  --app-line-soft: #f3efe3;
+  --app-ink: #1c2321;
+  --app-ink-soft: #5c6663;
+  --app-ink-faint: #8d9693;
+  /*
+   * Veg marking stays green rather than moving to teal: in India the green
+   * square is a labelling convention customers read literally, so it is one of
+   * the few places an off-palette colour is correct. Pulled toward the brand
+   * teal as far as it can go while still reading as "veg green".
+   */
+  --app-veg: #1f8a63;
+  --shadow-card: 0 1px 2px rgb(4 48 47 / 0.05), 0 12px 28px -12px rgb(4 48 47 / 0.18);
+  --shadow-card-hover: 0 2px 4px rgb(4 48 47 / 0.07), 0 22px 44px -16px rgb(4 48 47 / 0.28);
+}
+
+/* The ordering half drops the immersive teal chrome for a light, practical one. */
+.fc-shell[data-view='listing'] .fc-topbar {
+  background: var(--app-surface);
+  border-bottom-color: var(--app-line);
+  color: var(--app-ink);
+}
+
+.fc-shell[data-view='listing'] .fc-brand-name {
+  color: var(--teal-800);
+}
+
+.fc-shell[data-view='listing'] .fc-brand-sub {
+  color: var(--app-ink-faint);
+}
+
+.fc-shell[data-view='listing'] .fc-topbar .fc-search {
+  background: var(--app-bg);
+  border-color: var(--app-line);
+  color: var(--app-ink-faint);
+}
+
+.fc-shell[data-view='listing'] .fc-topbar .fc-search input {
+  color: var(--app-ink);
+}
+
+.fc-shell[data-view='listing'] .fc-topbar .fc-search input::placeholder,
+.fc-shell[data-view='listing'] .fc-topbar .fc-profile {
+  color: var(--app-ink-soft);
+}
+
+.fc-shell[data-view='listing'] .fc-topbar .fc-profile {
+  background: var(--app-bg);
+  border-color: var(--app-line);
+}
+
+.fc-shell[data-view='listing'] .fc-topbar .fc-profile-avatar {
+  background: var(--app-surface);
 }
 
 .fc-shell[data-view='listing'] {
@@ -953,11 +1061,6 @@ body {
     opacity: 0;
     transform: scale(1.03) translateY(10px);
   }
-}
-
-.fc-topbar[data-compact] {
-  background: var(--app-surface);
-  border-bottom-color: var(--app-line);
 }
 
 /* ------------------------------------------------------------------ hero -- */
@@ -989,8 +1092,8 @@ body {
 }
 
 .rl-back:hover {
-  background: var(--app-ink);
-  border-color: var(--app-ink);
+  background: var(--teal-700);
+  border-color: var(--teal-700);
   color: #fff;
   transform: translateX(-2px);
 }
@@ -1002,7 +1105,7 @@ body {
 .fb-reset:focus-visible,
 .fb-select select:focus-visible,
 .fb-search input:focus-visible {
-  outline: 2px solid var(--district-accent, var(--flame));
+  outline: 2px solid var(--teal-600);
   outline-offset: 2px;
 }
 
@@ -1017,12 +1120,12 @@ body {
   gap: 7px;
   padding: 5px 13px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--district-accent) 12%, transparent);
+  background: var(--butter);
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--district-accent);
+  color: var(--teal-800);
 }
 
 .rl-title {
@@ -1032,7 +1135,7 @@ body {
   font-size: clamp(38px, 5vw, 60px);
   line-height: 1;
   letter-spacing: -0.038em;
-  color: var(--app-ink);
+  color: var(--teal-800);
 }
 
 .rl-sub {
@@ -1127,14 +1230,16 @@ body {
 }
 
 .fb-chip[aria-pressed='true'] {
-  background: var(--app-ink);
-  border-color: var(--app-ink);
-  color: #fff;
+  background: var(--butter);
+  border-color: var(--butter-shade);
+  color: var(--teal-800);
+  font-weight: 600;
 }
 
 .fb-chip.is-veg[aria-pressed='true'] {
   background: var(--app-veg);
   border-color: var(--app-veg);
+  color: #fff;
 }
 
 .fb-select select {
@@ -1162,7 +1267,7 @@ body {
   font: inherit;
   font-size: 13px;
   font-weight: 500;
-  color: var(--district-accent, var(--flame));
+  color: var(--magenta);
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -1182,7 +1287,7 @@ body {
   font-weight: 600;
   font-size: 21px;
   letter-spacing: -0.02em;
-  color: var(--app-ink);
+  color: var(--teal-800);
 }
 
 .rl-grid {
@@ -1211,7 +1316,7 @@ body {
 .rc-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-card-hover);
-  border-color: color-mix(in srgb, var(--district-accent) 34%, var(--app-line));
+  border-color: var(--teal-300);
 }
 
 .rc-media {
@@ -1237,7 +1342,7 @@ body {
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgb(24 20 17 / 0.52);
+  background: rgb(4 48 47 / 0.58);
 }
 
 .rc-closed span {
@@ -1246,7 +1351,7 @@ body {
   background: rgb(255 255 255 / 0.94);
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--app-ink);
+  color: var(--teal-800);
 }
 
 .rc-badge {
@@ -1255,11 +1360,11 @@ body {
   bottom: 12px;
   padding: 5px 11px;
   border-radius: 999px;
-  background: rgb(255 255 255 / 0.95);
+  background: var(--magenta);
   font-size: 11.5px;
   font-weight: 600;
-  color: var(--app-veg);
-  box-shadow: 0 2px 8px rgb(33 29 25 / 0.18);
+  color: #fff;
+  box-shadow: 0 2px 8px rgb(4 48 47 / 0.22);
 }
 
 .rc-body {
@@ -1292,21 +1397,22 @@ body {
   flex: none;
   padding: 3.5px 9px;
   border-radius: 8px;
-  background: var(--app-veg);
+  background: var(--teal-700);
   font-size: 12.5px;
   font-weight: 700;
   color: #fff;
 }
 
 .rc-rating.is-low {
-  background: #b8862f;
+  background: var(--salmon);
+  color: var(--teal-900);
 }
 
 .rc-cuisines {
   margin: 0;
   font-size: 13px;
   font-weight: 500;
-  color: var(--district-accent, var(--app-ink-soft));
+  color: var(--teal-600);
 }
 
 .rc-desc {
@@ -1381,7 +1487,7 @@ body {
   font-family: 'Fraunces', Georgia, serif;
   font-size: 20px;
   font-weight: 600;
-  color: var(--app-ink);
+  color: var(--teal-800);
 }
 
 .rl-empty-sub {
@@ -1394,7 +1500,7 @@ body {
   padding: 9px 18px;
   border: 0;
   border-radius: 999px;
-  background: var(--app-ink);
+  background: var(--magenta);
   font: inherit;
   font-size: 13.5px;
   font-weight: 500;
@@ -1416,10 +1522,10 @@ body {
   max-width: min(560px, calc(100vw - 32px));
   padding: 13px 15px 13px 19px;
   border-radius: 14px;
-  background: var(--app-ink);
-  color: #fff;
+  background: var(--teal-900);
+  color: var(--cream);
   font-size: 13.5px;
-  box-shadow: 0 18px 40px -14px rgb(33 29 25 / 0.55);
+  box-shadow: 0 18px 40px -14px rgb(4 48 47 / 0.6);
   animation: rl-notice-in 260ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
 }
 
@@ -1458,7 +1564,7 @@ body {
   margin-top: 22px;
   height: 3px;
   border-radius: 999px;
-  background: var(--paper-edge);
+  background: rgb(255 255 255 / 0.16);
   overflow: hidden;
 }
 
@@ -1467,7 +1573,7 @@ body {
   height: 100%;
   width: 0;
   border-radius: 999px;
-  background: var(--panel-accent, var(--flame));
+  background: var(--magenta);
   animation: fc-entering-fill 820ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 

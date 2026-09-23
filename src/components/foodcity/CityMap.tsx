@@ -5,6 +5,7 @@ import { IsoGround } from './art/IsoGround';
 import { IsoScooter } from './art/IsoScenery';
 import { DistrictLabels } from './DistrictLabels';
 import { IsoDistrict } from './IsoDistrict';
+import { brand } from '../../theme/brand';
 import { depthOf, districtPlots, iso, MAP_H, MAP_W } from './iso';
 
 interface CityMapProps {
@@ -57,15 +58,27 @@ export const CityMap = forwardRef<SVGGElement, CityMapProps>(function CityMap(
         <filter id="fc-soft-shadow" x="-40%" y="-40%" width="180%" height="180%">
           <feGaussianBlur stdDeviation="9" />
         </filter>
-        <radialGradient id="fc-turf-light" cx="62%" cy="26%" r="78%">
-          <stop offset="0%" stopColor="#FFFBEA" stopOpacity="0.5" />
-          <stop offset="55%" stopColor="#FFFBEA" stopOpacity="0.08" />
-          <stop offset="100%" stopColor="#7A6B45" stopOpacity="0.18" />
+        {/* Sunlight falling across the turf. */}
+        <radialGradient id="fc-turf-light" cx="62%" cy="24%" r="78%">
+          <stop offset="0%" stopColor={brand.butter} stopOpacity="0.4" />
+          <stop offset="55%" stopColor={brand.butter} stopOpacity="0.07" />
+          <stop offset="100%" stopColor={brand.teal900} stopOpacity="0.2" />
         </radialGradient>
-        <radialGradient id="fc-sky" cx="50%" cy="18%" r="92%">
-          <stop offset="0%" stopColor="#FDF6E6" />
-          <stop offset="58%" stopColor="#F3E7D2" />
-          <stop offset="100%" stopColor="#E3D2B8" />
+        {/*
+          Atmospheric perspective. In this projection the far corner of the
+          slab is the top of the screen, so the haze is strongest there and
+          clears toward the heavier foreground.
+        */}
+        <linearGradient id="fc-haze" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={brand.teal200} stopOpacity="0.34" />
+          <stop offset="45%" stopColor={brand.teal300} stopOpacity="0.08" />
+          <stop offset="100%" stopColor={brand.teal900} stopOpacity="0.1" />
+        </linearGradient>
+        {/* Deep teal is the environmental colour; the city sits inside it. */}
+        <radialGradient id="fc-sky" cx="50%" cy="14%" r="96%">
+          <stop offset="0%" stopColor={brand.teal300} />
+          <stop offset="46%" stopColor={brand.teal600} />
+          <stop offset="100%" stopColor={brand.teal900} />
         </radialGradient>
       </defs>
 

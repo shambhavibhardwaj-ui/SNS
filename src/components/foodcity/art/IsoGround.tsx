@@ -1,12 +1,13 @@
+import { brand, world } from '../../../theme/brand';
 import { BLOCK, GRID, iso, poly, ROAD, shade, STEP, TILE_W } from '../iso';
 import { IsoTree, IsoShrub } from './IsoScenery';
 
 const SLAB_DEPTH = 52;
-const GRASS = '#D9DCB4';
-const GRASS_DARK = '#C5CB9E';
-const PAVING = '#E3D4B6';
-const PAVING_EDGE = '#D2BD9B';
-const SOIL = '#A98763';
+const GRASS = world.turf;
+const GRASS_DARK = world.turfDark;
+const PAVING = world.paving;
+const PAVING_EDGE = world.pavingEdge;
+const SOIL = world.soil;
 
 /** Grid bounds of the slab, a little larger than the city itself. */
 const LO = -1.4;
@@ -37,8 +38,8 @@ export function IsoGround() {
         cy={iso(GRID / 2, GRID / 2).y + SLAB_DEPTH + 26}
         rx={TILE_W * GRID * 0.5}
         ry={TILE_W * GRID * 0.15}
-        fill="#6B5334"
-        opacity={0.2}
+        fill={brand.teal900}
+        opacity={0.3}
         filter="url(#fc-soft-shadow)"
       />
 
@@ -58,6 +59,8 @@ export function IsoGround() {
       {/* turf */}
       <polygon points={poly(topA, topB, topC, topD)} fill={GRASS} />
       <polygon points={poly(topA, topB, topC, topD)} fill="url(#fc-turf-light)" />
+      {/* Distance haze — the far corner of the slab sits back behind more air. */}
+      <polygon points={poly(topA, topB, topC, topD)} fill="url(#fc-haze)" />
 
       {/* roads */}
       {bands.map((b) => (
@@ -77,8 +80,8 @@ export function IsoGround() {
               iso(b + ROAD / 2 + 0.05, HI),
               iso(b + ROAD / 2 - 0.05, HI),
             )}
-            fill="#FBF3E3"
-            opacity={0.55}
+            fill={world.marking}
+            opacity={0.5}
           />
         </g>
       ))}
@@ -99,8 +102,8 @@ export function IsoGround() {
               iso(HI, b + ROAD / 2 + 0.05),
               iso(LO, b + ROAD / 2 + 0.05),
             )}
-            fill="#FBF3E3"
-            opacity={0.55}
+            fill={world.marking}
+            opacity={0.5}
           />
         </g>
       ))}
@@ -140,11 +143,11 @@ function Plaza() {
 
       {/* fountain: a stepped basin with a little height of its own */}
       <ellipse cx={mid.x} cy={mid.y + 4} rx={44} ry={22} fill={shade(PAVING, -0.1)} />
-      <ellipse cx={mid.x} cy={mid.y - 2} rx={38} ry={19} fill="#A9C6C9" />
-      <ellipse cx={mid.x} cy={mid.y - 4} rx={30} ry={15} fill="#C3DADC" />
+      <ellipse cx={mid.x} cy={mid.y - 2} rx={38} ry={19} fill={world.water} />
+      <ellipse cx={mid.x} cy={mid.y - 4} rx={30} ry={15} fill={world.waterLight} />
       <ellipse cx={mid.x} cy={mid.y - 26} rx={13} ry={6.5} fill={shade(PAVING, 0.1)} />
       <rect x={mid.x - 4} y={mid.y - 26} width={8} height={24} fill={shade(PAVING, -0.04)} />
-      <circle cx={mid.x} cy={mid.y - 34} r={5} fill="#C3DADC" className="fc-lamp-glow" />
+      <circle cx={mid.x} cy={mid.y - 34} r={5} fill={brand.butter} className="fc-lamp-glow" />
 
       {[
         [g0 + 0.5, g0 + 0.5],
@@ -174,8 +177,8 @@ function Park() {
         )}
         fill={GRASS_DARK}
       />
-      <ellipse cx={mid.x + 10} cy={mid.y + 6} rx={62} ry={31} fill="#9FC2C6" />
-      <ellipse cx={mid.x + 10} cy={mid.y + 4} rx={54} ry={26} fill="#B7D4D7" />
+      <ellipse cx={mid.x + 10} cy={mid.y + 6} rx={62} ry={31} fill={world.water} />
+      <ellipse cx={mid.x + 10} cy={mid.y + 4} rx={54} ry={26} fill={world.waterLight} />
       <IsoTree gx={g0 + 0.8} gy={g0 + 0.8} scale={1.05} />
       <IsoTree gx={g0 + 4.1} gy={g0 + 1.1} scale={0.85} />
       <IsoTree gx={g0 + 1.1} gy={g0 + 4.1} scale={0.92} />

@@ -1,4 +1,5 @@
 import type { DistrictTheme, RoofStyle } from '../../../data/types';
+import { brand } from '../../../theme/brand';
 import { FACE_LIGHT, iso, poly, shade, TILE_H, TILE_W } from '../iso';
 
 interface IsoBuildingProps {
@@ -66,8 +67,8 @@ export function IsoBuilding({
           { x: C.x - 16, y: C.y + 9 },
           { x: D.x - 16, y: D.y + 9 },
         )}
-        fill="#4A3B2E"
-        opacity={0.17}
+        fill={brand.teal900}
+        opacity={0.24}
         filter="url(#fc-soft-shadow)"
       />
 
@@ -76,7 +77,7 @@ export function IsoBuilding({
       {/* Lower-right face (lit). */}
       <polygon points={poly(B, C, C2, B2)} fill={rightTone} />
       {/* Contact shading where the walls meet the ground. */}
-      <polygon points={poly(D, C, { x: C.x, y: C.y - 7 }, { x: D.x, y: D.y - 7 })} fill="#4A3B2E" opacity={0.1} />
+      <polygon points={poly(D, C, { x: C.x, y: C.y - 7 }, { x: D.x, y: D.y - 7 })} fill={brand.teal900} opacity={0.14} />
 
       <Roof
         style={theme.roofStyle}
@@ -110,7 +111,7 @@ export function IsoBuilding({
           { x: D.x + 14 + TILE_W * 0.34, y: D.y - h + 52 + TILE_H * 0.34 },
           { x: D.x + 14, y: D.y - h + 52 },
         )}
-        fill={variant % 2 === 0 ? '#F2C368' : '#9FB6C0'}
+        fill={variant % 2 === 0 ? brand.butter : brand.teal300}
         opacity={0.8}
       />
 
@@ -126,7 +127,7 @@ export function IsoBuilding({
             strokeWidth={2.5}
           />
           <circle cx={midX} cy={C.y - h - 28} r={11} fill={theme.roof} />
-          <circle cx={midX} cy={C.y - h - 28} r={8.5} fill="#FFFBF2" />
+          <circle cx={midX} cy={C.y - h - 28} r={8.5} fill={brand.butter} />
           <text x={midX} y={C.y - h - 24} textAnchor="middle" fontSize={10}>
             {emblem}
           </text>
@@ -265,7 +266,7 @@ function Roof({ style, gx, gy, w, d, h, theme, topTone, corners }: RoofProps) {
       const centre = iso(gx + w / 2, gy + d / 2, h);
       return (
         <g>
-          <polygon points={poly(A2, B2, C2, D2)} fill={shade('#7FA672', 0.06)} />
+          <polygon points={poly(A2, B2, C2, D2)} fill={shade('#3E9385', 0.1)} />
           <polygon
             points={poly(
               iso(gx, gy, h + 9),
@@ -285,10 +286,10 @@ function Roof({ style, gx, gy, w, d, h, theme, topTone, corners }: RoofProps) {
               cy={centre.y - 8 + (i === 0 ? -5 : 6)}
               rx={13}
               ry={6.5}
-              fill={shade('#5E8C6A', t * 0.2)}
+              fill={shade('#2F7A6B', t * 0.25)}
             />
           ))}
-          <ellipse cx={centre.x} cy={centre.y - 16} rx={9} ry={11} fill="#6E8C5A" />
+          <ellipse cx={centre.x} cy={centre.y - 16} rx={9} ry={11} fill="#3E9385" />
         </g>
       );
     }
@@ -365,8 +366,8 @@ function Shopfront({
       {/* glazing */}
       <polygon
         points={poly(at(0.12, 6), at(0.88, 6), at(0.88, awningTop - 4), at(0.12, awningTop - 4))}
-        fill="#F6DCA9"
-        opacity={0.62}
+        fill={brand.butter}
+        opacity={0.5}
       />
       {/* doorway */}
       <polygon
@@ -397,8 +398,8 @@ function Shopfront({
       {lit ? (
         <polygon
           points={poly(at(0.12, 6), at(0.88, 6), at(0.88, awningTop - 4), at(0.12, awningTop - 4))}
-          fill="#FFD98A"
-          opacity={0.3}
+          fill={brand.butter}
+          opacity={0.42}
         />
       ) : null}
     </g>
