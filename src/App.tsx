@@ -1,81 +1,63 @@
-import { useCallback, useState } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthProvider';
-import { SignInDialog } from './components/auth/SignInDialog';
-import { FoodCity } from './components/foodcity/FoodCity';
-import { TopBar } from './components/layout/TopBar';
-import { RestaurantListing } from './pages/RestaurantListing';
+import { RequireRole } from './auth/RequireRole';
+import { RoleHome } from './auth/RoleHome';
+import { CustomerApp } from './pages/CustomerApp';
+import { LoginPage } from './pages/LoginPage';
+import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { DeliveryDashboard } from './pages/delivery/DeliveryDashboard';
 
 /**
- * Customer journey state.
+ * Routing.
  *
- * Deliberately a plain union rather than a router: the journey is linear
- * (city -> district -> restaurant -> cart -> checkout) and each step needs the
- * previous step's id. A router goes in when URLs need to be shareable.
+ * Discovery is public — a visitor can wander Food City before signing in, which
+ * is the whole point of the city. Everything that belongs to an account sits
+ * behind a role guard, and each guard redirects to the signer's own home rather
+ * than to a dead end.
+ *
+ * The guards decide what renders. What actually protects the data is row level
+ * security in Supabase; see supabase/migrations/0001_profiles_and_roles.sql.
  */
-type View = { name: 'city' } | { name: 'listing'; districtId: string };
-
 export default function App() {
-  const [view, setView] = useState<View>({ name: 'city' });
-  const [notice, setNotice] = useState<string | null>(null);
-
-  const enterDistrict = useCallback((districtId: string) => {
-    setView({ name: 'listing', districtId });
-  }, []);
-
-  const backToCity = useCallback(() => {
-    setNotice(null);
-    setView({ name: 'city' });
-  }, []);
-
-  /* Phase 4 replaces this with the restaurant menu page. */
-  const openRestaurant = useCallback((restaurantId: string) => {
-    setNotice(restaurantId);
-  }, []);
-
   return (
-    <AuthProvider>
-      <div className="fc-shell" id="top" data-view={view.name}>
-      <TopBar compact={view.name !== 'city'} />
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
 
-      {view.name === 'city' ? (
-        <FoodCity key="city" onEnterDistrict={enterDistrict} />
-      ) : (
-        <div className="rl-scroll" key={view.districtId}>
-          <RestaurantListing
-            districtId={view.districtId}
-            onBackToCity={backToCity}
-            onOpenRestaurant={openRestaurant}
+          {/* Signed out: explore the city. Signed in: go to your own home. */}
+          <Route path="/" element={<RoleHome publicFallback={<CustomerApp />} />} />
+
+          <Route
+            path="/customer/*"
+            element={
+              <RequireRole allow={['customer']}>
+                <CustomerApp />
+              </RequireRole>
+            }
           />
-        </div>
-      )}
 
-        {notice ? <NextStepNotice restaurantId={notice} onClose={() => setNotice(null)} /> : null}
-        <SignInDialog />
-      </div>
-    </AuthProvider>
-  );
-}
+          <Route
+            path="/admin/*"
+            element={
+              <RequireRole allow={['admin']}>
+                <AdminDashboard />
+              </RequireRole>
+            }
+          />
 
-/**
- * Stands in for the restaurant menu page until phase 4 lands, so a card click
- * says what will happen rather than doing nothing.
- */
-function NextStepNotice({
-  restaurantId,
-  onClose,
-}: {
-  restaurantId: string;
-  onClose: () => void;
-}) {
-  return (
-    <div className="rl-notice" role="status">
-      <span>
-        <strong>{restaurantId.replace(/^res-/, '').replace(/-/g, ' ')}</strong> — the menu page with
-        per-cuisine tabs is the next build step.
-      </span>
-      <button type="button" onClick={onClose} aria-label="Dismiss">
-        ✕
-      </button>
-    </div>
+          <Route
+            path="/delivery/*"
+            element={
+              <RequireRole allow={['delivery']}>
+                <DeliveryDashboard />
+              </RequireRole>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

@@ -1970,116 +1970,244 @@ body {
   outline-offset: 2px;
 }
 
-/* -------------------------------------------------------------- dialog -- */
 
-.au-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background: rgb(4 48 47 / 0.55);
-  backdrop-filter: blur(3px);
-  animation: au-fade 180ms ease both;
-}
 
-@keyframes au-fade {
-  from {
-    opacity: 0;
-  }
-}
+/* ==========================================================================
+   SIGN IN
+   ========================================================================== */
 
-.au-dialog {
-  position: relative;
-  width: min(420px, 100%);
-  max-height: calc(100dvh - 48px);
-  overflow-y: auto;
-  padding: 30px 30px 24px;
-  border-radius: 20px;
-  background: var(--app-surface);
-  box-shadow: 0 30px 70px -20px rgb(4 48 47 / 0.55);
-  animation: au-rise 240ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
-}
-
-@keyframes au-rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px) scale(0.98);
-  }
-}
-
-.au-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border: 0;
+.au-menu-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 8px 0 0;
+  padding: 3px 9px;
   border-radius: 999px;
-  background: var(--app-line-soft);
-  color: var(--app-ink-soft);
-  cursor: pointer;
+  background: color-mix(in srgb, var(--teal-600) 13%, transparent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--teal-700);
 }
 
-.au-close:hover {
-  background: var(--app-line);
+.au-route-wait {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  min-height: 100dvh;
+  background: var(--teal-900);
+  color: var(--teal-200);
+  font-size: 14px;
 }
 
-.au-eyebrow {
-  margin: 0 0 8px;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--teal-600);
+.au-spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 2.5px solid rgb(255 255 255 / 0.18);
+  border-top-color: var(--butter);
+  animation: au-spin 720ms linear infinite;
 }
 
-.au-title {
-  margin: 0;
+@keyframes au-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ------------------------------------------------------------ login page -- */
+
+.lg-page {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  min-height: 100dvh;
+  background: var(--app-bg);
+}
+
+.lg-art {
+  position: relative;
+  overflow: hidden;
+  background: var(--teal-800);
+}
+
+.lg-skyline {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.lg-panel {
+  display: grid;
+  place-items: center;
+  padding: 40px 32px;
+  overflow-y: auto;
+}
+
+.lg-card {
+  width: min(420px, 100%);
+}
+
+.lg-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 26px;
   font-family: 'Fraunces', Georgia, serif;
   font-weight: 700;
-  font-size: 27px;
-  letter-spacing: -0.028em;
+  font-size: 19px;
   color: var(--teal-800);
 }
 
-.au-sub {
-  margin: 10px 0 22px;
-  font-size: 14px;
+.lg-mark {
+  width: 38px;
+  height: 38px;
+}
+
+.lg-title {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(30px, 3.4vw, 38px);
+  line-height: 1.06;
+  letter-spacing: -0.032em;
+  color: var(--teal-800);
+}
+
+.lg-sub {
+  margin: 12px 0 26px;
+  font-size: 15px;
   line-height: 1.55;
   color: var(--app-ink-soft);
 }
 
-.au-button-slot {
+.lg-google {
   display: flex;
+  align-items: center;
   justify-content: center;
-  min-height: 44px;
+  gap: 11px;
+  width: 100%;
+  padding: 14px 20px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  background: var(--app-surface);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--app-ink);
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: transform 180ms cubic-bezier(0.2, 0.7, 0.3, 1), box-shadow 180ms ease;
 }
 
-.au-error {
-  margin: 14px 0 0;
-  padding: 10px 13px;
-  border-radius: 10px;
+.lg-google:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.lg-google:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+.lg-google:focus-visible,
+.lg-roles a:focus-visible {
+  outline: 2px solid var(--teal-600);
+  outline-offset: 3px;
+}
+
+.lg-nopass {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--app-ink-faint);
+}
+
+.lg-error {
+  margin: 18px 0 0;
+  padding: 11px 14px;
+  border-radius: 11px;
   background: color-mix(in srgb, var(--magenta) 10%, transparent);
-  font-size: 13px;
+  font-size: 13.5px;
   color: #a3155c;
 }
 
-.au-legal {
-  margin: 20px 0 0;
-  padding-top: 14px;
-  border-top: 1px solid var(--app-line-soft);
+.lg-roles {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--app-line);
+}
+
+.lg-roles-head {
+  margin: 0 0 14px;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--app-ink-faint);
+}
+
+.lg-roles ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lg-roles li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--app-line);
+  border-radius: 13px;
+  background: var(--app-surface);
+}
+
+.lg-role-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--teal-600) 11%, transparent);
+  color: var(--teal-700);
+}
+
+.lg-role-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lg-role-title {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 14.5px;
+  color: var(--app-ink);
+}
+
+.lg-role-blurb {
+  font-size: 12.5px;
+  color: var(--app-ink-soft);
+}
+
+.lg-role-note {
+  font-size: 11.5px;
+  color: var(--app-ink-faint);
+}
+
+.lg-roles-foot {
+  margin: 14px 0 0;
   font-size: 12px;
   line-height: 1.5;
   color: var(--app-ink-faint);
 }
 
-/* Shown until a client ID exists, so the dialog explains itself. */
-.au-setup {
-  padding: 15px 16px;
+.lg-setup {
+  padding: 16px 17px;
   border: 1px dashed var(--app-line);
   border-radius: 13px;
   font-size: 13px;
@@ -2087,31 +2215,329 @@ body {
   color: var(--app-ink-soft);
 }
 
-.au-setup p {
+.lg-setup p {
   margin: 0 0 9px;
 }
 
-.au-setup-title {
+.lg-setup-title {
   font-weight: 600;
   color: var(--app-ink);
 }
 
-.au-setup code,
-.au-setup pre {
+.lg-setup code,
+.lg-setup pre {
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
   font-size: 11.5px;
 }
 
-.au-setup pre {
+.lg-setup pre {
   margin: 0 0 9px;
-  padding: 9px 11px;
+  padding: 10px 12px;
   border-radius: 8px;
   background: var(--app-line-soft);
   overflow-x: auto;
+  white-space: pre-wrap;
   color: var(--app-ink);
 }
 
-.au-setup-note {
+.lg-setup-note {
   margin: 0;
   color: var(--app-ink-faint);
+}
+
+@media (max-width: 880px) {
+  .lg-page {
+    grid-template-columns: 1fr;
+  }
+
+  .lg-art {
+    height: 180px;
+  }
+}
+
+/* ==========================================================================
+   STAFF DASHBOARDS
+   ========================================================================== */
+
+.db {
+  display: grid;
+  grid-template-columns: 252px 1fr;
+  min-height: 100dvh;
+  background: var(--app-bg);
+}
+
+.db-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 22px 16px;
+  background: var(--teal-900);
+  color: var(--cream);
+}
+
+.db-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+}
+
+.db-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--db-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--db-accent) 26%, transparent);
+}
+
+.db-brand strong {
+  display: block;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 16px;
+}
+
+.db-brand em {
+  display: block;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10px;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal-300);
+}
+
+.db-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.db-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: var(--teal-200);
+  text-decoration: none;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.db-nav-item:hover {
+  background: rgb(255 255 255 / 0.08);
+  color: var(--cream);
+}
+
+.db-nav-item.is-active {
+  background: color-mix(in srgb, var(--db-accent) 20%, transparent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.db-nav-item:focus-visible {
+  outline: 2px solid var(--butter);
+  outline-offset: 2px;
+}
+
+.db-whoami {
+  margin: auto 0 0;
+  padding: 0 10px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--teal-300);
+  overflow-wrap: anywhere;
+}
+
+.db-main {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-width: 0;
+}
+
+.db-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 28px;
+  background: var(--app-surface);
+  border-bottom: 1px solid var(--app-line);
+}
+
+.db-title {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+  color: var(--teal-800);
+}
+
+.db-body {
+  padding: 30px 28px;
+  overflow-y: auto;
+}
+
+.db-placeholder {
+  max-width: 560px;
+  padding: 34px 30px;
+  border: 1px dashed var(--app-line);
+  border-radius: 18px;
+  background: var(--app-surface);
+}
+
+.db-placeholder-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 16px;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--db-accent) 12%, transparent);
+  color: var(--db-accent);
+}
+
+.db-placeholder h2 {
+  margin: 0 0 8px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--app-ink);
+}
+
+.db-placeholder p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--app-ink-soft);
+}
+
+.db-placeholder-note {
+  margin-top: 14px !important;
+  font-size: 12.5px !important;
+  color: var(--app-ink-faint) !important;
+}
+
+@media (max-width: 880px) {
+  .db {
+    grid-template-columns: 1fr;
+  }
+
+  .db-rail {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .db-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .db-whoami {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   CUSTOMER ACCOUNT PAGES
+   ========================================================================== */
+
+.ac-page {
+  min-height: 100dvh;
+  padding: 34px 24px 64px;
+  background: var(--app-bg);
+}
+
+.ac-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.ac-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 28px 0 26px;
+}
+
+.ac-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: none;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--teal-600) 12%, transparent);
+  color: var(--teal-700);
+}
+
+.ac-head h1 {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: -0.03em;
+  color: var(--teal-800);
+}
+
+.ac-head p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--app-ink-soft);
+}
+
+.ac-facts {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  border: 1px solid var(--app-line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--app-line);
+}
+
+.ac-facts div {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 12px;
+  padding: 15px 18px;
+  background: var(--app-surface);
+}
+
+.ac-facts dt {
+  font-size: 13px;
+  color: var(--app-ink-faint);
+}
+
+.ac-facts dd {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--app-ink);
+  overflow-wrap: anywhere;
+}
+
+.ac-role {
+  text-transform: capitalize;
+}
+
+.ac-empty {
+  padding: 40px 24px;
+  border: 1px dashed var(--app-line);
+  border-radius: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--app-ink-faint);
+}
+
+@media (max-width: 620px) {
+  .ac-facts div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
 }

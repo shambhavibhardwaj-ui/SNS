@@ -1,13 +1,16 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
+  /** Supabase project URL, e.g. https://abcdefgh.supabase.co. Public. */
+  readonly VITE_SUPABASE_URL?: string;
   /**
-   * Google OAuth 2.0 Web client ID.
+   * Supabase publishable (anon) key. Public by design — every request it makes
+   * is still governed by row level security.
    *
-   * Public by design — it ships in the bundle. The client *secret* must never
-   * appear in this project; it belongs only to server-side flows.
+   * The service-role key must NEVER be added here. It bypasses RLS, and
+   * anything in a VITE_ variable ships to the browser.
    */
-  readonly VITE_GOOGLE_CLIENT_ID?: string;
+  readonly VITE_SUPABASE_ANON_KEY?: string;
 }
 
 interface ImportMeta {

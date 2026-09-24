@@ -1,10 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { LogOut, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Bike, Heart, LogOut, ReceiptText, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
 
-/** Top-bar account control: signed-out prompt, or the signed-in person's menu. */
+const ROLE_BADGE = {
+  admin: { label: 'Admin', Icon: ShieldCheck, to: '/admin' },
+  delivery: { label: 'Delivery', Icon: Bike, to: '/delivery' },
+  customer: { label: 'Customer', Icon: UserRound, to: '/customer' },
+} as const;
+
+/** Top-bar account control: sign-in prompt, or the signed-in person's menu. */
 export function AccountButton() {
-  const { customer, openSignIn, signOut } = useAuth();
+  const { status, profile, role, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
 
@@ -24,18 +31,19 @@ export function AccountButton() {
     };
   }, [open]);
 
-  if (!customer) {
+  if (status !== 'signed-in' || !profile || !role) {
     return (
-      <button type="button" className="fc-profile is-action" onClick={openSignIn}>
+      <Link to="/login" className="fc-profile is-action">
         <span className="fc-profile-avatar" aria-hidden="true">
-          <User size={15} strokeWidth={2.2} />
+          <UserRound size={15} strokeWidth={2.2} />
         </span>
         <span>Sign in</span>
-      </button>
+      </Link>
     );
   }
 
-  const initial = (customer.givenName ?? customer.name ?? customer.email).charAt(0).toUpperCase();
+  const badge = ROLE_BADGE[role];
+  const initial = profile.name.charAt(0).toUpperCase() || 'G';
 
   return (
     <div className="au-account" ref={wrap}>
@@ -47,35 +55,69 @@ export function AccountButton() {
         aria-haspopup="menu"
       >
         <span className="fc-profile-avatar" aria-hidden="true">
-          {customer.avatarUrl ? (
-            <img src={customer.avatarUrl} alt="" referrerPolicy="no-referrer" />
+          {profile.avatarUrl ? (
+            <img src={profile.avatarUrl} alt="" referrerPolicy="no-referrer" />
           ) : (
             initial
           )}
         </span>
-        <span>{customer.givenName ?? customer.name}</span>
+        <span>{role === 'customer' ? profile.name.split(' ')[0] : badge.label}</span>
       </button>
 
       {open ? (
         <div className="au-menu" role="menu">
           <div className="au-menu-head">
-            <p className="au-menu-name">{customer.name}</p>
-            <p className="au-menu-email">{customer.email}</p>
+            <p className="au-menu-name">{profile.name}</p>
+            <p className="au-menu-email">{profile.email}</p>
+            <p className="au-menu-role">
+              <badge.Icon size={12} strokeWidth={2.4} />
+              {badge.label}
+            </p>
           </div>
+
+          {role === 'customer' ? (
+            <>
+              <MenuLink to="/customer/profile" Icon={UserRound} label="Profile" onGo={() => setOpen(false)} />
+              <MenuLink to="/customer/orders" Icon={ReceiptText} label="Orders" onGo={() => setOpen(false)} />
+              <MenuLink to="/customer/favorites" Icon={Heart} label="Favorites" onGo={() => setOpen(false)} />
+            </>
+          ) : (
+            <MenuLink to={badge.to} Icon={badge.Icon} label={`${badge.label} dashboard`} onGo={() => setOpen(false)} />
+          )}
+
           <button
             type="button"
             className="au-menu-item"
             role="menuitem"
             onClick={() => {
-              signOut();
               setOpen(false);
+              void signOut();
             }}
           >
             <LogOut size={15} strokeWidth={2} />
-            Sign out
+            Log out
           </button>
         </div>
       ) : null}
     </div>
+  );
+}
+
+function MenuLink({
+  to,
+  Icon,
+  label,
+  onGo,
+}: {
+  to: string;
+  Icon: typeof UserRound;
+  label: string;
+  onGo: () => void;
+}) {
+  return (
+    <Link to={to} className="au-menu-item" role="menuitem" onClick={onGo}>
+      <Icon size={15} strokeWidth={2} />
+      {label}
+    </Link>
   );
 }

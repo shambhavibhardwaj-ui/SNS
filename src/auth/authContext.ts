@@ -1,18 +1,19 @@
 import { createContext } from 'react';
-import type { Customer } from '../data/types';
-import type { AuthState } from '../services/authService';
+import type { AppRole, AuthStatus, Profile } from '../services/authService';
 
 export interface AuthContextValue {
-  state: AuthState;
-  customer: Customer | null;
-  /** False when no identity provider is configured; the UI says so rather than failing. */
-  configured: boolean;
-  isDialogOpen: boolean;
-  openSignIn: () => void;
-  closeSignIn: () => void;
-  /** Called with the raw Google credential once the user picks an account. */
-  completeGoogleSignIn: (credential: string) => void;
-  signOut: () => void;
+  status: AuthStatus;
+  profile: Profile | null;
+  /**
+   * Convenience for rendering only. What actually protects admin data is row
+   * level security on the server, not this value.
+   */
+  role: AppRole | null;
+  /** Message to show the person when something went wrong. */
+  error: string | null;
+  clearError: () => void;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
 /** Kept apart from the provider so each file exports one kind of thing. */

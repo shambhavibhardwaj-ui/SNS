@@ -1,96 +1,186 @@
 /**
- * authService — the only place the UI touches identity.
+ * authService — the only place the UI touches identity or roles.
  *
- * Provider-agnostic on purpose. Today it is backed by Google Identity Services
- * directly, because the app has no backend yet. When Supabase lands, its
- * `signInWithOAuth` / `onAuthStateChange` replace the internals here and the
- * components do not change.
+ * Authentication ("who is this?") is Supabase Auth. Authorisation ("what may
+ * they reach?") is the `role` column on `profiles`, which the browser cannot
+ * write — see supabase/migrations/0001_profiles_and_roles.sql.
  *
- * The session is kept in localStorage, which is a demo-grade store: it is
- * readable by any script on the origin and trivially editable by the person
- * using the browser. That is acceptable while nothing depends on it. A real
- * session belongs in an httpOnly cookie issued by a server that has verified
- * the provider's token.
+ * The role returned here is a *convenience for rendering*, not a security
+ * boundary. Hiding the admin dashboard is a courtesy; what actually stops a
+ * customer reading admin data is row level security on the server. Treat every
+ * role check in the client as cosmetic.
  */
-import type { Customer } from '../data/types';
-import {
-  decodeIdToken,
-  forgetGoogleAccount,
-  isGoogleConfigured,
-} from './providers/googleIdentity';
+import type { Session, User } from '@supabase/supabase-js';
+import { isSupabaseConfigured, requireSupabase, supabase } from './supabaseClient';
 
-const SESSION_KEY = 'foodcity.session.v1';
+export type AppRole = 'customer' | 'admin' | 'delivery';
 
-export type AuthState =
-  | { status: 'signed-out' }
-  | { status: 'signed-in'; customer: Customer };
+/** Mirrors the `profiles` table. */
+export interface Profile {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  avatarUrl: string | null;
+  role: AppRole;
+  createdAt: string;
+}
 
-/** Whether an identity provider is configured at all. */
+export type AuthStatus = 'loading' | 'signed-out' | 'signed-in' | 'unconfigured';
+
+/** Friendly text for the things that actually go wrong. */
+export class AuthError extends Error {
+  constructor(message: string, readonly cause?: unknown) {
+    super(message);
+    this.name = 'AuthError';
+  }
+}
+
 export function isAuthConfigured(): boolean {
-  return isGoogleConfigured();
+  return isSupabaseConfigured();
 }
 
-function readStorage(): Customer | null {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Customer;
-    /* Ignore anything that is not shaped like a customer. */
-    if (!parsed?.id || !parsed?.email) return null;
-    return parsed;
-  } catch {
-    /* Private mode, blocked storage, or corrupt JSON — treat as signed out. */
-    return null;
-  }
+/** Where each role lands after signing in. */
+export const HOME_FOR_ROLE: Record<AppRole, string> = {
+  customer: '/customer',
+  admin: '/admin',
+  delivery: '/delivery',
+};
+
+export function homeForRole(role: AppRole | null | undefined): string {
+  return role ? HOME_FOR_ROLE[role] : '/login';
 }
 
-function writeStorage(customer: Customer | null): void {
-  try {
-    if (customer) localStorage.setItem(SESSION_KEY, JSON.stringify(customer));
-    else localStorage.removeItem(SESSION_KEY);
-  } catch {
-    /* Not fatal: the session simply will not survive a reload. */
-  }
+/* --------------------------------------------------------------- session -- */
+
+export async function getSession(): Promise<Session | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw new AuthError('Could not read your session. Try reloading the page.', error);
+  return data.session;
 }
 
-export function getSession(): AuthState {
-  const customer = readStorage();
-  return customer ? { status: 'signed-in', customer } : { status: 'signed-out' };
+/** Fires whenever Supabase signs in, signs out or refreshes the token. */
+export function onAuthChange(handler: (session: Session | null) => void): () => void {
+  if (!supabase) return () => {};
+  const { data } = supabase.auth.onAuthStateChange((_event, session) => handler(session));
+  return () => data.subscription.unsubscribe();
 }
 
-/**
- * Turn a Google ID token into a customer record.
- *
- * Throws when the token carries no usable identity. Note that the token is
- * decoded, not verified — see the security note in providers/googleIdentity.
- */
-export function customerFromGoogleCredential(credential: string): Customer {
-  const payload = decodeIdToken(credential);
-  if (!payload.sub || !payload.email) {
-    throw new Error('Google did not return an email for this account.');
-  }
-  if (payload.email_verified === false) {
-    throw new Error('That Google account has an unverified email address.');
-  }
+/* ------------------------------------------------------------- profiles -- */
 
+interface ProfileRow {
+  id: string;
+  user_id: string;
+  name: string | null;
+  email: string | null;
+  avatar_url: string | null;
+  role: AppRole;
+  created_at: string;
+}
+
+function toProfile(row: ProfileRow): Profile {
   return {
-    id: payload.sub,
-    email: payload.email,
-    name: payload.name ?? payload.email.split('@')[0],
-    givenName: payload.given_name,
-    avatarUrl: payload.picture,
-    provider: 'google',
-    createdAt: new Date().toISOString(),
+    id: row.id,
+    userId: row.user_id,
+    name: row.name?.trim() || (row.email ?? 'Guest').split('@')[0],
+    email: row.email ?? '',
+    avatarUrl: row.avatar_url,
+    role: row.role,
+    createdAt: row.created_at,
   };
 }
 
-export function signIn(customer: Customer): AuthState {
-  writeStorage(customer);
-  return { status: 'signed-in', customer };
+/**
+ * Read the signed-in user's profile.
+ *
+ * A trigger creates the profile the moment the auth user is inserted, so the
+ * row is normally there already. It can be missing for a moment right after a
+ * first sign-in, which is why this retries briefly rather than reporting a
+ * broken account.
+ */
+export async function fetchProfile(user: User, attempt = 0): Promise<Profile> {
+  const client = requireSupabase();
+  const { data, error } = await client
+    .from('profiles')
+    .select('id, user_id, name, email, avatar_url, role, created_at')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (error) {
+    throw new AuthError('We could not load your account. Please try again in a moment.', error);
+  }
+
+  if (!data) {
+    if (attempt < 3) {
+      await new Promise((r) => setTimeout(r, 350 * (attempt + 1)));
+      return fetchProfile(user, attempt + 1);
+    }
+    throw new AuthError(
+      'Your account has no profile yet. If this keeps happening, the database setup step has not been run.',
+    );
+  }
+
+  return toProfile(data as ProfileRow);
 }
 
-export function signOut(): AuthState {
-  writeStorage(null);
-  forgetGoogleAccount();
-  return { status: 'signed-out' };
+/** Update the fields a person is allowed to change about themselves. */
+export async function updateOwnProfile(
+  userId: string,
+  patch: { name?: string; avatarUrl?: string | null },
+): Promise<void> {
+  const client = requireSupabase();
+  const { error } = await client
+    .from('profiles')
+    .update({ name: patch.name, avatar_url: patch.avatarUrl })
+    .eq('user_id', userId);
+  if (error) throw new AuthError('That change could not be saved.', error);
+}
+
+/* ------------------------------------------------------------- sign in -- */
+
+/**
+ * Start the Google sign-in redirect.
+ *
+ * Supabase handles the OAuth exchange and verifies the token server-side, which
+ * is the part a browser-only implementation cannot do.
+ */
+export async function signInWithGoogle(redirectTo: string = window.location.origin): Promise<void> {
+  const client = requireSupabase();
+  const { error } = await client.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo,
+      queryParams: { prompt: 'select_account' },
+    },
+  });
+  if (error) {
+    throw new AuthError('Google sign-in could not be started. Please try again.', error);
+  }
+}
+
+export async function signOut(): Promise<void> {
+  if (!supabase) return;
+  const { error } = await supabase.auth.signOut();
+  if (error) throw new AuthError('Sign out did not complete. Please try again.', error);
+}
+
+/**
+ * Turn whatever Supabase threw into something worth showing a person.
+ * OAuth failures arrive as query or hash parameters on the redirect back.
+ */
+export function readOAuthError(search: string, hash: string): string | null {
+  const params = new URLSearchParams(search.startsWith('?') ? search.slice(1) : search);
+  const hashParams = new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash);
+  const code = params.get('error') ?? hashParams.get('error');
+  if (!code) return null;
+
+  const description =
+    params.get('error_description') ?? hashParams.get('error_description') ?? '';
+
+  if (code === 'access_denied') return 'Sign-in was cancelled. Nothing has changed.';
+  if (description.toLowerCase().includes('expired')) {
+    return 'That sign-in link expired. Please try again.';
+  }
+  return 'Google sign-in did not complete. Please try again.';
 }
