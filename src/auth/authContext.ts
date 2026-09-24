@@ -13,6 +13,9 @@ export interface AuthContextValue {
   error: string | null;
   clearError: () => void;
   signInWithGoogle: () => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<void>;
+  /** Resolves true when the account needs its email confirmed before use. */
+  signUpWithPassword: (email: string, password: string, name: string) => Promise<boolean>;
   signOut: () => Promise<void>;
 }
 

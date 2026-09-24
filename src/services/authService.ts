@@ -159,6 +159,63 @@ export async function signInWithGoogle(redirectTo: string = window.location.orig
   }
 }
 
+/**
+ * Email and password sign-in.
+ *
+ * A second method alongside Google, not a different privilege path: the role
+ * still comes from the `profiles` row, which the browser cannot write. Signing
+ * in by password gets you exactly what signing in with Google would.
+ */
+export async function signInWithPassword(email: string, password: string): Promise<void> {
+  const client = requireSupabase();
+  const { error } = await client.auth.signInWithPassword({ email: email.trim(), password });
+  if (!error) return;
+
+  /* Supabase returns one message for both, deliberately — saying which was
+     wrong tells an attacker whether the address exists. Keep that. */
+  if (/invalid login credentials/i.test(error.message)) {
+    throw new AuthError('That email and password do not match an account.', error);
+  }
+  if (/email not confirmed/i.test(error.message)) {
+    throw new AuthError(
+      'That account still needs its email confirmed. Check your inbox, or turn off email confirmation in Supabase while developing.',
+      error,
+    );
+  }
+  throw new AuthError('Sign-in failed. Please try again.', error);
+}
+
+/** Create an account with an email and password. */
+export async function signUpWithPassword(
+  email: string,
+  password: string,
+  name: string,
+): Promise<{ needsConfirmation: boolean }> {
+  const client = requireSupabase();
+  const { data, error } = await client.auth.signUp({
+    email: email.trim(),
+    password,
+    options: {
+      /* Read by the signup trigger to seed the profile name. */
+      data: { full_name: name.trim() },
+      emailRedirectTo: `${window.location.origin}/login`,
+    },
+  });
+
+  if (error) {
+    if (/already registered/i.test(error.message)) {
+      throw new AuthError('An account with that email already exists. Try signing in.', error);
+    }
+    if (/password/i.test(error.message)) {
+      throw new AuthError('That password is too short — use at least six characters.', error);
+    }
+    throw new AuthError('That account could not be created. Please try again.', error);
+  }
+
+  /* No session means Supabase is waiting on email confirmation. */
+  return { needsConfirmation: !data.session };
+}
+
 export async function signOut(): Promise<void> {
   if (!supabase) return;
   const { error } = await supabase.auth.signOut();

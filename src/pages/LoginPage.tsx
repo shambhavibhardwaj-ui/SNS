@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { Bike, Lock, ShieldCheck, UserRound } from 'lucide-react';
+import { Bike, Lock, Mail, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { homeForRole } from '../services/authService';
 import { RouteSpinner } from '../auth/RequireRole';
@@ -37,10 +37,17 @@ const ROLES = [
  * role is read from the database after Google has confirmed who you are, which
  * is the only order that cannot be gamed.
  */
+type Method = 'google' | 'email';
+
 export function LoginPage() {
-  const { status, role, error, clearError, signInWithGoogle } = useAuth();
+  const { status, role, error, clearError, signInWithGoogle, signInWithPassword, signUpWithPassword } =
+    useAuth();
   const location = useLocation();
   const [busy, setBusy] = useState(false);
+  const [method, setMethod] = useState<Method>('google');
+  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [notice, setNotice] = useState<string | null>(null);
 
   if (status === 'loading') return <RouteSpinner />;
   if (status === 'signed-in' && role) {
@@ -55,6 +62,32 @@ export function LoginPage() {
     /* On success the browser leaves for Google, so this only runs on failure. */
     setBusy(false);
   };
+
+  const onEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setNotice(null);
+    clearError();
+    try {
+      if (mode === 'signup') {
+        const needsConfirmation = await signUpWithPassword(form.email, form.password, form.name);
+        setNotice(
+          needsConfirmation
+            ? 'Account created. Check your inbox to confirm the address before signing in.'
+            : 'Account created — signing you in.',
+        );
+      } else {
+        await signInWithPassword(form.email, form.password);
+      }
+    } catch {
+      /* The provider has already put a readable message on `error`. */
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const field = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((f) => ({ ...f, [k]: e.target.value }));
 
   return (
     <main className="lg-page">
@@ -83,19 +116,110 @@ export function LoginPage() {
             <SetupNotice />
           ) : (
             <>
-              <button type="button" className="lg-google" onClick={onSignIn} disabled={busy}>
-                <GoogleMark />
-                {busy ? 'Opening Google…' : 'Continue with Google'}
-              </button>
-              <p className="lg-nopass">
-                No password to create — we use your Google account.
-              </p>
+              <div className="lg-methods" role="tablist" aria-label="Sign-in method">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={method === 'google'}
+                  onClick={() => setMethod('google')}
+                >
+                  <GoogleMark />
+                  Google
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={method === 'email'}
+                  onClick={() => setMethod('email')}
+                >
+                  <Mail size={15} strokeWidth={2} />
+                  Email
+                </button>
+              </div>
+
+              {method === 'google' ? (
+                <>
+                  <button type="button" className="lg-google" onClick={onSignIn} disabled={busy}>
+                    <GoogleMark />
+                    {busy ? 'Opening Google…' : 'Continue with Google'}
+                  </button>
+                  <p className="lg-nopass">
+                    No password to create — we use your Google account.
+                  </p>
+                </>
+              ) : (
+                <form className="lg-form" onSubmit={onEmailSubmit}>
+                  {mode === 'signup' ? (
+                    <label>
+                      <span>Name</span>
+                      <input
+                        type="text"
+                        value={form.name}
+                        onChange={field('name')}
+                        autoComplete="name"
+                        required
+                      />
+                    </label>
+                  ) : null}
+
+                  <label>
+                    <span>Email</span>
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={field('email')}
+                      autoComplete="email"
+                      required
+                    />
+                  </label>
+
+                  <label>
+                    <span>Password</span>
+                    <input
+                      type="password"
+                      value={form.password}
+                      onChange={field('password')}
+                      autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                      minLength={6}
+                      required
+                    />
+                  </label>
+
+                  <button type="submit" className="lg-submit" disabled={busy}>
+                    {busy
+                      ? 'Working…'
+                      : mode === 'signup'
+                        ? 'Create account'
+                        : 'Sign in'}
+                  </button>
+
+                  <p className="lg-switch">
+                    {mode === 'signup' ? 'Already have an account?' : 'No account yet?'}{' '}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode(mode === 'signup' ? 'signin' : 'signup');
+                        setNotice(null);
+                        clearError();
+                      }}
+                    >
+                      {mode === 'signup' ? 'Sign in' : 'Create one'}
+                    </button>
+                  </p>
+                </form>
+              )}
             </>
           )}
 
           {error ? (
             <p className="lg-error" role="alert">
               {error}
+            </p>
+          ) : null}
+
+          {notice ? (
+            <p className="lg-notice" role="status">
+              {notice}
             </p>
           ) : null}
 
@@ -119,9 +243,9 @@ export function LoginPage() {
               ))}
             </ul>
             <p className="lg-roles-foot">
-              These are not options to pick. Signing in creates a <strong>customer</strong>
-              {' '}account; admin and delivery are granted in the database by someone who is
-              already an admin.
+              These are not options to pick, and it makes no difference whether you sign in with
+              Google or a password. Signing in creates a <strong>customer</strong> account unless
+              the database already says otherwise.
             </p>
           </div>
         </div>

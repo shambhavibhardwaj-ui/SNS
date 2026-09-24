@@ -7,6 +7,8 @@ import {
   onAuthChange,
   readOAuthError,
   signInWithGoogle as startGoogleSignIn,
+  signInWithPassword as passwordSignIn,
+  signUpWithPassword as passwordSignUp,
   signOut as endSession,
   type AuthStatus,
   type Profile,
@@ -88,6 +90,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const signInWithPassword = useCallback(async (email: string, password: string) => {
+    setError(null);
+    try {
+      await passwordSignIn(email, password);
+    } catch (e) {
+      const message = e instanceof AuthError ? e.message : 'Sign-in failed.';
+      setError(message);
+      throw e;
+    }
+  }, []);
+
+  const signUpWithPassword = useCallback(
+    async (email: string, password: string, name: string) => {
+      setError(null);
+      try {
+        const { needsConfirmation } = await passwordSignUp(email, password, name);
+        return needsConfirmation;
+      } catch (e) {
+        const message = e instanceof AuthError ? e.message : 'That account could not be created.';
+        setError(message);
+        throw e;
+      }
+    },
+    [],
+  );
+
   const signOut = useCallback(async () => {
     try {
       await endSession();
@@ -108,9 +136,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       error,
       clearError: () => setError(null),
       signInWithGoogle,
+      signInWithPassword,
+      signUpWithPassword,
       signOut,
     }),
-    [status, profile, error, signInWithGoogle, signOut],
+    [status, profile, error, signInWithGoogle, signInWithPassword, signUpWithPassword, signOut],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
