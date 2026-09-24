@@ -31,6 +31,14 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured()
     })
   : null;
 
+/*
+ * Exposed in development only, so the row level security rules can be probed
+ * from the console — see supabase/SETUP.md. Never in a production build.
+ */
+if (import.meta.env.DEV && supabase) {
+  (window as unknown as { __sb: SupabaseClient }).__sb = supabase;
+}
+
 /** Narrowing helper for the call sites that genuinely need a client. */
 export function requireSupabase(): SupabaseClient {
   if (!supabase) {
