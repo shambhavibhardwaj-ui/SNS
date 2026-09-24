@@ -1,4 +1,6 @@
 import { useCallback, useState } from 'react';
+import { AuthProvider } from './auth/AuthProvider';
+import { SignInDialog } from './components/auth/SignInDialog';
 import { FoodCity } from './components/foodcity/FoodCity';
 import { TopBar } from './components/layout/TopBar';
 import { RestaurantListing } from './pages/RestaurantListing';
@@ -31,7 +33,8 @@ export default function App() {
   }, []);
 
   return (
-    <div className="fc-shell" id="top" data-view={view.name}>
+    <AuthProvider>
+      <div className="fc-shell" id="top" data-view={view.name}>
       <TopBar compact={view.name !== 'city'} />
 
       {view.name === 'city' ? (
@@ -46,8 +49,10 @@ export default function App() {
         </div>
       )}
 
-      {notice ? <NextStepNotice restaurantId={notice} onClose={() => setNotice(null)} /> : null}
-    </div>
+        {notice ? <NextStepNotice restaurantId={notice} onClose={() => setNotice(null)} /> : null}
+        <SignInDialog />
+      </div>
+    </AuthProvider>
   );
 }
 

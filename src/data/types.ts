@@ -148,6 +148,23 @@ export interface MenuItem {
   image?: string;
 }
 
+/**
+ * table: customers
+ *
+ * Created on first sign-in. `id` is the identity provider's stable subject
+ * claim, which is what `orders.customerId` points at.
+ */
+export interface Customer {
+  id: ID;
+  email: string;
+  name: string;
+  givenName?: string;
+  avatarUrl?: string;
+  /** Which identity provider vouched for this person. */
+  provider: 'google';
+  createdAt: string;
+}
+
 /** table: orders */
 export interface Order {
   id: ID;

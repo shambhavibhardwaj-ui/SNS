@@ -1,9 +1,10 @@
+import { AccountButton } from '../auth/AccountButton';
+
 /**
  * Landing-page chrome.
  *
- * Search and the profile control are deliberately inert in this build — search
- * lands in its own step, and there is no auth yet. They are marked
- * `aria-disabled` rather than faked so the demo never implies working features.
+ * Search is deliberately inert in this build and marked `aria-disabled`, so the
+ * demo never implies a working feature. The account control is real.
  */
 export function TopBar({ compact = false }: { compact?: boolean }) {
   return (
@@ -34,17 +35,7 @@ export function TopBar({ compact = false }: { compact?: boolean }) {
         />
       </div>
 
-      <button
-        type="button"
-        className="fc-profile"
-        aria-disabled="true"
-        title="Accounts arrive in a later step"
-      >
-        <span className="fc-profile-avatar" aria-hidden="true">
-          🧑‍🍳
-        </span>
-        <span>Guest</span>
-      </button>
+      <AccountButton />
     </header>
   );
 }
