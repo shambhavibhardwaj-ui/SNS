@@ -66,7 +66,9 @@ as $$
   select role from public.profiles where user_id = auth.uid()
 $$;
 
-revoke all on function public.current_app_role() from public;
+-- `from public` alone is not enough: Supabase separately grants EXECUTE on new
+-- public-schema functions to `anon`, and that grant survives it.
+revoke all on function public.current_app_role() from public, anon;
 grant execute on function public.current_app_role() to authenticated;
 
 -- --------------------------------------------------------------- policies --
@@ -166,7 +168,7 @@ begin
 end;
 $$;
 
-revoke all on function public.set_user_role(text, public.app_role) from public;
+revoke all on function public.set_user_role(text, public.app_role) from public, anon;
 grant execute on function public.set_user_role(text, public.app_role) to authenticated;
 
 -- ------------------------------------------------------ first admin --

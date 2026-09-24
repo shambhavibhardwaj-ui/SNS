@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import type { LucideIcon } from 'lucide-react';
+import { Bell, Search, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { AccountButton } from '../components/auth/AccountButton';
 
@@ -8,8 +8,6 @@ export interface DashboardSection {
   to: string;
   label: string;
   Icon: LucideIcon;
-  /** Shown on the placeholder page until the section is built. */
-  blurb: string;
 }
 
 /**
@@ -24,12 +22,15 @@ export function DashboardShell({
   kicker,
   sections,
   accent,
+  showSearch = false,
   children,
 }: {
   title: string;
   kicker: string;
   sections: DashboardSection[];
   accent: string;
+  /** Admin gets a search field; delivery does not need one. */
+  showSearch?: boolean;
   children?: ReactNode;
 }) {
   const { profile } = useAuth();
@@ -69,34 +70,36 @@ export function DashboardShell({
       <div className="db-main">
         <header className="db-top">
           <h1 className="db-title">{title}</h1>
-          <AccountButton />
+
+          <div className="db-top-tools">
+            {showSearch ? (
+              <label className="db-search">
+                <Search size={16} strokeWidth={2} aria-hidden="true" />
+                <input
+                  type="search"
+                  placeholder="Search restaurants, customers, orders"
+                  aria-label="Search the platform — not wired up yet"
+                  disabled
+                />
+              </label>
+            ) : null}
+
+            <button
+              type="button"
+              className="db-bell"
+              aria-disabled="true"
+              title="Notifications arrive with real orders"
+              aria-label="Notifications"
+            >
+              <Bell size={17} strokeWidth={2} />
+              <span className="db-bell-dot" aria-hidden="true" />
+            </button>
+
+            <AccountButton />
+          </div>
         </header>
         <div className="db-body">{children ?? <Outlet />}</div>
       </div>
     </div>
-  );
-}
-
-/** Stands in for a section that has not been built yet. */
-export function SectionPlaceholder({
-  title,
-  blurb,
-  Icon,
-}: {
-  title: string;
-  blurb: string;
-  Icon: LucideIcon;
-}) {
-  return (
-    <section className="db-placeholder">
-      <span className="db-placeholder-icon" aria-hidden="true">
-        <Icon size={22} strokeWidth={1.8} />
-      </span>
-      <h2>{title}</h2>
-      <p>{blurb}</p>
-      <p className="db-placeholder-note">
-        The route, the guard and the navigation are in place. This screen is next.
-      </p>
-    </section>
   );
 }
