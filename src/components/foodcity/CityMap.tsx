@@ -6,7 +6,15 @@ import { IsoScooter } from './art/IsoScenery';
 import { DistrictLabels } from './DistrictLabels';
 import { IsoDistrict } from './IsoDistrict';
 import { brand } from '../../theme/brand';
-import { depthOf, districtPlots, iso, MAP_H, MAP_W } from './iso';
+import {
+  depthOf,
+  districtPlots,
+  iso,
+  MAP_H,
+  MAP_W,
+  setProjectionRotation,
+  type Rotation,
+} from './iso';
 
 interface CityMapProps {
   summaries: DistrictSummary[];
@@ -16,6 +24,8 @@ interface CityMapProps {
   cameraTransform: string;
   /** False while the camera is being dragged, so the move tracks the pointer. */
   cameraAnimated: boolean;
+  /** Quarter turns the city is drawn at. */
+  rotation: Rotation;
   onHover: (districtId: string | null) => void;
   onSelect: (districtId: string) => void;
 }
@@ -38,15 +48,22 @@ export const CityMap = forwardRef<SVGSVGElement, CityMapProps>(function CityMap(
     activeId,
     cameraTransform,
     cameraAnimated,
+    rotation,
     onHover,
     onSelect,
   },
   svgRef,
 ) {
+  /*
+   * Set before anything below projects a point. CityMap is the single owner of
+   * the city tree, so this is the one place the art's rotation is decided.
+   */
+  setProjectionRotation(rotation);
+
   const ordered = [...summaries].sort((a, b) => {
     const pa = districtPlots[a.district.id];
     const pb = districtPlots[b.district.id];
-    return depthOf(pa.gx, pa.gy) - depthOf(pb.gx, pb.gy);
+    return depthOf(pa.gx, pa.gy, rotation) - depthOf(pb.gx, pb.gy, rotation);
   });
 
   return (
@@ -119,6 +136,7 @@ export const CityMap = forwardRef<SVGSVGElement, CityMapProps>(function CityMap(
               hovered={hoveredId === summary.district.id && activeId === null}
               dimmed={activeId !== null && activeId !== summary.district.id}
               active={activeId === summary.district.id}
+              rotation={rotation}
               onHover={onHover}
               onSelect={onSelect}
             />

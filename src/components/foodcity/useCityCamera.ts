@@ -9,6 +9,7 @@ import {
   ZOOM_MAX,
   ZOOM_MIN,
   type Camera,
+  type Rotation,
   type Viewport,
 } from './iso';
 
@@ -17,6 +18,10 @@ const DRAG_THRESHOLD = 5;
 
 export interface CityCamera {
   transform: string;
+  /** Quarter turns the city is currently shown at. */
+  rotation: Rotation;
+  /** Turn the city a quarter left (-1) or right (+1). */
+  rotate: (direction: 1 | -1) => void;
   /** True while the move should be transitioned (buttons, fly-to) rather than tracked live. */
   animated: boolean;
   scale: number;
@@ -54,6 +59,13 @@ export function useCityCamera(): CityCamera {
   const [view, setView] = useState<Viewport>(() => clampViewport(viewportFor(CITY_CAMERA)));
   const [animated, setAnimated] = useState(true);
   const [isPanning, setIsPanning] = useState(false);
+  const [rotation, setRotation] = useState<Rotation>(0);
+
+  /*
+   * Mirrors `rotation` for the pointer handlers, which must not re-bind on
+   * every turn. Kept in step by `rotate`, the only thing that changes it.
+   */
+  const rotRef = useRef<Rotation>(0);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
   /** Active pointers, so one finger pans and two pinch. */
@@ -89,17 +101,36 @@ export function useCityCamera(): CityCamera {
       if (next === v.scale) return v;
       /* Keep `world` fixed: it sits at the same screen spot before and after. */
       const k = next / v.scale;
-      return clampViewport({
-        tx: world.x - (world.x - v.tx) * k,
-        ty: world.y - (world.y - v.ty) * k,
-        scale: next,
-      });
+      return clampViewport(
+        {
+          tx: world.x - (world.x - v.tx) * k,
+          ty: world.y - (world.y - v.ty) * k,
+          scale: next,
+        },
+        rotRef.current,
+      );
     });
   }, []);
 
   const flyTo = useCallback((cam: Camera) => {
     setAnimated(true);
-    setView(clampViewport(viewportFor(cam)));
+    setView(clampViewport(viewportFor(cam, rotRef.current), rotRef.current));
+  }, []);
+
+  /**
+   * Turn the city a quarter.
+   *
+   * A turn re-projects everything, so the old translation no longer points
+   * anywhere meaningful: the camera keeps its zoom and re-centres. Done here
+   * rather than in an effect on `rotation`, so the turn and the camera move are
+   * one update instead of two renders.
+   */
+  const rotate = useCallback((direction: 1 | -1) => {
+    const next = (((rotRef.current + direction + 4) % 4) as Rotation);
+    rotRef.current = next;
+    setAnimated(true);
+    setRotation(next);
+    setView((v) => clampViewport(viewportFor({ ...CITY_CAMERA, scale: v.scale }, next), next));
   }, []);
 
   const reset = useCallback(() => flyTo(CITY_CAMERA), [flyTo]);
@@ -142,11 +173,14 @@ export function useCityCamera(): CityCamera {
         setView((v) => {
           const next = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, target));
           const k = next / v.scale;
-          return clampViewport({
-            tx: mid.x - (mid.x - v.tx) * k,
-            ty: mid.y - (mid.y - v.ty) * k,
-            scale: next,
-          });
+          return clampViewport(
+            {
+              tx: mid.x - (mid.x - v.tx) * k,
+              ty: mid.y - (mid.y - v.ty) * k,
+              scale: next,
+            },
+            rotRef.current,
+          );
         });
         moved.current += 10;
         return;
@@ -157,7 +191,9 @@ export function useCityCamera(): CityCamera {
       moved.current += Math.hypot(dx, dy);
       const ratio = pxPerUnit();
       setAnimated(false);
-      setView((v) => clampViewport({ ...v, tx: v.tx + dx / ratio, ty: v.ty + dy / ratio }));
+      setView((v) =>
+        clampViewport({ ...v, tx: v.tx + dx / ratio, ty: v.ty + dy / ratio }, rotRef.current),
+      );
     },
     [pxPerUnit, toWorld],
   );
@@ -195,6 +231,8 @@ export function useCityCamera(): CityCamera {
 
   return {
     transform: toTransform(view),
+    rotation,
+    rotate,
     animated,
     scale: view.scale,
     isPanning,

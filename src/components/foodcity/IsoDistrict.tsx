@@ -2,7 +2,17 @@ import type { Restaurant } from '../../data/types';
 import type { DistrictSummary } from '../../services/restaurantService';
 import { RestaurantBuilding } from './buildings/RestaurantBuilding';
 import { IsoLamp, IsoPerson, IsoShrub, IsoSteam } from './art/IsoScenery';
-import { BLOCK, BUILDING_HEIGHTS, BUILDING_SLOTS, iso, poly, shade, type Plot } from './iso';
+import {
+  BLOCK,
+  BUILDING_HEIGHTS,
+  BUILDING_SLOTS,
+  depthOf,
+  iso,
+  poly,
+  shade,
+  type Plot,
+  type Rotation,
+} from './iso';
 
 interface IsoDistrictProps {
   summary: DistrictSummary;
@@ -11,6 +21,7 @@ interface IsoDistrictProps {
   hovered: boolean;
   dimmed: boolean;
   active: boolean;
+  rotation: Rotation;
   onHover: (districtId: string | null) => void;
   onSelect: (districtId: string) => void;
 }
@@ -29,6 +40,7 @@ export function IsoDistrict({
   hovered,
   dimmed,
   active,
+  rotation,
   onHover,
   onSelect,
 }: IsoDistrictProps) {
@@ -43,7 +55,7 @@ export function IsoDistrict({
       restaurant: restaurants[i],
       variant: i,
     }))
-    .sort((a, b) => a.gx + a.gy - (b.gx + b.gy));
+    .sort((a, b) => depthOf(a.gx, a.gy, rotation) - depthOf(b.gx, b.gy, rotation));
 
   const label = `${district.name}. ${restaurantCount} restaurants. Top rated ${
     topRating?.toFixed(1) ?? 'not rated'

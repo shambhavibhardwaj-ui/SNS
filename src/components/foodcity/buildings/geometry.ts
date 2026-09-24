@@ -5,7 +5,7 @@
  * light direction and one sense of scale. Cuisine-specific architecture is built
  * on top of these anchor points rather than re-deriving the projection.
  */
-import { iso, type IsoPoint } from '../iso';
+import { iso, local, type IsoPoint } from '../iso';
 
 export interface Footprint {
   gx: number;
@@ -34,18 +34,34 @@ export interface BoxAnchors {
   groundMid: IsoPoint;
 }
 
-export function boxAnchors({ gx, gy, w, d, h }: Footprint): BoxAnchors {
+/**
+ * Screen position of a point on the building, given as an offset from its grid
+ * origin.
+ *
+ * The origin is rotated with the city; the offset is not. That is what keeps a
+ * building facing the camera as the city turns — rotating its geometry too
+ * would swing the shopfront and the lit wall round to the back, and the face
+ * tones would then be lighting the wrong sides.
+ */
+export function at(fp: Footprint, dx: number, dy: number, dz = 0): IsoPoint {
+  const anchor = iso(fp.gx, fp.gy);
+  const step = local(dx, dy, dz);
+  return { x: anchor.x + step.x, y: anchor.y + step.y };
+}
+
+export function boxAnchors(fp: Footprint): BoxAnchors {
+  const { w, d, h } = fp;
   return {
-    A: iso(gx, gy),
-    B: iso(gx + w, gy),
-    C: iso(gx + w, gy + d),
-    D: iso(gx, gy + d),
-    A2: iso(gx, gy, h),
-    B2: iso(gx + w, gy, h),
-    C2: iso(gx + w, gy + d, h),
-    D2: iso(gx, gy + d, h),
-    roofMid: iso(gx + w / 2, gy + d / 2, h),
-    groundMid: iso(gx + w / 2, gy + d / 2),
+    A: at(fp, 0, 0),
+    B: at(fp, w, 0),
+    C: at(fp, w, d),
+    D: at(fp, 0, d),
+    A2: at(fp, 0, 0, h),
+    B2: at(fp, w, 0, h),
+    C2: at(fp, w, d, h),
+    D2: at(fp, 0, d, h),
+    roofMid: at(fp, w / 2, d / 2, h),
+    groundMid: at(fp, w / 2, d / 2),
   };
 }
 

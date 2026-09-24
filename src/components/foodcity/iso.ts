@@ -25,11 +25,67 @@ export interface IsoPoint {
   y: number;
 }
 
-/** Project a grid point (gx, gy) at height gz (in px) to screen space. */
-export function iso(gx: number, gy: number, gz = 0): IsoPoint {
+/** Quarter turns of the city, anticlockwise. */
+export type Rotation = 0 | 1 | 2 | 3;
+
+/**
+ * Turn the city a quarter at a time.
+ *
+ * The projection itself is fixed — what rotates is where each grid point sits.
+ * The grid is not square, so the extents swap on odd quarters.
+ */
+export function rotateGrid(gx: number, gy: number, rot: Rotation): { gx: number; gy: number } {
+  switch (rot) {
+    case 1:
+      return { gx: gy, gy: GRID_X - gx };
+    case 2:
+      return { gx: GRID_X - gx, gy: GRID_Y - gy };
+    case 3:
+      return { gx: GRID_Y - gy, gy: gx };
+    default:
+      return { gx, gy };
+  }
+}
+
+/** Project a grid point at a given rotation. Pure. */
+export function project(gx: number, gy: number, gz: number, rot: Rotation): IsoPoint {
+  const r = rotateGrid(gx, gy, rot);
   return {
-    x: ORIGIN.x + (gx - gy) * (TILE_W / 2),
-    y: ORIGIN.y + (gx + gy) * (TILE_H / 2) - gz,
+    x: ORIGIN.x + (r.gx - r.gy) * (TILE_W / 2),
+    y: ORIGIN.y + (r.gx + r.gy) * (TILE_H / 2) - gz,
+  };
+}
+
+/**
+ * The rotation the city art is currently being drawn at.
+ *
+ * Held here rather than threaded through every component because the whole city
+ * is one synchronously-rendered tree with a single owner: CityMap sets this at
+ * the top of its render, before any child projects anything. Anything that needs
+ * a rotation independent of that tree must call `project` directly.
+ */
+let activeRotation: Rotation = 0;
+
+export function setProjectionRotation(rot: Rotation): void {
+  activeRotation = rot;
+}
+
+/** Project a grid point (gx, gy) at height gz (in px), at the city's rotation. */
+export function iso(gx: number, gy: number, gz = 0): IsoPoint {
+  return project(gx, gy, gz, activeRotation);
+}
+
+/**
+ * Screen offset for a local step, ignoring rotation.
+ *
+ * Buildings are positioned by a rotated anchor but built from unrotated offsets,
+ * so they keep facing the camera as the city turns. Rotating their geometry too
+ * would swing the shopfront and the lit wall around to the back.
+ */
+export function local(dx: number, dy: number, dz = 0): IsoPoint {
+  return {
+    x: (dx - dy) * (TILE_W / 2),
+    y: (dx + dy) * (TILE_H / 2) - dz,
   };
 }
 
@@ -40,10 +96,11 @@ export function poly(...points: IsoPoint[]): string {
 
 /**
  * Painter's-algorithm depth key. Larger draws later, i.e. nearer the viewer.
- * Two objects on the same gx+gy diagonal never overlap, so ties are safe.
+ * Two objects on the same diagonal never overlap, so ties are safe.
  */
-export function depthOf(gx: number, gy: number): number {
-  return gx + gy;
+export function depthOf(gx: number, gy: number, rot: Rotation = 0): number {
+  const r = rotateGrid(gx, gy, rot);
+  return r.gx + r.gy;
 }
 
 /* ------------------------------------------------------------- lighting -- */
@@ -181,8 +238,8 @@ export function cameraForPlot(plot: Plot, scale = 1.95): Camera {
 }
 
 /** Turn a grid-focused camera into the viewport that centres it. */
-export function viewportFor(cam: Camera): Viewport {
-  const focus = iso(cam.gx, cam.gy);
+export function viewportFor(cam: Camera, rot: Rotation = 0): Viewport {
+  const focus = project(cam.gx, cam.gy, 0, rot);
   return {
     tx: MAP_W / 2 - focus.x * cam.scale,
     ty: MAP_H / 2 - focus.y * cam.scale,
@@ -204,11 +261,16 @@ export function toTransform(v: Viewport): string {
  * their ground point and the depth of the slab below it. Panning is clamped to
  * this so the city can never be dragged off into empty space.
  */
-export const CITY_BOUNDS = (() => {
+export function cityBounds(rot: Rotation = 0) {
   const lo = -1.4;
   const hiX = GRID_X + 1.4;
   const hiY = GRID_Y + 1.4;
-  const corners = [iso(lo, lo), iso(hiX, lo), iso(hiX, hiY), iso(lo, hiY)];
+  const corners = [
+    project(lo, lo, 0, rot),
+    project(hiX, lo, 0, rot),
+    project(hiX, hiY, 0, rot),
+    project(lo, hiY, 0, rot),
+  ];
   const xs = corners.map((c) => c.x);
   const ys = corners.map((c) => c.y);
   /** Tallest roof furniture, and the slab's soil sides. */
@@ -220,7 +282,7 @@ export const CITY_BOUNDS = (() => {
     minY: Math.min(...ys) - HEADROOM,
     maxY: Math.max(...ys) + UNDERSIDE,
   };
-})();
+}
 
 /**
  * Keep the city in view.
@@ -230,15 +292,16 @@ export const CITY_BOUNDS = (() => {
  * opposite inequalities, which is why the two cases are handled separately
  * rather than with one clamp.
  */
-export function clampViewport(v: Viewport): Viewport {
+export function clampViewport(v: Viewport, rot: Rotation = 0): Viewport {
+  const bounds = cityBounds(rot);
   const scale = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, v.scale));
-  const spanX = (CITY_BOUNDS.maxX - CITY_BOUNDS.minX) * scale;
-  const spanY = (CITY_BOUNDS.maxY - CITY_BOUNDS.minY) * scale;
+  const spanX = (bounds.maxX - bounds.minX) * scale;
+  const spanY = (bounds.maxY - bounds.minY) * scale;
 
-  const atLeft = -CITY_BOUNDS.minX * scale;
-  const atRight = MAP_W - CITY_BOUNDS.maxX * scale;
-  const atTop = -CITY_BOUNDS.minY * scale;
-  const atBottom = MAP_H - CITY_BOUNDS.maxY * scale;
+  const atLeft = -bounds.minX * scale;
+  const atRight = MAP_W - bounds.maxX * scale;
+  const atTop = -bounds.minY * scale;
+  const atBottom = MAP_H - bounds.maxY * scale;
 
   const tx =
     spanX >= MAP_W

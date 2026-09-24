@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Maximize2, Minus, Plus } from 'lucide-react';
+import { Maximize2, Minus, Plus, RotateCcw, RotateCw } from 'lucide-react';
 import {
   getCityStats,
   getDistrictSummaries,
@@ -54,6 +54,8 @@ export function FoodCity({ onEnterDistrict }: FoodCityProps) {
     flyTo,
     reset: resetCamera,
     zoomStep,
+    rotation,
+    rotate,
     bind: cameraBind,
     onWheel,
     setSvg,
@@ -97,13 +99,14 @@ export function FoodCity({ onEnterDistrict }: FoodCityProps) {
   return (
     <main className="fc-stage" data-zoomed={activeId ? 'true' : undefined}>
       <aside className="fc-aside" data-collapsed={collapsed || undefined}>
-        <SideNav
-          collapsed={collapsed}
-          onToggle={() => setCollapsed((c) => !c)}
-          onHome={resetCamera}
-        />
+        <div className="fc-aside-scroll">
+          <SideNav
+            collapsed={collapsed}
+            onToggle={() => setCollapsed((c) => !c)}
+            onHome={resetCamera}
+          />
 
-        <div className="fc-aside-body">
+          <div className="fc-aside-body">
           {activeSummary ? (
             <div className="fc-entering">
               <p className="fc-panel-eyebrow">Heading into</p>
@@ -137,9 +140,10 @@ export function FoodCity({ onEnterDistrict }: FoodCityProps) {
               />
             </div>
           )}
-
-          <FoodieAIBar />
+          </div>
         </div>
+
+        <FoodieAIBar />
       </aside>
 
       <div
@@ -156,6 +160,7 @@ export function FoodCity({ onEnterDistrict }: FoodCityProps) {
           activeId={activeId}
           cameraTransform={cameraTransform}
           cameraAnimated={cameraAnimated}
+          rotation={rotation}
           onHover={setHoveredId}
           onSelect={openDistrict}
         />
@@ -180,13 +185,29 @@ export function FoodCity({ onEnterDistrict }: FoodCityProps) {
           >
             <Minus size={17} strokeWidth={2.4} />
           </button>
+          <button
+            type="button"
+            onClick={() => rotate(-1)}
+            aria-label="Turn the city left"
+            title="Turn left"
+          >
+            <RotateCcw size={16} strokeWidth={2.2} />
+          </button>
+          <button
+            type="button"
+            onClick={() => rotate(1)}
+            aria-label="Turn the city right"
+            title="Turn right"
+          >
+            <RotateCw size={16} strokeWidth={2.2} />
+          </button>
           <button type="button" onClick={resetCamera} aria-label="Reset view" title="Reset view">
             <Maximize2 size={15} strokeWidth={2.2} />
           </button>
         </div>
 
         {!activeId ? (
-          <p className="fc-map-hint">Drag to explore · scroll to zoom · click a district to walk in</p>
+          <p className="fc-map-hint">Drag to explore · scroll to zoom · turn the city · click a district to walk in</p>
         ) : null}
 
         <p className="fc-sr-only" role="status">

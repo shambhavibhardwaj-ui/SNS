@@ -1,9 +1,10 @@
 import { brand } from '../../../theme/brand';
-import { iso, poly, shade, TILE_W } from '../iso';
+import { poly, shade, TILE_W } from '../iso';
 import type { BuildingStyle } from './buildingStyles';
 import {
   alongFront,
   alongSide,
+  at,
   awningSlab,
   frontArch,
   frontPanel,
@@ -99,10 +100,10 @@ export function ConeArchitecture(props: ArchitectureProps) {
       ))}
       <polygon
         points={poly(
-          iso(fp.gx - 0.1, fp.gy - 0.1, h + 8),
-          iso(fp.gx + fp.w + 0.1, fp.gy - 0.1, h + 8),
-          iso(fp.gx + fp.w + 0.1, fp.gy + fp.d + 0.1, h + 8),
-          iso(fp.gx - 0.1, fp.gy + fp.d + 0.1, h + 8),
+          at(fp, 0 - 0.1, 0 - 0.1, h + 8),
+          at(fp, 0 + fp.w + 0.1, 0 - 0.1, h + 8),
+          at(fp, 0 + fp.w + 0.1, 0 + fp.d + 0.1, h + 8),
+          at(fp, 0 - 0.1, 0 + fp.d + 0.1, h + 8),
         )}
         fill={style.roof}
         opacity={0.55}
@@ -172,10 +173,10 @@ export function NorthIndianArchitecture(props: ArchitectureProps) {
       {/* parapet with a carved edge */}
       <polygon
         points={poly(
-          iso(fp.gx - 0.12, fp.gy - 0.12, h + 11),
-          iso(fp.gx + fp.w + 0.12, fp.gy - 0.12, h + 11),
-          iso(fp.gx + fp.w + 0.12, fp.gy + fp.d + 0.12, h + 11),
-          iso(fp.gx - 0.12, fp.gy + fp.d + 0.12, h + 11),
+          at(fp, 0 - 0.12, 0 - 0.12, h + 11),
+          at(fp, 0 + fp.w + 0.12, 0 - 0.12, h + 11),
+          at(fp, 0 + fp.w + 0.12, 0 + fp.d + 0.12, h + 11),
+          at(fp, 0 - 0.12, 0 + fp.d + 0.12, h + 11),
         )}
         fill={shade(style.roof, 0.06)}
       />
@@ -266,13 +267,13 @@ export function PizzaOvenArchitecture(props: ArchitectureProps) {
   const rise = 34;
   const o = 0.24;
 
-  const eA = iso(fp.gx - o, fp.gy - o, h);
-  const eB = iso(fp.gx + fp.w + o, fp.gy - o, h);
-  const eC = iso(fp.gx + fp.w + o, fp.gy + fp.d + o, h);
-  const eD = iso(fp.gx - o, fp.gy + fp.d + o, h);
-  const R1 = iso(fp.gx - o, fp.gy + fp.d / 2, h + rise);
-  const R2 = iso(fp.gx + fp.w + o, fp.gy + fp.d / 2, h + rise);
-  const chimney = iso(fp.gx + fp.w * 0.24, fp.gy + fp.d * 0.3, h + rise);
+  const eA = at(fp, 0 - o, 0 - o, h);
+  const eB = at(fp, 0 + fp.w + o, 0 - o, h);
+  const eC = at(fp, 0 + fp.w + o, 0 + fp.d + o, h);
+  const eD = at(fp, 0 - o, 0 + fp.d + o, h);
+  const R1 = at(fp, 0 - o, 0 + fp.d / 2, h + rise);
+  const R2 = at(fp, 0 + fp.w + o, 0 + fp.d / 2, h + rise);
+  const chimney = at(fp, 0 + fp.w * 0.24, 0 + fp.d * 0.3, h + rise);
 
   return (
     <g>
@@ -336,12 +337,12 @@ export function ChineseArchitecture(props: ArchitectureProps) {
 
   const tier = (lift: number, spread: number, depth: number) => {
     const o = spread;
-    const eA = iso(fp.gx - o, fp.gy - o, lift);
-    const eB = iso(fp.gx + fp.w + o, fp.gy - o, lift);
-    const eC = iso(fp.gx + fp.w + o, fp.gy + fp.d + o, lift);
-    const eD = iso(fp.gx - o, fp.gy + fp.d + o, lift);
-    const R1 = iso(fp.gx - o * 0.3, fp.gy + fp.d / 2, lift + depth);
-    const R2 = iso(fp.gx + fp.w + o * 0.3, fp.gy + fp.d / 2, lift + depth);
+    const eA = at(fp, 0 - o, 0 - o, lift);
+    const eB = at(fp, 0 + fp.w + o, 0 - o, lift);
+    const eC = at(fp, 0 + fp.w + o, 0 + fp.d + o, lift);
+    const eD = at(fp, 0 - o, 0 + fp.d + o, lift);
+    const R1 = at(fp, 0 - o * 0.3, 0 + fp.d / 2, lift + depth);
+    const R2 = at(fp, 0 + fp.w + o * 0.3, 0 + fp.d / 2, lift + depth);
     return (
       <g>
         {/* upturned eaves: the corners lift above the ridge line */}
@@ -445,19 +446,19 @@ export function StuccoArchArchitecture(props: ArchitectureProps) {
       {/* stepped clay parapet */}
       <polygon
         points={poly(
-          iso(fp.gx - 0.14, fp.gy - 0.14, h + 13),
-          iso(fp.gx + fp.w + 0.14, fp.gy - 0.14, h + 13),
-          iso(fp.gx + fp.w + 0.14, fp.gy + fp.d + 0.14, h + 13),
-          iso(fp.gx - 0.14, fp.gy + fp.d + 0.14, h + 13),
+          at(fp, 0 - 0.14, 0 - 0.14, h + 13),
+          at(fp, 0 + fp.w + 0.14, 0 - 0.14, h + 13),
+          at(fp, 0 + fp.w + 0.14, 0 + fp.d + 0.14, h + 13),
+          at(fp, 0 - 0.14, 0 + fp.d + 0.14, h + 13),
         )}
         fill={shade(style.roof, 0.08)}
       />
       <polygon
         points={poly(
-          iso(fp.gx - 0.14, fp.gy + fp.d + 0.14, h + 13),
-          iso(fp.gx + fp.w + 0.14, fp.gy + fp.d + 0.14, h + 13),
-          iso(fp.gx + fp.w + 0.14, fp.gy + fp.d + 0.14, h),
-          iso(fp.gx - 0.14, fp.gy + fp.d + 0.14, h),
+          at(fp, 0 - 0.14, 0 + fp.d + 0.14, h + 13),
+          at(fp, 0 + fp.w + 0.14, 0 + fp.d + 0.14, h + 13),
+          at(fp, 0 + fp.w + 0.14, 0 + fp.d + 0.14, h),
+          at(fp, 0 - 0.14, 0 + fp.d + 0.14, h),
         )}
         fill={shade(style.roof, -0.24)}
       />
@@ -536,12 +537,12 @@ export function GreenhouseArchitecture(props: ArchitectureProps) {
   const rise = 30;
   const o = 0.12;
 
-  const eA = iso(fp.gx - o, fp.gy - o, h);
-  const eB = iso(fp.gx + fp.w + o, fp.gy - o, h);
-  const eC = iso(fp.gx + fp.w + o, fp.gy + fp.d + o, h);
-  const eD = iso(fp.gx - o, fp.gy + fp.d + o, h);
-  const R1 = iso(fp.gx - o, fp.gy + fp.d / 2, h + rise);
-  const R2 = iso(fp.gx + fp.w + o, fp.gy + fp.d / 2, h + rise);
+  const eA = at(fp, 0 - o, 0 - o, h);
+  const eB = at(fp, 0 + fp.w + o, 0 - o, h);
+  const eC = at(fp, 0 + fp.w + o, 0 + fp.d + o, h);
+  const eD = at(fp, 0 - o, 0 + fp.d + o, h);
+  const R1 = at(fp, 0 - o, 0 + fp.d / 2, h + rise);
+  const R2 = at(fp, 0 + fp.w + o, 0 + fp.d / 2, h + rise);
 
   return (
     <g>
@@ -626,13 +627,13 @@ export function SeafoodArchitecture(props: ArchitectureProps) {
   const rise = 30;
   const o = 0.2;
 
-  const eA = iso(fp.gx - o, fp.gy - o, h);
-  const eB = iso(fp.gx + fp.w + o, fp.gy - o, h);
-  const eC = iso(fp.gx + fp.w + o, fp.gy + fp.d + o, h);
-  const eD = iso(fp.gx - o, fp.gy + fp.d + o, h);
-  const R1 = iso(fp.gx - o, fp.gy + fp.d / 2, h + rise);
-  const R2 = iso(fp.gx + fp.w + o, fp.gy + fp.d / 2, h + rise);
-  const tower = iso(fp.gx + 0.2, fp.gy + 0.2, h);
+  const eA = at(fp, 0 - o, 0 - o, h);
+  const eB = at(fp, 0 + fp.w + o, 0 - o, h);
+  const eC = at(fp, 0 + fp.w + o, 0 + fp.d + o, h);
+  const eD = at(fp, 0 - o, 0 + fp.d + o, h);
+  const R1 = at(fp, 0 - o, 0 + fp.d / 2, h + rise);
+  const R2 = at(fp, 0 + fp.w + o, 0 + fp.d / 2, h + rise);
+  const tower = at(fp, 0 + 0.2, 0 + 0.2, h);
 
   return (
     <g>
@@ -736,12 +737,12 @@ export function PureVegArchitecture(props: ArchitectureProps) {
   const rise = 32;
   const o = 0.2;
 
-  const eA = iso(fp.gx - o, fp.gy - o, h);
-  const eB = iso(fp.gx + fp.w + o, fp.gy - o, h);
-  const eC = iso(fp.gx + fp.w + o, fp.gy + fp.d + o, h);
-  const eD = iso(fp.gx - o, fp.gy + fp.d + o, h);
-  const R1 = iso(fp.gx - o, fp.gy + fp.d / 2, h + rise);
-  const R2 = iso(fp.gx + fp.w + o, fp.gy + fp.d / 2, h + rise);
+  const eA = at(fp, 0 - o, 0 - o, h);
+  const eB = at(fp, 0 + fp.w + o, 0 - o, h);
+  const eC = at(fp, 0 + fp.w + o, 0 + fp.d + o, h);
+  const eD = at(fp, 0 - o, 0 + fp.d + o, h);
+  const R1 = at(fp, 0 - o, 0 + fp.d / 2, h + rise);
+  const R2 = at(fp, 0 + fp.w + o, 0 + fp.d / 2, h + rise);
   /* Gable end faces the street on the lit side. */
   const gableMid = { x: (eB.x + eC.x) / 2, y: (eB.y + eC.y) / 2 };
   const apex = { x: R2.x, y: R2.y };
@@ -835,19 +836,19 @@ export function JainArchitecture(props: ArchitectureProps) {
       {/* stone-banded parapet */}
       <polygon
         points={poly(
-          iso(fp.gx - 0.16, fp.gy - 0.16, h + 12),
-          iso(fp.gx + fp.w + 0.16, fp.gy - 0.16, h + 12),
-          iso(fp.gx + fp.w + 0.16, fp.gy + fp.d + 0.16, h + 12),
-          iso(fp.gx - 0.16, fp.gy + fp.d + 0.16, h + 12),
+          at(fp, 0 - 0.16, 0 - 0.16, h + 12),
+          at(fp, 0 + fp.w + 0.16, 0 - 0.16, h + 12),
+          at(fp, 0 + fp.w + 0.16, 0 + fp.d + 0.16, h + 12),
+          at(fp, 0 - 0.16, 0 + fp.d + 0.16, h + 12),
         )}
         fill={brand.stone}
       />
       <polygon
         points={poly(
-          iso(fp.gx - 0.16, fp.gy + fp.d + 0.16, h + 12),
-          iso(fp.gx + fp.w + 0.16, fp.gy + fp.d + 0.16, h + 12),
-          iso(fp.gx + fp.w + 0.16, fp.gy + fp.d + 0.16, h),
-          iso(fp.gx - 0.16, fp.gy + fp.d + 0.16, h),
+          at(fp, 0 - 0.16, 0 + fp.d + 0.16, h + 12),
+          at(fp, 0 + fp.w + 0.16, 0 + fp.d + 0.16, h + 12),
+          at(fp, 0 + fp.w + 0.16, 0 + fp.d + 0.16, h),
+          at(fp, 0 - 0.16, 0 + fp.d + 0.16, h),
         )}
         fill={shade(style.roof, 0.04)}
       />
@@ -938,12 +939,12 @@ export function SouthIndianArchitecture(props: ArchitectureProps) {
   const rise = 26;
   const o = 0.5; // deep overhang is the defining feature
 
-  const eA = iso(fp.gx - o, fp.gy - o, h);
-  const eB = iso(fp.gx + fp.w + o, fp.gy - o, h);
-  const eC = iso(fp.gx + fp.w + o, fp.gy + fp.d + o, h);
-  const eD = iso(fp.gx - o, fp.gy + fp.d + o, h);
-  const R1 = iso(fp.gx - o * 0.3, fp.gy + fp.d / 2, h + rise);
-  const R2 = iso(fp.gx + fp.w + o * 0.3, fp.gy + fp.d / 2, h + rise);
+  const eA = at(fp, 0 - o, 0 - o, h);
+  const eB = at(fp, 0 + fp.w + o, 0 - o, h);
+  const eC = at(fp, 0 + fp.w + o, 0 + fp.d + o, h);
+  const eD = at(fp, 0 - o, 0 + fp.d + o, h);
+  const R1 = at(fp, 0 - o * 0.3, 0 + fp.d / 2, h + rise);
+  const R2 = at(fp, 0 + fp.w + o * 0.3, 0 + fp.d / 2, h + rise);
 
   return (
     <g>
