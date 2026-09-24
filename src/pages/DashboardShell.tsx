@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { Bell, Search, type LucideIcon } from 'lucide-react';
+import { Bell, LogOut, Menu, Search, X, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { AccountButton } from '../components/auth/AccountButton';
 
@@ -10,66 +10,137 @@ export interface DashboardSection {
   Icon: LucideIcon;
 }
 
+export interface NavGroup {
+  /** Omitted for a single ungrouped list. */
+  title?: string;
+  items: DashboardSection[];
+}
+
 /**
  * Shared chrome for the staff dashboards.
  *
- * Admin and delivery differ only in their sections and accent, so they share
- * one shell rather than two near-identical layouts. Deliberately plainer than
- * Food City: these are work tools, not the discovery experience.
+ * Admin and delivery differ in their navigation and accent, not their layout,
+ * so they share this. Deliberately plainer than Food City: these are work
+ * tools, read at speed.
+ *
+ * Below 980px the sidebar becomes a drawer rather than shrinking, because a
+ * squeezed rail of fourteen links is worse than a button that opens a proper
+ * one.
  */
 export function DashboardShell({
   title,
+  lede,
   kicker,
-  sections,
+  groups,
   accent,
   showSearch = false,
   children,
 }: {
   title: string;
+  lede?: string;
   kicker: string;
-  sections: DashboardSection[];
+  groups: NavGroup[];
   accent: string;
-  /** Admin gets a search field; delivery does not need one. */
   showSearch?: boolean;
   children?: ReactNode;
 }) {
-  const { profile } = useAuth();
+  const { profile, signOut } = useAuth();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  /* Escape closes the drawer, and it never stays open across a navigation. */
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setDrawerOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [drawerOpen]);
 
   return (
     <div className="db" style={{ '--db-accent': accent } as React.CSSProperties}>
-      <aside className="db-rail">
+      {drawerOpen ? (
+        <div className="db-scrim" onClick={() => setDrawerOpen(false)} role="presentation" />
+      ) : null}
+
+      <aside className="db-rail" data-open={drawerOpen || undefined}>
         <div className="db-brand">
           <span className="db-dot" aria-hidden="true" />
           <span>
             <strong>Food City</strong>
             <em>{kicker}</em>
           </span>
+          <button
+            type="button"
+            className="db-drawer-close"
+            onClick={() => setDrawerOpen(false)}
+            aria-label="Close navigation"
+          >
+            <X size={17} strokeWidth={2.2} />
+          </button>
         </div>
 
         <nav className="db-nav" aria-label={`${title} sections`}>
-          {sections.map(({ to, label, Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end
-              className={({ isActive }) => `db-nav-item${isActive ? ' is-active' : ''}`}
-            >
-              <Icon size={17} strokeWidth={2} />
-              <span>{label}</span>
-            </NavLink>
+          {groups.map((group, i) => (
+            <div key={group.title ?? i} className="db-nav-group">
+              {group.title ? <p className="db-nav-title">{group.title}</p> : null}
+              {group.items.map(({ to, label, Icon }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  end
+                  className={({ isActive }) => `db-nav-item${isActive ? ' is-active' : ''}`}
+                  onClick={() => setDrawerOpen(false)}
+                >
+                  <Icon size={16} strokeWidth={2} />
+                  <span>{label}</span>
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
 
         {profile ? (
-          <p className="db-whoami">
-            Signed in as <strong>{profile.email}</strong>
-          </p>
+          <div className="db-rail-foot">
+            <span className="db-rail-avatar" aria-hidden="true">
+              {profile.avatarUrl ? (
+                <img src={profile.avatarUrl} alt="" referrerPolicy="no-referrer" />
+              ) : (
+                profile.name.charAt(0).toUpperCase()
+              )}
+            </span>
+            <span className="db-rail-who">
+              <strong>{profile.name}</strong>
+              <em>{profile.email}</em>
+            </span>
+            <button
+              type="button"
+              className="db-rail-out"
+              onClick={() => void signOut()}
+              title="Log out"
+              aria-label="Log out"
+            >
+              <LogOut size={15} strokeWidth={2} />
+            </button>
+          </div>
         ) : null}
       </aside>
 
       <div className="db-main">
         <header className="db-top">
-          <h1 className="db-title">{title}</h1>
+          <button
+            type="button"
+            className="db-burger"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Open navigation"
+          >
+            <Menu size={19} strokeWidth={2} />
+          </button>
+
+          <div className="db-top-title">
+            <h1 className="db-title">{title}</h1>
+            {lede ? <p className="db-lede">{lede}</p> : null}
+          </div>
 
           <div className="db-top-tools">
             {showSearch ? (
@@ -77,7 +148,7 @@ export function DashboardShell({
                 <Search size={16} strokeWidth={2} aria-hidden="true" />
                 <input
                   type="search"
-                  placeholder="Search restaurants, customers, orders"
+                  placeholder="Search the platform"
                   aria-label="Search the platform — not wired up yet"
                   disabled
                 />
@@ -98,6 +169,7 @@ export function DashboardShell({
             <AccountButton />
           </div>
         </header>
+
         <div className="db-body">{children ?? <Outlet />}</div>
       </div>
     </div>

@@ -78,14 +78,25 @@ const RESTAURANT_COLUMNS: Column<AdminRestaurantRow>[] = [
   { key: 'actions', header: 'Actions', cell: () => <RowActions labels={['View', 'Edit', 'Disable']} /> },
 ];
 
-export function AdminRestaurants() {
+export function AdminRestaurants({ offboarded = false }: { offboarded?: boolean } = {}) {
+  const rows = offboarded
+    ? adminRestaurants.filter((r) => r.status === 'Paused')
+    : adminRestaurants.filter((r) => r.status !== 'Paused');
   return (
-    <Page title="Restaurants" lede="Every restaurant on the platform, its cuisines and how it delivers.">
+    <Page
+      title={offboarded ? 'Offboarded Restaurants' : 'Active Restaurants'}
+      lede={
+        offboarded
+          ? 'Restaurants no longer trading on the platform.'
+          : 'Every restaurant currently on the platform, its cuisines and how it delivers.'
+      }
+    >
       <DataTable
-        caption="Restaurants"
+        caption={offboarded ? 'Offboarded restaurants' : 'Active restaurants'}
         columns={RESTAURANT_COLUMNS}
-        rows={adminRestaurants}
+        rows={rows}
         rowKey={(r) => r.name}
+        empty="None in this state."
       />
     </Page>
   );
