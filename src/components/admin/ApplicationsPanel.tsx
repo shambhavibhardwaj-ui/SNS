@@ -6,7 +6,7 @@ import {
   type ApplicationStatus,
   type RestaurantApplication,
 } from '../../data/admin/types';
-import { ApplicationStatusBadge } from './ApplicationStatusBadge';
+import { ApplicationsTable } from './ApplicationsTable';
 
 type Filter = ApplicationStatus | 'All';
 const FILTERS: Filter[] = ['All', ...APPLICATION_STATUSES];
@@ -75,57 +75,7 @@ export function ApplicationsPanel({
         {filter !== 'All' ? ` · ${filter}` : ''}
       </p>
 
-      {shown.length ? (
-        <div className="dt-wrap">
-          <table className="dt">
-            <caption className="fc-sr-only">Restaurant applications</caption>
-            <thead>
-              <tr>
-                <th scope="col">Restaurant</th>
-                <th scope="col">Owner</th>
-                <th scope="col" data-secondary>Cuisine</th>
-                <th scope="col" data-secondary>Application ID</th>
-                <th scope="col">Submitted</th>
-                <th scope="col">Status</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((a) => (
-                <tr key={a.id}>
-                  <td><strong>{a.restaurantName}</strong></td>
-                  <td>{a.ownerName}</td>
-                  <td data-secondary>
-                    <span className="ap-cuisines">
-                      {a.cuisines.map((c) => (
-                        <span key={c} className="ap-cuisine">{c}</span>
-                      ))}
-                    </span>
-                  </td>
-                  <td data-secondary><span className="dt-mono">{a.id}</span></td>
-                  <td>{formatDay(a.submittedAt)}</td>
-                  <td><ApplicationStatusBadge status={a.status} /></td>
-                  <td>
-                    <button type="button" className="dt-action is-live" onClick={() => onReview(a)}>
-                      {a.status === 'Approved' || a.status === 'Rejected' ? 'View' : 'Review'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <p className="dt-empty">
-          No applications match that. Try another status, or clear the search.
-        </p>
-      )}
+      <ApplicationsTable rows={shown} onReview={onReview} />
     </div>
   );
-}
-
-/** "2026-09-24" -> "24 Sep" */
-function formatDay(iso: string): string {
-  const d = new Date(iso);
-  return `${d.getUTCDate()} ${d.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' })}`;
 }

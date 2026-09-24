@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import {
   Archive, BadgePercent, BarChart3, Bike, ClipboardList, FileSearch,
@@ -6,9 +5,7 @@ import {
 } from 'lucide-react';
 import { DashboardShell, type NavGroup } from '../DashboardShell';
 import { AdminHome } from './AdminHome';
-import { ApplicationsPanel } from '../../components/admin/ApplicationsPanel';
-import { ApplicationReview } from '../../components/admin/ApplicationReview';
-import type { ApplicationStatus, RestaurantApplication } from '../../data/admin/types';
+import { RestaurantApplications } from './RestaurantApplications';
 import {
   AdminAnalytics, AdminCustomers, AdminDeliveryServices, AdminImprovementPlans,
   AdminOrders, AdminRatings, AdminRestaurants, AdminServiceFees, AdminSettings,
@@ -57,7 +54,7 @@ export function AdminDashboard() {
     >
       <Routes>
         <Route index element={<AdminHome />} />
-        <Route path="restaurants/applications" element={<ApplicationsPage />} />
+        <Route path="restaurants/applications" element={<RestaurantApplications />} />
         <Route path="restaurants/active" element={<AdminRestaurants />} />
         <Route path="restaurants/offboarded" element={<AdminRestaurants offboarded />} />
         <Route path="orders" element={<AdminOrders />} />
@@ -71,37 +68,5 @@ export function AdminDashboard() {
         <Route path="*" element={<AdminHome />} />
       </Routes>
     </DashboardShell>
-  );
-}
-
-/** The whole onboarding queue, unclipped — reached from "View all applications". */
-function ApplicationsPage() {
-  const [reviewing, setReviewing] = useState<RestaurantApplication | null>(null);
-  const [, setDecisions] = useState<Record<string, ApplicationStatus>>({});
-
-  return (
-    <section className="dh">
-      <header className="dh-head">
-        <h2>Restaurant Applications</h2>
-        <p>Review and manage restaurant applications.</p>
-      </header>
-
-      <ApplicationsPanel onReview={setReviewing} />
-
-      {reviewing ? (
-        <ApplicationReview
-          application={reviewing}
-          onClose={() => setReviewing(null)}
-          onDecide={(id, status) => {
-            setDecisions((d) => ({ ...d, [id]: status }));
-            setReviewing(null);
-          }}
-        />
-      ) : null}
-
-      <p className="dh-mock-note">
-        Decisions are local for now — this is where the Supabase update will go.
-      </p>
-    </section>
   );
 }
