@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { Bike, ShieldCheck, UserRound } from 'lucide-react';
+import { Bike, Lock, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { homeForRole } from '../services/authService';
 import { RouteSpinner } from '../auth/RequireRole';
@@ -100,7 +100,10 @@ export function LoginPage() {
           ) : null}
 
           <div className="lg-roles">
-            <p className="lg-roles-head">Food City has three kinds of account</p>
+            <p className="lg-roles-head">
+              <Lock size={12} strokeWidth={2.4} aria-hidden="true" />
+              Roles are assigned, not chosen
+            </p>
             <ul>
               {ROLES.map(({ key, Icon, title, blurb, note }) => (
                 <li key={key}>
@@ -116,8 +119,9 @@ export function LoginPage() {
               ))}
             </ul>
             <p className="lg-roles-foot">
-              Your role comes from your account, not from this page. Signing in creates a
-              customer account unless an admin has already given you another role.
+              These are not options to pick. Signing in creates a <strong>customer</strong>
+              {' '}account; admin and delivery are granted in the database by someone who is
+              already an admin.
             </p>
           </div>
         </div>

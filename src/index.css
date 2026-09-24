@@ -2139,7 +2139,10 @@ body {
 }
 
 .lg-roles-head {
-  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 10px;
   font-family: 'IBM Plex Mono', ui-monospace, monospace;
   font-size: 10.5px;
   letter-spacing: 0.14em;
@@ -2155,25 +2158,32 @@ body {
   list-style: none;
 }
 
+/*
+ * Deliberately not card-like.
+ *
+ * These describe the three kinds of account; they are not a chooser. Drawn as
+ * boxed cards they read as selectable, and the first thing anyone tries is to
+ * click "Admin" — which must never be a way to become one.
+ */
 .lg-roles li {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 12px 14px;
-  border: 1px solid var(--app-line);
-  border-radius: 13px;
-  background: var(--app-surface);
+  padding: 9px 0;
+  cursor: default;
+}
+
+.lg-roles li + li {
+  border-top: 1px solid var(--app-line-soft);
 }
 
 .lg-role-icon {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   flex: none;
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--teal-600) 11%, transparent);
-  color: var(--teal-700);
+  color: var(--app-ink-faint);
 }
 
 .lg-role-body {
@@ -2201,9 +2211,12 @@ body {
 
 .lg-roles-foot {
   margin: 14px 0 0;
+  padding: 11px 13px;
+  border-radius: 10px;
+  background: var(--app-line-soft);
   font-size: 12px;
   line-height: 1.5;
-  color: var(--app-ink-faint);
+  color: var(--app-ink-soft);
 }
 
 .lg-setup {
