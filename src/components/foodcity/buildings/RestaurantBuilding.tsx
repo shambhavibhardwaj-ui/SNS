@@ -2,13 +2,16 @@ import type { Restaurant } from '../../../data/types';
 import { brand } from '../../../theme/brand';
 import { FACE_LIGHT, poly, shade } from '../iso';
 import {
+  ChineseArchitecture,
   ConeArchitecture,
-  DinerSignArchitecture,
-  DomeArchitecture,
   GreenhouseArchitecture,
+  JainArchitecture,
+  NorthIndianArchitecture,
   PizzaOvenArchitecture,
+  PureVegArchitecture,
+  SeafoodArchitecture,
+  SouthIndianArchitecture,
   StuccoArchArchitecture,
-  TieredRoofArchitecture,
   type ArchitectureProps,
 } from './architecture';
 import { styleFor, type CuisineKind } from './buildingStyles';
@@ -31,13 +34,16 @@ interface RestaurantBuildingProps {
 }
 
 const ARCHITECTURE: Record<CuisineKind, (p: ArchitectureProps) => React.JSX.Element> = {
-  dessert: ConeArchitecture,
-  indian: DomeArchitecture,
-  italian: PizzaOvenArchitecture,
-  asian: TieredRoofArchitecture,
   mexican: StuccoArchArchitecture,
-  burger: DinerSignArchitecture,
+  chinese: ChineseArchitecture,
+  seafood: SeafoodArchitecture,
+  pureVeg: PureVegArchitecture,
+  jain: JainArchitecture,
+  italian: PizzaOvenArchitecture,
   healthy: GreenhouseArchitecture,
+  southIndian: SouthIndianArchitecture,
+  northIndian: NorthIndianArchitecture,
+  dessert: ConeArchitecture,
 };
 
 /**

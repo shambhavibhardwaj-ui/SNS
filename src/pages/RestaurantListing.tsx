@@ -52,7 +52,7 @@ export function RestaurantListing({
           <p className="rl-eyebrow">
             <span aria-hidden="true">{district.emoji}</span> {district.name}
           </p>
-          <h1 className="rl-title">{headline(district.name)}</h1>
+          <h1 className="rl-title">{district.foodLabel}</h1>
           <p className="rl-sub">{district.description}</p>
         </div>
       </header>
@@ -96,12 +96,4 @@ export function RestaurantListing({
       </div>
     </div>
   );
-}
-
-/** "Indian District" -> "Indian food", so the page reads as a cuisine, not a place. */
-function headline(districtName: string): string {
-  const base = districtName
-    .replace(/\s+(District|Street|Plaza|Avenue|Lane|Garden)$/i, '')
-    .trim();
-  return `${base} food`;
 }

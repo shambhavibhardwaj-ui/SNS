@@ -38,6 +38,12 @@ export interface District {
   tagline: string;
   /** Longer copy for the listing page hero. */
   description: string;
+  /**
+   * Headline for the listing page, e.g. "South Indian food".
+   * Explicit rather than derived from the district name: "Harbour Point" and
+   * "Quiet Court" say where you are, not what is cooked there.
+   */
+  foodLabel: string;
   /** Cuisines this district is known for. FK -> cuisines.id */
   cuisineIds: ID[];
   theme: DistrictTheme;
@@ -50,13 +56,16 @@ export interface District {
 
 /** Keep in step with CuisineKind in components/foodcity/buildings/buildingStyles.ts. */
 export type BuildingKind =
-  | 'dessert'
-  | 'indian'
-  | 'italian'
-  | 'asian'
   | 'mexican'
-  | 'burger'
-  | 'healthy';
+  | 'chinese'
+  | 'seafood'
+  | 'pureVeg'
+  | 'jain'
+  | 'italian'
+  | 'healthy'
+  | 'southIndian'
+  | 'northIndian'
+  | 'dessert';
 
 export interface DistrictTheme {
   /** Wall / facade colour. */

@@ -39,6 +39,19 @@ export const brand = {
   slate: '#374151',
   slateDeep: '#252F3D',
 
+  /*
+   * Architectural materials, not brand accents.
+   *
+   * Terracotta, sandstone, stone and timber are what several of these cuisines
+   * are actually built from, and they read as surfaces rather than as colour
+   * statements — so they sit outside the accent budget alongside the neutrals.
+   */
+  terracotta: '#C2643F',
+  terracottaDeep: '#9A4C2E',
+  sand: '#E8C79A',
+  stone: '#D8D2C4',
+  timber: '#8A6A47',
+
   /* warm light surfaces */
   cream: '#FFFDF4',
   creamWarm: '#FBF3DE',

@@ -1,8 +1,10 @@
 import {
+  Compass,
   Heart,
   Home,
   PanelLeftClose,
   PanelLeftOpen,
+  ReceiptText,
   Search,
   ShoppingBag,
   User,
@@ -11,7 +13,7 @@ import {
 export interface SideNavProps {
   collapsed: boolean;
   onToggle: () => void;
-  /** Items beyond Home are stubs until their phases land. */
+  /** Home and Explore both return to the city; the rest are stubs for now. */
   onHome: () => void;
   cartCount?: number;
 }
@@ -36,7 +38,9 @@ export function SideNav({ collapsed, onToggle, onHome, cartCount = 0 }: SideNavP
   const items: NavItem[] = [
     { key: 'home', label: 'Home', Icon: Home, onSelect: onHome },
     { key: 'search', label: 'Search', Icon: Search, onSelect: null },
+    { key: 'explore', label: 'Explore', Icon: Compass, onSelect: onHome },
     { key: 'favorites', label: 'Favorites', Icon: Heart, onSelect: null },
+    { key: 'orders', label: 'Orders', Icon: ReceiptText, onSelect: null },
     { key: 'cart', label: 'Cart', Icon: ShoppingBag, onSelect: null, badge: cartCount },
     { key: 'profile', label: 'Profile', Icon: User, onSelect: null },
   ];

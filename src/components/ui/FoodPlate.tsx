@@ -40,6 +40,8 @@ const PRESETS: Record<string, Preset> = {
   cake:    { kind: 'stack', bg: ['#F9E6E8', '#D69CA8'], vessel: '#FBF4EE', food: ['#8C4A3C', '#E8C9B0', '#D98B9B'], garnish: '#C4543F' },
   salad:   { kind: 'bowl',  bg: ['#EEF0D8', '#B9C28C'], vessel: '#FAF7EC', food: ['#4F7A5C', '#7FA672', '#C9D69B'], garnish: '#C4543F' },
   bowl:    { kind: 'bowl',  bg: ['#EDEFD9', '#AFBC8A'], vessel: '#F8F5E9', food: ['#5E8C6A', '#C9922F', '#A9C08A'], garnish: '#B3543F' },
+  seafood: { kind: 'board', bg: ['#E6EFEA', '#A9C4C0'], vessel: '#F4F7F3', food: ['#E08A6B', '#F2D9C0', '#C2543F'], garnish: '#2F7A6B' },
+  thali:   { kind: 'plate', bg: ['#F7E6C6', '#DDB478'], vessel: '#F8F2E4', food: ['#C08438', '#E0B25C', '#7FA672'], garnish: '#B33C2C' },
   juice:   { kind: 'cup',   bg: ['#F4EFD2', '#CBBE72'], vessel: '#FAF7E8', food: ['#D99A2B', '#E8BE4C', '#F2D98A'], garnish: '#5E8C6A' },
 };
 

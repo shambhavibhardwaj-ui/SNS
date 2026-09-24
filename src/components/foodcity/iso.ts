@@ -14,11 +14,11 @@
 export const TILE_W = 62;
 export const TILE_H = 31;
 
-export const MAP_W = 1300;
-export const MAP_H = 880;
+export const MAP_W = 1640;
+export const MAP_H = 1060;
 
 /** Screen position of grid origin (0,0). */
-export const ORIGIN = { x: 650, y: 196 };
+export const ORIGIN = { x: 712, y: 248 };
 
 export interface IsoPoint {
   x: number;
@@ -98,8 +98,17 @@ export const BLOCK = 5;
 export const ROAD = 2;
 /** Grid distance from one block origin to the next. */
 export const STEP = BLOCK + ROAD;
-/** Total grid extent: three blocks and two roads. */
-export const GRID = STEP * 3 - ROAD;
+
+/** The city is four blocks across and three deep. */
+export const COLS = 4;
+export const ROWS = 3;
+
+export const GRID_X = STEP * COLS - ROAD;
+export const GRID_Y = STEP * ROWS - ROAD;
+
+/** Street positions, as the grid coordinate each road band starts at. */
+export const X_BANDS = Array.from({ length: COLS - 1 }, (_, i) => BLOCK + i * STEP);
+export const Y_BANDS = Array.from({ length: ROWS - 1 }, (_, i) => BLOCK + i * STEP);
 
 export interface Plot {
   gx: number;
@@ -107,22 +116,25 @@ export interface Plot {
 }
 
 /**
- * The city is a three-by-three arrangement of blocks, which in isometric reads
- * as a diamond of nine. Seven are districts, the middle is the plaza, and the
- * far corner is parkland so the silhouette is not perfectly regular.
+ * Twelve blocks in a four-by-three arrangement, which in isometric reads as a
+ * diamond. Ten are cuisine districts, one is the central plaza, and the far
+ * corner is parkland so the silhouette is not perfectly regular.
  */
 export const districtPlots: Record<string, Plot> = {
-  'dis-asian': { gx: 0, gy: 0 },
-  'dis-burger': { gx: STEP, gy: 0 },
-  'dis-italian': { gx: STEP * 2, gy: 0 },
-  'dis-indian': { gx: 0, gy: STEP },
-  'dis-dessert': { gx: STEP * 2, gy: STEP },
-  'dis-garden': { gx: 0, gy: STEP * 2 },
-  'dis-mexican': { gx: STEP, gy: STEP * 2 },
+  'dis-chinese': { gx: 0, gy: 0 },
+  'dis-north-indian': { gx: STEP, gy: 0 },
+  'dis-south-indian': { gx: STEP * 2, gy: 0 },
+  'dis-italian': { gx: STEP * 3, gy: 0 },
+  'dis-seafood': { gx: 0, gy: STEP },
+  'dis-mexican': { gx: STEP * 2, gy: STEP },
+  'dis-dessert': { gx: STEP * 3, gy: STEP },
+  'dis-pure-veg': { gx: 0, gy: STEP * 2 },
+  'dis-jain': { gx: STEP, gy: STEP * 2 },
+  'dis-healthy': { gx: STEP * 2, gy: STEP * 2 },
 };
 
 export const PLAZA_PLOT: Plot = { gx: STEP, gy: STEP };
-export const PARK_PLOT: Plot = { gx: STEP * 2, gy: STEP * 2 };
+export const PARK_PLOT: Plot = { gx: STEP * 3, gy: STEP * 2 };
 
 /** Where each building sits inside its 5x5 block, as a 2x2 footprint. */
 export const BUILDING_SLOTS: Plot[] = [
@@ -155,8 +167,8 @@ export interface Viewport {
 }
 
 export const CITY_CAMERA: Camera = {
-  gx: (GRID - 1) / 2,
-  gy: (GRID - 1) / 2,
+  gx: (GRID_X - 1) / 2,
+  gy: (GRID_Y - 1) / 2,
   scale: 1,
 };
 
@@ -194,8 +206,9 @@ export function toTransform(v: Viewport): string {
  */
 export const CITY_BOUNDS = (() => {
   const lo = -1.4;
-  const hi = GRID + 1.4;
-  const corners = [iso(lo, lo), iso(hi, lo), iso(hi, hi), iso(lo, hi)];
+  const hiX = GRID_X + 1.4;
+  const hiY = GRID_Y + 1.4;
+  const corners = [iso(lo, lo), iso(hiX, lo), iso(hiX, hiY), iso(lo, hiY)];
   const xs = corners.map((c) => c.x);
   const ys = corners.map((c) => c.y);
   /** Tallest roof furniture, and the slab's soil sides. */

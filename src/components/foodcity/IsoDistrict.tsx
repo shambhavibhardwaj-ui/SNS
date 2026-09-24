@@ -1,15 +1,7 @@
 import type { Restaurant } from '../../data/types';
 import type { DistrictSummary } from '../../services/restaurantService';
 import { RestaurantBuilding } from './buildings/RestaurantBuilding';
-import {
-  IsoLamp,
-  IsoParasol,
-  IsoPerson,
-  IsoShrub,
-  IsoStall,
-  IsoSteam,
-  IsoTree,
-} from './art/IsoScenery';
+import { IsoLamp, IsoPerson, IsoShrub, IsoSteam } from './art/IsoScenery';
 import { BLOCK, BUILDING_HEIGHTS, BUILDING_SLOTS, iso, poly, shade, type Plot } from './iso';
 
 interface IsoDistrictProps {
@@ -114,7 +106,7 @@ export function IsoDistrict({
         fill={shade(theme.ground, -0.14)}
       />
 
-      <BlockDressing plot={plot} theme={theme} styleKey={district.slug} />
+      <BlockDressing plot={plot} theme={theme} />
 
       {/* Buildings, back to front. */}
       {slots.map((slot) => (
@@ -137,85 +129,29 @@ export function IsoDistrict({
   );
 }
 
-/** Per-district street dressing, so each block has its own character. */
+/**
+ * Generic street dressing: lighting, greenery and a couple of residents.
+ *
+ * Cuisine character lives in the architecture itself — banana plants, water
+ * basins, produce crates, mooring bollards and so on are part of each building.
+ * This only sets the block, so the two do not duplicate each other.
+ */
 function BlockDressing({
   plot,
   theme,
-  styleKey,
 }: {
   plot: Plot;
   theme: { accent: string; awning: string; roof: string };
-  styleKey: string;
 }) {
   const x = plot.gx;
   const y = plot.gy;
-
-  switch (styleKey) {
-    case 'asian-street':
-      return (
-        <g>
-          <IsoLamp gx={x + 2.5} gy={y + 0.2} accent={theme.accent} />
-          <IsoStall gx={x + 2.3} gy={y + 2.3} canopy={theme.awning} emblem="🥟" />
-          <IsoPerson gx={x + 4.6} gy={y + 2.2} shirt="#7E9BB5" delay={0.4} />
-          <IsoPerson gx={x + 2.2} gy={y + 4.6} shirt="#C4534A" delay={1.6} />
-        </g>
-      );
-    case 'italian-street':
-      return (
-        <g>
-          <IsoParasol gx={x + 2.4} gy={y + 2.4} canopy={theme.awning} />
-          <IsoTree gx={x + 4.7} gy={y + 0.3} scale={0.72} />
-          <IsoPerson gx={x + 4.5} gy={y + 2.6} shirt="#E0A93B" delay={0.9} />
-          <IsoShrub gx={x + 0.3} gy={y + 4.6} scale={0.9} />
-        </g>
-      );
-    case 'indian-district':
-      return (
-        <g>
-          <IsoStall gx={x + 2.3} gy={y + 2.3} canopy={theme.awning} emblem="🫖" />
-          <IsoStall gx={x + 0.2} gy={y + 4.4} canopy={theme.accent} emblem="🥭" />
-          <IsoLamp gx={x + 4.7} gy={y + 0.2} accent="#E0A93B" />
-          <IsoPerson gx={x + 4.5} gy={y + 2.5} shirt="#5E8C6A" delay={0.2} />
-          <IsoPerson gx={x + 2.6} gy={y + 4.7} shirt="#9C3F6A" delay={1.2} />
-        </g>
-      );
-    case 'mexican-plaza':
-      return (
-        <g>
-          <IsoParasol gx={x + 2.4} gy={y + 2.4} canopy={theme.awning} />
-          <IsoShrub gx={x + 4.6} gy={y + 0.4} />
-          <IsoPerson gx={x + 4.5} gy={y + 2.6} shirt="#2E8B8B" delay={0.7} />
-          <IsoLamp gx={x + 0.3} gy={y + 4.6} />
-        </g>
-      );
-    case 'burger-avenue':
-      return (
-        <g>
-          <IsoLamp gx={x + 2.5} gy={y + 0.2} />
-          <IsoLamp gx={x + 0.2} gy={y + 2.5} />
-          <IsoParasol gx={x + 2.4} gy={y + 2.4} canopy={theme.accent} />
-          <IsoPerson gx={x + 4.6} gy={y + 2.3} shirt="#C9922F" delay={1.1} />
-        </g>
-      );
-    case 'healthy-garden':
-      return (
-        <g>
-          <IsoTree gx={x + 2.4} gy={y + 2.4} scale={0.9} />
-          <IsoShrub gx={x + 4.6} gy={y + 0.4} />
-          <IsoShrub gx={x + 0.4} gy={y + 4.6} />
-          <IsoShrub gx={x + 4.6} gy={y + 4.6} />
-          <IsoPerson gx={x + 2.5} gy={y + 4.7} shirt="#5E8C6A" delay={0.5} />
-        </g>
-      );
-    case 'dessert-lane':
-    default:
-      return (
-        <g>
-          <IsoParasol gx={x + 2.4} gy={y + 2.4} canopy={theme.awning} />
-          <IsoLamp gx={x + 4.7} gy={y + 0.3} accent="#F5C86B" />
-          <IsoShrub gx={x + 0.3} gy={y + 4.6} scale={0.95} />
-          <IsoPerson gx={x + 4.5} gy={y + 2.6} shirt="#D98B9B" delay={0.5} />
-        </g>
-      );
-  }
+  return (
+    <g>
+      <IsoLamp gx={x + 2.5} gy={y + 0.15} accent={theme.accent} />
+      <IsoLamp gx={x + 0.15} gy={y + 2.5} accent={theme.accent} />
+      <IsoPerson gx={x + 4.65} gy={y + 2.3} shirt={theme.awning} delay={0.4} />
+      <IsoPerson gx={x + 2.35} gy={y + 4.65} shirt={theme.roof} delay={1.5} />
+      <IsoShrub gx={x + 4.7} gy={y + 4.7} scale={0.85} />
+    </g>
+  );
 }
