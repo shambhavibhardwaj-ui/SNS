@@ -14,6 +14,8 @@ interface CityMapProps {
   hoveredId: string | null;
   activeId: string | null;
   cameraTransform: string;
+  /** False while the camera is being dragged, so the move tracks the pointer. */
+  cameraAnimated: boolean;
   onHover: (districtId: string | null) => void;
   onSelect: (districtId: string) => void;
 }
@@ -21,24 +23,25 @@ interface CityMapProps {
 /**
  * The isometric city.
  *
- * Two nested transform groups: `fc-camera` carries the pan/zoom move, and
- * `fc-parallax` inside it carries the small pointer-driven offset. Keeping them
- * separate means a parallax nudge never fights the camera transition.
+ * One transform group, `fc-camera`, carries the whole pan/zoom move. The
+ * transition is switched off while dragging (`cameraAnimated`) so the city
+ * tracks the pointer instead of easing behind it.
  *
  * Blocks render back to front by grid depth (gx + gy), which is what lets
  * near buildings overlap far ones correctly.
  */
-export const CityMap = forwardRef<SVGGElement, CityMapProps>(function CityMap(
+export const CityMap = forwardRef<SVGSVGElement, CityMapProps>(function CityMap(
   {
     summaries,
     restaurantsByDistrict,
     hoveredId,
     activeId,
     cameraTransform,
+    cameraAnimated,
     onHover,
     onSelect,
   },
-  parallaxRef,
+  svgRef,
 ) {
   const ordered = [...summaries].sort((a, b) => {
     const pa = districtPlots[a.district.id];
@@ -48,6 +51,7 @@ export const CityMap = forwardRef<SVGGElement, CityMapProps>(function CityMap(
 
   return (
     <svg
+      ref={svgRef}
       className="fc-map"
       viewBox={`0 0 ${MAP_W} ${MAP_H}`}
       preserveAspectRatio="xMidYMid meet"
@@ -84,8 +88,12 @@ export const CityMap = forwardRef<SVGGElement, CityMapProps>(function CityMap(
 
       <rect x={0} y={0} width={MAP_W} height={MAP_H} fill="url(#fc-sky)" />
 
-      <g className="fc-camera" style={{ transform: cameraTransform }}>
-        <g className="fc-parallax" ref={parallaxRef}>
+      <g
+        className="fc-camera"
+        data-animated={cameraAnimated || undefined}
+        style={{ transform: cameraTransform }}
+      >
+        <g>
           <IsoGround />
 
           {/* Delivery scooters working the two main streets. */}

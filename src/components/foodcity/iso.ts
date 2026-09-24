@@ -143,25 +143,98 @@ export interface Camera {
   scale: number;
 }
 
+/**
+ * The camera as it is actually applied: a translation and a scale in viewBox
+ * units. Free panning needs this form — a grid focus point cannot express
+ * "dragged half a tile north-west".
+ */
+export interface Viewport {
+  tx: number;
+  ty: number;
+  scale: number;
+}
+
 export const CITY_CAMERA: Camera = {
   gx: (GRID - 1) / 2,
   gy: (GRID - 1) / 2,
   scale: 1,
 };
 
+export const ZOOM_MIN = 0.7;
+export const ZOOM_MAX = 3.2;
+
 /** Frame a district block. */
 export function cameraForPlot(plot: Plot, scale = 1.95): Camera {
   return { gx: plot.gx + BLOCK / 2, gy: plot.gy + BLOCK / 2, scale };
 }
 
+/** Turn a grid-focused camera into the viewport that centres it. */
+export function viewportFor(cam: Camera): Viewport {
+  const focus = iso(cam.gx, cam.gy);
+  return {
+    tx: MAP_W / 2 - focus.x * cam.scale,
+    ty: MAP_H / 2 - focus.y * cam.scale,
+    scale: cam.scale,
+  };
+}
+
 /**
- * CSS transform that puts the camera's grid point at the centre of the map.
+ * CSS transform for a viewport.
  * CSS syntax (units, commas) — SVG's unitless transform form is rejected by the
  * CSS parser, and this has to be a CSS transform so it can be transitioned.
  */
-export function cameraTransform(cam: Camera): string {
-  const focus = iso(cam.gx, cam.gy);
-  const tx = MAP_W / 2 - focus.x * cam.scale;
-  const ty = MAP_H / 2 - focus.y * cam.scale;
-  return `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px) scale(${cam.scale.toFixed(4)})`;
+export function toTransform(v: Viewport): string {
+  return `translate(${v.tx.toFixed(2)}px, ${v.ty.toFixed(2)}px) scale(${v.scale.toFixed(4)})`;
+}
+
+/**
+ * Extent of the city in world units, including the height buildings rise above
+ * their ground point and the depth of the slab below it. Panning is clamped to
+ * this so the city can never be dragged off into empty space.
+ */
+export const CITY_BOUNDS = (() => {
+  const lo = -1.4;
+  const hi = GRID + 1.4;
+  const corners = [iso(lo, lo), iso(hi, lo), iso(hi, hi), iso(lo, hi)];
+  const xs = corners.map((c) => c.x);
+  const ys = corners.map((c) => c.y);
+  /** Tallest roof furniture, and the slab's soil sides. */
+  const HEADROOM = 210;
+  const UNDERSIDE = 60;
+  return {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    minY: Math.min(...ys) - HEADROOM,
+    maxY: Math.max(...ys) + UNDERSIDE,
+  };
+})();
+
+/**
+ * Keep the city in view.
+ *
+ * When the city is larger than the frame it must cover the frame completely;
+ * when it is smaller than the frame it must stay wholly inside it. Those are
+ * opposite inequalities, which is why the two cases are handled separately
+ * rather than with one clamp.
+ */
+export function clampViewport(v: Viewport): Viewport {
+  const scale = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, v.scale));
+  const spanX = (CITY_BOUNDS.maxX - CITY_BOUNDS.minX) * scale;
+  const spanY = (CITY_BOUNDS.maxY - CITY_BOUNDS.minY) * scale;
+
+  const atLeft = -CITY_BOUNDS.minX * scale;
+  const atRight = MAP_W - CITY_BOUNDS.maxX * scale;
+  const atTop = -CITY_BOUNDS.minY * scale;
+  const atBottom = MAP_H - CITY_BOUNDS.maxY * scale;
+
+  const tx =
+    spanX >= MAP_W
+      ? Math.max(atRight, Math.min(atLeft, v.tx))
+      : Math.min(atRight, Math.max(atLeft, v.tx));
+  const ty =
+    spanY >= MAP_H
+      ? Math.max(atBottom, Math.min(atTop, v.ty))
+      : Math.min(atBottom, Math.max(atTop, v.ty));
+
+  return { tx, ty, scale };
 }
