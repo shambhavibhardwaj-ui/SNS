@@ -6,8 +6,9 @@ import {
 import { DashboardShell, type NavGroup } from '../DashboardShell';
 import { AdminHome } from './AdminHome';
 import { RestaurantApplications } from './RestaurantApplications';
+import { AdminAnalytics } from './Analytics';
 import {
-  AdminAnalytics, AdminCustomers, AdminDeliveryServices, AdminImprovementPlans,
+  AdminCustomers, AdminDeliveryServices, AdminImprovementPlans,
   AdminOrders, AdminRatings, AdminRestaurants, AdminServiceFees, AdminSettings,
 } from './adminSections';
 

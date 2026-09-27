@@ -251,21 +251,8 @@ export function AdminServiceFees() {
   );
 }
 
-/* ----------------------------------------------------- analytics, settings -- */
-
-export function AdminAnalytics() {
-  return (
-    <Page
-      title="Analytics"
-      lede="Order volume, rating trends and fee income over time."
-      note="Charts land once there is real order data to plot — plotting mock trends would only be misleading."
-    >
-      <div className="dh-soon">
-        <p>Nothing to chart yet.</p>
-      </div>
-    </Page>
-  );
-}
+/* ---------------------------------------------------------------- settings -- */
+/* Analytics has its own file — it is a page, not a table with a header. */
 
 export function AdminSettings() {
   return (

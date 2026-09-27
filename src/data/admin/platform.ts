@@ -31,6 +31,30 @@ export const platformRestaurants: AdminRestaurant[] = [
   { id: 'r-maiz', name: 'Maíz y Humo', cuisines: ['Tex-Mex', 'BBQ & Grill'], deliveryModel: 'aggregator', state: 'Needs Changes', totalOrders: 377, onboardedAt: '2026-04-09' },
   { id: 'r-lantern-wok', name: 'Lantern Wok', cuisines: ['Cantonese', 'Dim Sum'], deliveryModel: 'aggregator', state: 'Under Review', totalOrders: 0, onboardedAt: '2026-09-19' },
   { id: 'r-green-fork', name: 'Green Fork', cuisines: ['Pure Veg'], deliveryModel: 'own_staff', state: 'Pending', totalOrders: 0, onboardedAt: '2026-09-20' },
+  /*
+   * Added so every one of the ten Food City cuisines has real kitchens behind
+   * it. Analytics that show a cuisine with no restaurants is a chart of the
+   * seed data's gaps, not of the business.
+   */
+  { id: 'r-pasta-fresca', name: 'Pasta Fresca', cuisines: ['Italian'], deliveryModel: 'own_staff', state: 'Active', totalOrders: 597, onboardedAt: '2025-09-08' },
+  { id: 'r-casa-verde', name: 'Casa Verde', cuisines: ['Mexican'], deliveryModel: 'own_staff', state: 'Active', totalOrders: 534, onboardedAt: '2026-01-07' },
+  { id: 'r-bao-bar', name: 'Bao & Bun Bar', cuisines: ['Dim Sum', 'Cantonese'], deliveryModel: 'aggregator', state: 'Active', totalOrders: 618, onboardedAt: '2025-11-21' },
+  { id: 'r-tide-table', name: 'Tide Table', cuisines: ['Coastal', 'Seafood'], deliveryModel: 'aggregator', state: 'Active', totalOrders: 455, onboardedAt: '2026-02-03' },
+  { id: 'r-satvik', name: 'Satvik Rasoi', cuisines: ['Pure Veg', 'Thali'], deliveryModel: 'own_staff', state: 'Active', totalOrders: 690, onboardedAt: '2025-10-12' },
+  { id: 'r-ahimsa', name: 'Ahimsa Bhojanalay', cuisines: ['Jain', 'Gujarati'], deliveryModel: 'own_staff', state: 'Active', totalOrders: 372, onboardedAt: '2026-03-02' },
+  { id: 'r-jain-thali', name: 'Shravak Thali House', cuisines: ['Jain'], deliveryModel: 'aggregator', state: 'Active', totalOrders: 244, onboardedAt: '2026-04-26' },
+  { id: 'r-leaf-bowl', name: 'Leaf & Bowl', cuisines: ['Salads & Bowls', 'Plant-Based'], deliveryModel: 'aggregator', state: 'Active', totalOrders: 826, onboardedAt: '2025-07-30' },
+  { id: 'r-green-grain', name: 'Green Grain Kitchen', cuisines: ['Salads & Bowls'], deliveryModel: 'own_staff', state: 'Active', totalOrders: 431, onboardedAt: '2026-02-17' },
+  { id: 'r-macaron', name: 'Maison Macaron', cuisines: ['Desserts', 'Bakery'], deliveryModel: 'aggregator', state: 'Active', totalOrders: 1103, onboardedAt: '2025-06-05' },
+  { id: 'r-scoop-street', name: 'Scoop Street', cuisines: ['Ice Cream'], deliveryModel: 'own_staff', state: 'Active', totalOrders: 968, onboardedAt: '2025-08-19' },
+  { id: 'r-idli-express', name: 'Idli Express', cuisines: ['Dosa & Idli', 'South Indian'], deliveryModel: 'aggregator', state: 'Active', totalOrders: 712, onboardedAt: '2025-12-14' },
+  /*
+   * The two applications sitting at Approved in `restaurantApplications`.
+   * Without them "approved" leads nowhere and the onboarding funnel ends at
+   * zero. No orders yet — they have only just gone live.
+   */
+  { id: 'r-xyz-cafe', name: 'XYZ Cafe', cuisines: ['Cafe', 'Bakery'], deliveryModel: 'own_staff', state: 'Active', totalOrders: 0, onboardedAt: '2026-09-24' },
+  { id: 'r-tiffin-co', name: 'Tiffin & Co.', cuisines: ['South Indian', 'Dosa & Idli', 'Filter Coffee'], deliveryModel: 'own_staff', state: 'Active', totalOrders: 0, onboardedAt: '2026-09-22' },
   { id: 'r-midnight-grill', name: 'Midnight Grill', cuisines: ['BBQ & Grill'], deliveryModel: 'aggregator', state: 'Offboarded', totalOrders: 96, onboardedAt: '2025-10-30' },
   { id: 'r-old-tandoor', name: 'Old Tandoor', cuisines: ['North Indian'], deliveryModel: 'own_staff', state: 'Offboarded', totalOrders: 210, onboardedAt: '2025-05-12' },
 ];
@@ -45,18 +69,38 @@ export const platformRestaurants: AdminRestaurant[] = [
 const RATING_PROFILES: {
   id: string;
   name: string;
+  /** Rated 3 or 3.5 — below neither rule's threshold, but real feedback. */
+  midRated: number;
   lowRated: number;
   highRatedThisWeek: number;
   highRatedOlder: number;
 }[] = [
-  { id: 'r-abc', name: 'ABC Kitchen', lowRated: 6, highRatedThisWeek: 2, highRatedOlder: 18 },
-  { id: 'r-spice-house', name: 'Spice House', lowRated: 8, highRatedThisWeek: 1, highRatedOlder: 12 },
-  { id: 'r-corner-wok', name: 'Corner Wok', lowRated: 7, highRatedThisWeek: 3, highRatedOlder: 20 },
-  { id: 'r-maiz', name: 'Maíz y Humo', lowRated: 4, highRatedThisWeek: 2, highRatedOlder: 9 },
-  { id: 'r-indian-spice-house', name: 'Indian Spice House', lowRated: 1, highRatedThisWeek: 11, highRatedOlder: 140 },
-  { id: 'r-forno-rosso', name: 'Forno Rosso', lowRated: 2, highRatedThisWeek: 10, highRatedOlder: 165 },
-  { id: 'r-annas-tiffin', name: "Anna's Tiffin Room", lowRated: 0, highRatedThisWeek: 8, highRatedOlder: 150 },
-  { id: 'r-harbour-shack', name: 'The Harbour Shack', lowRated: 1, highRatedThisWeek: 6, highRatedOlder: 70 },
+  { id: 'r-abc', name: 'ABC Kitchen', midRated: 14, lowRated: 6, highRatedThisWeek: 2, highRatedOlder: 18 },
+  { id: 'r-spice-house', name: 'Spice House', midRated: 19, lowRated: 8, highRatedThisWeek: 1, highRatedOlder: 12 },
+  { id: 'r-corner-wok', name: 'Corner Wok', midRated: 16, lowRated: 7, highRatedThisWeek: 3, highRatedOlder: 20 },
+  { id: 'r-maiz', name: 'Maíz y Humo', midRated: 21, lowRated: 4, highRatedThisWeek: 2, highRatedOlder: 9 },
+  { id: 'r-indian-spice-house', name: 'Indian Spice House', midRated: 26, lowRated: 1, highRatedThisWeek: 11, highRatedOlder: 140 },
+  { id: 'r-forno-rosso', name: 'Forno Rosso', midRated: 31, lowRated: 2, highRatedThisWeek: 10, highRatedOlder: 165 },
+  { id: 'r-annas-tiffin', name: "Anna's Tiffin Room", midRated: 24, lowRated: 0, highRatedThisWeek: 8, highRatedOlder: 150 },
+  { id: 'r-harbour-shack', name: 'The Harbour Shack', midRated: 18, lowRated: 1, highRatedThisWeek: 6, highRatedOlder: 70 },
+  /*
+   * Deliberately all below both thresholds: at most 5 low-rated orders
+   * (RULE-05 needs more than 5) and at most 5 high-rated ones this week
+   * (RULE-06 needs 10). Adding restaurants must not quietly change who the
+   * rules catch.
+   */
+  { id: 'r-pasta-fresca', name: 'Pasta Fresca', midRated: 15, lowRated: 3, highRatedThisWeek: 5, highRatedOlder: 47 },
+  { id: 'r-casa-verde', name: 'Casa Verde', midRated: 13, lowRated: 3, highRatedThisWeek: 5, highRatedOlder: 38 },
+  { id: 'r-bao-bar', name: 'Bao & Bun Bar', midRated: 17, lowRated: 2, highRatedThisWeek: 5, highRatedOlder: 52 },
+  { id: 'r-tide-table', name: 'Tide Table', midRated: 12, lowRated: 5, highRatedThisWeek: 4, highRatedOlder: 31 },
+  { id: 'r-satvik', name: 'Satvik Rasoi', midRated: 20, lowRated: 1, highRatedThisWeek: 5, highRatedOlder: 61 },
+  { id: 'r-ahimsa', name: 'Ahimsa Bhojanalay', midRated: 9, lowRated: 0, highRatedThisWeek: 5, highRatedOlder: 29 },
+  { id: 'r-jain-thali', name: 'Shravak Thali House', midRated: 7, lowRated: 2, highRatedThisWeek: 3, highRatedOlder: 17 },
+  { id: 'r-leaf-bowl', name: 'Leaf & Bowl', midRated: 22, lowRated: 3, highRatedThisWeek: 5, highRatedOlder: 74 },
+  { id: 'r-green-grain', name: 'Green Grain Kitchen', midRated: 11, lowRated: 5, highRatedThisWeek: 4, highRatedOlder: 33 },
+  { id: 'r-macaron', name: 'Maison Macaron', midRated: 28, lowRated: 1, highRatedThisWeek: 5, highRatedOlder: 96 },
+  { id: 'r-scoop-street', name: 'Scoop Street', midRated: 23, lowRated: 2, highRatedThisWeek: 4, highRatedOlder: 83 },
+  { id: 'r-idli-express', name: 'Idli Express', midRated: 18, lowRated: 4, highRatedThisWeek: 5, highRatedOlder: 58 },
 ];
 
 /** table: ratings — one row per rated order. */
@@ -73,6 +117,18 @@ export const ratedOrders: RatedOrder[] = RATING_PROFILES.flatMap((p) => {
       ratedAt: daysAgo(3 + (n += 1)),
     });
   }
+  /* Neither rule counts these: RULE-05 wants below 3, RULE-06 above 4. They
+     exist so the ratings distribution has a middle, as real ones do. */
+  for (let i = 0; i < p.midRated; i += 1) {
+    rows.push({
+      orderId: `${p.id}-mid-${i}`,
+      restaurantId: p.id,
+      restaurant: p.name,
+      rating: i % 2 === 0 ? 3 : 3.5,
+      ratedAt: daysAgo(2 + (i % 50)),
+    });
+  }
+
   /* Inside the seven-day window RULE-06 looks at. */
   for (let i = 0; i < p.highRatedThisWeek; i += 1) {
     rows.push({
