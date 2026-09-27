@@ -145,6 +145,32 @@ function change(current: number, previous: number): number | null {
   return ((current - previous) / previous) * 100;
 }
 
+/**
+ * Options for the filter controls.
+ *
+ * Here rather than in the page so the page does not import `src/data` just to
+ * populate two dropdowns — the lists are a query (`select id, name from ...`)
+ * like everything else on the screen.
+ */
+export interface FilterOptions {
+  cuisines: { id: string; name: string }[];
+  restaurants: { id: string; name: string }[];
+  deliveryModels: { id: DeliveryModel; label: string }[];
+}
+
+export function getFilterOptions(): FilterOptions {
+  return {
+    cuisines: analyticsCuisines.map((c) => ({ id: c.id, name: c.name })),
+    restaurants: [...platformRestaurants]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((r) => ({ id: r.id, name: r.name })),
+    deliveryModels: (['aggregator', 'own_staff'] as DeliveryModel[]).map((m) => ({
+      id: m,
+      label: DELIVERY_MODEL_LABEL[m],
+    })),
+  };
+}
+
 /* --------------------------------------------------------------- metrics -- */
 
 export interface OverviewMetric {

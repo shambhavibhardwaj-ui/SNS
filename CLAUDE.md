@@ -29,70 +29,168 @@ Object-oriented programming is how the code is written, not a computation model.
 - **RULE-03:** restaurant uses aggregator delivery → aggregator delivery fee
 - **RULE-04:** restaurant uses its own delivery staff → alternative fee
 
+Both rating rules are **derived from rating rows, never stored as a flag**. `ratings` keeps
+one row per rated order rather than a per-restaurant average, because both rules count
+*orders* — RULE-01 needs the number below 3★, RULE-02 needs the number above 4★ inside a
+seven-day window — and an average can answer neither. The thresholds live in one place,
+`services/adminService.ts`.
+
+Fee percentages and the concession amount render as "Not set". The client has not given us
+those numbers; inventing one would put a figure in front of an admin that nobody agreed.
+
+> **Known inconsistency.** Newer code (`adminService`, `analyticsService`, `data/admin/*`,
+> `AdminHome`) calls the two rating rules **RULE-05 and RULE-06**. They are the same two
+> rules as RULE-01 and RULE-02 above — an alias, not a fifth and sixth rule. The numbering
+> above is the client's and is canonical. Worth normalising to one scheme.
+
 ## AI features
 
 - **Improvement-plan draft:** when RULE-01 fires, read recent customer feedback and draft a plan. The restaurant edits and submits it — never auto-submit.
 - **Order suggestions:** for customers, suggest items from the restaurant's own menu using selected cuisine, past orders, and preferences the user chose to share.
 
+Neither is built yet.
+
 ## Stack
 
-Vite + React + TypeScript + Tailwind v4. `npm run dev` serves on :5173.
-Tailwind supplies the reset and is there for the card-heavy screens still to come
-(restaurant page, cart); the illustrated city is bespoke CSS in `src/index.css`.
+Vite 6 + React 18.3 + TypeScript 5.7 + Tailwind v3.4. `npm run dev` serves on :5173,
+`npm run build` runs `tsc` then `vite build`, and oxlint is the linter (`npx oxlint src/`).
+
+Tailwind supplies the reset and utilities; almost all real styling is bespoke CSS in
+`src/index.css`, which is long because the isometric city, the dashboards and the analytics
+charts each carry their own section.
+
+`tsc` runs against the root `tsconfig.json` (ES2020 lib, `strict`). `tsconfig.app.json`
+exists alongside it with different settings and is **not** what the build checks — verify
+with `npm run build`, not with `tsc -p tsconfig.app.json`.
+
+Also in use: `react-router-dom` 7, `@supabase/supabase-js` 2, `lucide-react`.
 
 ## Architecture
 
 ```
-src/data/        Relational mock data — Cuisine, District, Restaurant,
-                 RestaurantCuisine (join), Menu, MenuItem, Order, Rating.
-                 Shaped like Supabase tables: surrogate ids, FKs, join tables.
+src/data/        Relational mock data. Shaped like the tables these become:
+                 surrogate ids, FKs, join tables.
+  data/admin/    Platform-side seed — restaurants, orders, ratings, applications,
+                 delivery partners, analytics series.
 src/services/    The only way the UI reads data. Components must never import
                  src/data directly. Swapping in Supabase changes these bodies,
                  not the components.
-src/components/  foodcity/ (map, districts, SVG art), layout/, ui/
+src/auth/        Provider, role guard, and routeDecision — a pure function so
+                 every guard combination can be tested without a browser.
+src/components/  foodcity/ (iso projection, map, buildings), analytics/ (charts,
+                 flow diagrams), dashboard/ (shared table, stat cards), admin/,
+                 auth/, layout/, listing/, ui/
+src/pages/       CustomerApp, admin/, delivery/, LoginPage, DashboardShell
+src/theme/       brand.ts — the single source of colour, mirrored as CSS
+                 custom properties in index.css
+supabase/        SQL migrations. Roles and RLS live here, not in the client.
 ```
 
-The rule that matters: a restaurant belongs to one district but offers many
-cuisines via `restaurantCuisines`, and each (restaurant, cuisine) pair gets its
-own `Menu`. Menus are never merged. Mumbai Spice (North Indian + Chinese) is the
-worked example in the seed data.
+Map geometry lives in `components/foodcity/iso.ts` — district records carry no pixel
+coordinates.
 
-Map geometry lives in `components/foodcity/mapLayout.ts`, never in `src/data` —
-district records carry no pixel coordinates.
+The rule that matters: a restaurant belongs to one district but offers many cuisines via
+`restaurantCuisines`, and each (restaurant, cuisine) pair gets its own `Menu`. **Menus are
+never merged.** Mumbai Spice (North Indian + Chinese) is the worked example in the seed.
 
-## Current state — customer dashboard, phase A+B
+## Auth and roles
 
-Built: the Food City landing page and interactive cuisine districts.
+Supabase Auth, with Google and email/password. The role is a column on `profiles` that the
+browser **cannot write** — column-level grants exclude it, and the update policy re-checks
+it through a `SECURITY DEFINER` function. A trigger on `auth.users` creates the profile and
+assigns the role; the only non-`customer` source is the `admin_bootstrap` allowlist table,
+which has RLS on and **no policies at all**, so no API request can reach it.
 
-- Illustrated SVG city: parchment ground, a boulevard and two streets around a
-  central plaza, six neighbourhoods in a 2x3 grid, ambient steam/lanterns/
-  scooters/strollers.
-- **One building is drawn per restaurant row**, so the skyline is the data.
-- Hover a district: buildings lift in sequence, the name plate swaps for a card
-  with restaurant count, top rating and cuisines.
-- Click: the whole scene pans and zooms to that block (one CSS transform on the
-  camera group) while the left column turns to that district's page.
-- Escape, the back button and the district rail all return to the city.
-- Keyboard-navigable districts, `prefers-reduced-motion` honoured, responsive
-  (the two columns stack under 880px).
+Role checks in React are cosmetic — they decide what renders. What protects the data is row
+level security. `/admin?role=admin` grants nothing.
 
-Stubs, deliberately inert and marked `aria-disabled`: top-bar search, the profile
-control, and the "Ask Foodie AI" launcher.
+Migrations, in order: `0001` profiles and roles · `0002` tighten function grants ·
+`0003` admin bootstrap allowlist · `0004` seed the demo admin and delivery accounts.
 
-Not built yet: restaurant discovery (clicking a storefront), restaurant pages,
-cuisine tabs, menus, cart, checkout, search, Foodie AI, auth, admin and
-restaurant dashboards, backend.
+Local config goes in `.env.local` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`). Anon key
+only — a service-role key must never reach the bundle. With neither set the app still runs;
+`supabase` is `null` and auth reports itself unconfigured.
+
+## Current state
+
+**Customer — Food City (public, no sign-in needed).** True 2:1 dimetric isometric city on a
+diorama slab, depth-sorted by `gx + gy`. Ten cuisine districts, each with its own
+architecture rather than a recoloured box — cone, dome-and-tandoor, pizza oven, tiered
+eaves, stucco arches, greenhouse, lighthouse, leaf gable, stone parapet, tiled eaves. One
+building per restaurant row, so the skyline is the data. Pan, zoom, pinch and four-way
+rotation; a merged collapsible sidebar. Clicking a district opens its restaurant listing,
+where the visual language deliberately drops to a clean light ordering interface.
+
+**Admin.** Home/overview, restaurant applications (tabs, search, sort, session decisions),
+the management tables, and `/admin/analytics` — KPIs, order and revenue trends, onboarding
+funnel and process diagram, order lifecycle, cuisine and restaurant tables, delivery-model
+comparison, customer growth and conversion, ratings, business-rule monitoring, platform
+health, activity timeline, top performers, cross-cutting filters and CSV export.
+
+**Delivery.** Home, assigned orders, completed deliveries, earnings, profile.
+
+**Not built yet:** restaurant menus with cuisine tabs, cart, checkout, order confirmation,
+search, Foodie AI, the restaurant owner's own dashboard, and any real backend reads — every
+screen still reads mock data through the services.
+
+Stubs, deliberately inert and marked `aria-disabled`: top-bar search, the cart control, and
+the "Ask Foodie AI" launcher.
+
+## Analytics
+
+`/admin/analytics` follows one rule: **the page computes nothing.** Every figure, share,
+percentage change and rule verdict arrives finished from `services/analyticsService.ts`.
+Comparisons are the current window measured against the window before it, from the same
+series — not stored change figures. The rule verdicts come from `adminService` rather than
+being re-derived, so there is one definition and it cannot drift.
+
+Charts and flow diagrams are hand-built SVG in `components/analytics/`, with no chart
+library: a dependency would bring its own colour system, fonts and DOM conventions to argue
+with the dashboard. `FlowDiagram` is reusable — nodes are ordinary HTML (so a node can be a
+router `Link` and take focus) over an SVG edge layer, positioned arithmetically from a
+`col`/`row` grid.
+
+The day series is generated once at module load from a seeded PRNG. `Math.random()` would
+redraw on every render and the tooltip would disagree with the line under the cursor;
+`MOCK_TODAY` is fixed for the same reason the rules use it.
 
 ## Design
 
-Cozy illustrated food village, drawn as original SVG — no external art.
-Warm parchment and terracotta; each district has its own roof silhouette
-(pagoda, gable, dome, scallop, flat, clay) so blocks are distinguishable across
-the map. Fonts: Fraunces (headings), Inter (body), IBM Plex Mono (labels).
-Tokens on `:root`: `--flame`, `--saffron`, `--herb`, `--crust`, `--paper*`.
+Two visual languages, on purpose. The city is an illustrated isometric world; everything
+past it — listings, dashboards, analytics — is a clean, practical interface. Original SVG
+throughout, no external art.
+
+Brand palette in `src/theme/brand.ts`, mirrored as CSS custom properties: deep teal
+`#0A6A66`, butter `#FFF8B5`, soft pink `#FCA5D1`, hot magenta `#FF258E`, soft salmon
+`#FC7494`, dark slate `#374151`. Roughly 60% teal and neutral, 25% warm light, 10% butter,
+5% accents. Architectural materials (terracotta, sand, stone, timber) are materials, not
+accents, and sit outside that budget.
+
+`index.css` defines two token sets: the brand `--teal-*` / `--butter*` / `--cream*` family,
+and an `--app-*` family for the light ordering and dashboard surfaces.
+
+Fonts: Fraunces (headings), Plus Jakarta Sans and Inter (body), IBM Plex Mono (labels and
+figures).
+
+## Conventions
+
+- Components never import **rows** from `src/data`. Services are the only reader.
+  Importing a type, or an enum label map such as `DELIVERY_MODEL_LABEL`, is fine — those
+  are the shape, not the data. **Currently broken** by the staff mock screens:
+  `pages/admin/adminSections.tsx`, `pages/delivery/deliverySections.tsx`,
+  `pages/delivery/DeliveryHome.tsx` and `pages/delivery/ActiveDeliveries.tsx` all read
+  `data/staffMock.ts` directly. They predate the service layer; route them through a
+  service when they grow real behaviour.
+- Nothing is stored as a conclusion. No `needsImprovementPlan: true`, no
+  `changePercent: 12.4` — derive it where it is used, from the counts underneath.
+- Don't invent a number the client has not given. "Not set" is an honest answer.
+- Mock data should include cases that *fail* a rule, so a threshold is shown to bite
+  rather than merely asserted.
+- Run `npm run build` and `npx oxlint src/` before committing.
 
 ## Open questions
 
 - What SNS stands for (the logo tagline currently says "Restaurant Onboarding")
 - Real team member names
-- Real fee percentages from the client
+- Real fee percentages and the concession amount from the client
+- Whether to normalise RULE-05/06 back to RULE-01/02 across the code

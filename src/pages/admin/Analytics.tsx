@@ -14,12 +14,11 @@ import { MetricToggle } from '../../components/analytics/MetricToggle';
 import {
   formatChange, formatCount, formatMoney, formatPercent, formatValue,
 } from '../../components/analytics/format';
-import { analyticsCuisines } from '../../data/admin/analytics';
-import { platformRestaurants } from '../../data/admin/platform';
-import { DELIVERY_MODEL_LABEL, type DeliveryModel } from '../../data/admin/types';
+import type { DeliveryModel } from '../../data/admin/types';
 import {
   buildAnalyticsExport, CUSTOMER_METRICS, DATE_RANGES, DEFAULT_FILTERS, DELIVERY_METRICS,
   getBusinessRuleAlerts, getBusinessRuleMonitor, getCuisinePerformance, getCustomerFunnel,
+  getFilterOptions,
   getCustomerGrowth, getDeliveryAnalytics, getDeliveryTrend, getLastUpdated, getOrderFlow,
   getOrderTrend, getOverviewMetrics, getPlatformHealth, getRatingAnalytics, getRecentActivity,
   getRestaurantOnboardingFlow, getRestaurantOnboardingFunnel, getRestaurantPerformance,
@@ -72,6 +71,8 @@ export function AdminAnalytics() {
   const alerts = useMemo(() => getBusinessRuleAlerts(), []);
   const health = useMemo(() => getPlatformHealth(filters), [filters]);
   const activity = useMemo(() => getRecentActivity(), []);
+
+  const options = useMemo(() => getFilterOptions(), []);
 
   const [restaurantSearch, setRestaurantSearch] = useState('');
   const restaurantRows = useMemo(() => {
@@ -141,7 +142,7 @@ export function AdminAnalytics() {
           <span>Cuisine</span>
           <select value={filters.cuisineId} onChange={(e) => set('cuisineId', e.target.value)}>
             <option value="all">All cuisines</option>
-            {analyticsCuisines.map((c) => (
+            {options.cuisines.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
@@ -150,7 +151,7 @@ export function AdminAnalytics() {
           <span>Restaurant</span>
           <select value={filters.restaurantId} onChange={(e) => set('restaurantId', e.target.value)}>
             <option value="all">All restaurants</option>
-            {platformRestaurants.map((r) => (
+            {options.restaurants.map((r) => (
               <option key={r.id} value={r.id}>{r.name}</option>
             ))}
           </select>
@@ -162,8 +163,9 @@ export function AdminAnalytics() {
             onChange={(e) => set('deliveryModel', e.target.value as DeliveryModel | 'all')}
           >
             <option value="all">Both models</option>
-            <option value="aggregator">{DELIVERY_MODEL_LABEL.aggregator}</option>
-            <option value="own_staff">{DELIVERY_MODEL_LABEL.own_staff}</option>
+            {options.deliveryModels.map((m) => (
+              <option key={m.id} value={m.id}>{m.label}</option>
+            ))}
           </select>
         </label>
         <label>
