@@ -30,9 +30,14 @@ export type AuthStatus = 'loading' | 'signed-out' | 'signed-in' | 'unconfigured'
 
 /** Friendly text for the things that actually go wrong. */
 export class AuthError extends Error {
-  constructor(message: string, readonly cause?: unknown) {
+  /* Declared and assigned rather than a parameter property: `tsc` runs with
+     `erasableSyntaxOnly`, which forbids the shorthand. */
+  readonly cause?: unknown;
+
+  constructor(message: string, cause?: unknown) {
     super(message);
     this.name = 'AuthError';
+    this.cause = cause;
   }
 }
 
@@ -203,13 +208,32 @@ export async function signUpWithPassword(
   });
 
   if (error) {
-    if (/already registered/i.test(error.message)) {
+    if (/already registered|already been registered/i.test(error.message)) {
       throw new AuthError('An account with that email already exists. Try signing in.', error);
     }
     if (/password/i.test(error.message)) {
       throw new AuthError('That password is too short — use at least six characters.', error);
     }
-    throw new AuthError('That account could not be created. Please try again.', error);
+    /* Supabase's built-in mailer allows only a couple of messages an hour. It is
+       reached solely because "Confirm email" is on; with it off no mail is sent
+       at all. Saying so beats "please try again", which invites the retry that
+       cannot work. */
+    if (/rate limit/i.test(error.message) || error.status === 429) {
+      throw new AuthError(
+        'Supabase has hit its confirmation-email limit for this hour. Turn off '
+          + 'Authentication \u2192 Sign In / Providers \u2192 Email \u2192 Confirm email in the '
+          + 'Supabase dashboard; no email is sent then, and sign-up works immediately.',
+        error,
+      );
+    }
+    if (/database error/i.test(error.message)) {
+      throw new AuthError(
+        'The database rejected the new account. The profile trigger in '
+          + 'supabase/migrations has probably not been run yet.',
+        error,
+      );
+    }
+    throw new AuthError(`That account could not be created. ${error.message}`, error);
   }
 
   /* No session means Supabase is waiting on email confirmation. */
