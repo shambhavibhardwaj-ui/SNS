@@ -20,7 +20,7 @@ export interface NavGroup {
  * Shared chrome for the staff dashboards.
  *
  * Admin and delivery differ in their navigation and accent, not their layout,
- * so they share this. Deliberately plainer than Food City: these are work
+ * so they share this. Deliberately plainer than the city: these are work
  * tools, read at speed.
  *
  * Below 980px the sidebar becomes a drawer rather than shrinking, because a
@@ -67,7 +67,7 @@ export function DashboardShell({
         <div className="db-brand">
           <span className="db-dot" aria-hidden="true" />
           <span>
-            <strong>Food City</strong>
+            <strong>SNS</strong>
             <em>{kicker}</em>
           </span>
           <button

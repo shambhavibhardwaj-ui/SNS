@@ -73,7 +73,7 @@ export const CityMap = forwardRef<SVGSVGElement, CityMapProps>(function CityMap(
       viewBox={`0 0 ${MAP_W} ${MAP_H}`}
       preserveAspectRatio="xMidYMid meet"
       role="group"
-      aria-label="Isometric map of Food City. Seven cuisine districts."
+      aria-label="Isometric map of the SNS city. Ten cuisine districts."
     >
       <defs>
         <filter id="fc-soft-shadow" x="-40%" y="-40%" width="180%" height="180%">

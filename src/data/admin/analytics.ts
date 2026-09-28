@@ -230,7 +230,7 @@ export interface FunnelStageSeed {
 }
 
 export const customerFunnelSeed: FunnelStageSeed[] = [
-  { id: 'visitors', label: 'Visitors', count: 18_430, hint: 'opened Food City' },
+  { id: 'visitors', label: 'Visitors', count: 18_430, hint: 'opened the SNS city' },
   { id: 'registered', label: 'Registered', count: 4_912, hint: 'created an account', href: '/admin/customers' },
   { id: 'first-order', label: 'First order', count: 2_418, hint: 'ordered at least once', href: '/admin/customers' },
   { id: 'repeat', label: 'Repeat customer', count: 1_286, hint: 'ordered more than once', href: '/admin/customers' },

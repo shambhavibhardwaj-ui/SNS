@@ -1,5 +1,6 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthProvider';
+import { CartProvider } from './cart/CartProvider';
 import { RequireRole } from './auth/RequireRole';
 import { RoleHome } from './auth/RoleHome';
 import { CustomerApp } from './pages/CustomerApp';
@@ -10,7 +11,7 @@ import { DeliveryDashboard } from './pages/delivery/DeliveryDashboard';
 /**
  * Routing.
  *
- * Discovery is public — a visitor can wander Food City before signing in, which
+ * Discovery is public — a visitor can wander the city before signing in, which
  * is the whole point of the city. Everything that belongs to an account sits
  * behind a role guard, and each guard redirects to the signer's own home rather
  * than to a dead end.
@@ -22,41 +23,45 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
+        <CartProvider>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
 
-          {/* Signed out: explore the city. Signed in: go to your own home. */}
-          <Route path="/" element={<RoleHome publicFallback={<CustomerApp />} />} />
+            <Route
+              path="/customer/*"
+              element={
+                <RequireRole allow={['customer']}>
+                  <CustomerApp />
+                </RequireRole>
+              }
+            />
 
-          <Route
-            path="/customer/*"
-            element={
-              <RequireRole allow={['customer']}>
-                <CustomerApp />
-              </RequireRole>
-            }
-          />
+            <Route
+              path="/admin/*"
+              element={
+                <RequireRole allow={['admin']}>
+                  <AdminDashboard />
+                </RequireRole>
+              }
+            />
 
-          <Route
-            path="/admin/*"
-            element={
-              <RequireRole allow={['admin']}>
-                <AdminDashboard />
-              </RequireRole>
-            }
-          />
+            <Route
+              path="/delivery/*"
+              element={
+                <RequireRole allow={['delivery']}>
+                  <DeliveryDashboard />
+                </RequireRole>
+              }
+            />
 
-          <Route
-            path="/delivery/*"
-            element={
-              <RequireRole allow={['delivery']}>
-                <DeliveryDashboard />
-              </RequireRole>
-            }
-          />
-
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+            {/*
+              Last, so the static branches above win. Signed out, this is the
+              public city and everything under it — discovery and the menus are
+              open on purpose. Signed in, it hands over to the role's own home.
+            */}
+            <Route path="/*" element={<RoleHome publicFallback={<CustomerApp />} />} />
+          </Routes>
+        </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   );

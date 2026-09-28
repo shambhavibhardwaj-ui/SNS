@@ -32,7 +32,7 @@ export const platformRestaurants: AdminRestaurant[] = [
   { id: 'r-lantern-wok', name: 'Lantern Wok', cuisines: ['Cantonese', 'Dim Sum'], deliveryModel: 'aggregator', state: 'Under Review', totalOrders: 0, onboardedAt: '2026-09-19' },
   { id: 'r-green-fork', name: 'Green Fork', cuisines: ['Pure Veg'], deliveryModel: 'own_staff', state: 'Pending', totalOrders: 0, onboardedAt: '2026-09-20' },
   /*
-   * Added so every one of the ten Food City cuisines has real kitchens behind
+   * Added so every one of the ten SNS cuisines has real kitchens behind
    * it. Analytics that show a cuisine with no restaurants is a chart of the
    * seed data's gaps, not of the business.
    */

@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FoodCity } from '../components/foodcity/FoodCity';
 import { TopBar } from '../components/layout/TopBar';
 import { RestaurantListing } from './RestaurantListing';
@@ -6,27 +7,32 @@ import { RestaurantListing } from './RestaurantListing';
 /**
  * The customer discovery and ordering experience — unchanged by the auth work.
  *
- * Deliberately a plain union rather than nested routes: the journey is linear
- * (city -> district -> restaurant -> cart -> checkout) and each step needs the
- * previous step's id. Routes go in when these steps need shareable URLs.
+ * City and district stay as local state: the district view is a zoom of the
+ * same canvas, and giving it a URL would mean rebuilding the camera on every
+ * navigation. From the restaurant onwards the journey does get real routes —
+ * a menu, a cart and an order are all things a person expects to be able to
+ * reload, link to, and reach with the back button.
  */
 type View = { name: 'city' } | { name: 'listing'; districtId: string };
 
 export function FoodCityExperience() {
   const [view, setView] = useState<View>({ name: 'city' });
-  const [notice, setNotice] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const enterDistrict = useCallback((districtId: string) => {
     setView({ name: 'listing', districtId });
   }, []);
 
   const backToCity = useCallback(() => {
-    setNotice(null);
     setView({ name: 'city' });
   }, []);
 
-  /* Phase 4 replaces this with the restaurant menu page. */
-  const openRestaurant = useCallback((restaurantId: string) => setNotice(restaurantId), []);
+  /* Relative, so this works under both "/" for a visitor and "/customer" for a
+     signed-in customer without knowing which base it is mounted on. */
+  const openRestaurant = useCallback(
+    (restaurantId: string) => navigate(`restaurant/${restaurantId}`),
+    [navigate],
+  );
 
   return (
     <div className="fc-shell" id="top" data-view={view.name}>
@@ -43,32 +49,6 @@ export function FoodCityExperience() {
           />
         </div>
       )}
-
-      {notice ? <NextStepNotice restaurantId={notice} onClose={() => setNotice(null)} /> : null}
-    </div>
-  );
-}
-
-/**
- * Stands in for the restaurant menu page until phase 4 lands, so a card click
- * says what will happen rather than doing nothing.
- */
-function NextStepNotice({
-  restaurantId,
-  onClose,
-}: {
-  restaurantId: string;
-  onClose: () => void;
-}) {
-  return (
-    <div className="rl-notice" role="status">
-      <span>
-        <strong>{restaurantId.replace(/^res-/, '').replace(/-/g, ' ')}</strong> — the menu page with
-        per-cuisine tabs is the next build step.
-      </span>
-      <button type="button" onClick={onClose} aria-label="Dismiss">
-        ✕
-      </button>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 /**
- * Isometric projection for the Food City diorama.
+ * Isometric projection for the SNS city diorama.
  *
  * A true 2:1 dimetric projection: one grid step along +gx moves half a tile
  * right and half a tile down; +gy moves half a tile left and half a tile down;

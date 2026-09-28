@@ -9,8 +9,8 @@
  * NOTE: these are synchronous while the data is in-memory. Switching to Supabase
  * turns them into Promises — that is the one intentional seam in this layer.
  */
-import { cuisines, districts, restaurantCuisines, restaurants } from '../data';
-import type { Cuisine, District, ID, Restaurant } from '../data/types';
+import { cuisines, districts, menuItems, menus, restaurantCuisines, restaurants } from '../data';
+import type { Cuisine, District, ID, MenuItem, Restaurant } from '../data/types';
 
 /** A district plus the aggregates the map needs. Never hard-code these in the UI. */
 export interface DistrictSummary {
@@ -164,4 +164,85 @@ export function listRestaurants(
       });
   }
   return sorted;
+}
+
+
+/* ------------------------------------------------------------------ menus -- */
+
+/**
+ * One cuisine's menu at one restaurant, grouped into the sections it prints in.
+ *
+ * The page receives an array of these — never a flattened list of every item
+ * the restaurant sells. That is the brief's core rule ("do NOT combine all
+ * cuisines into one menu") expressed in the return type, so a component cannot
+ * merge them without deliberately going out of its way.
+ */
+export interface MenuSection {
+  category: string;
+  items: MenuItem[];
+}
+
+export interface CuisineMenu {
+  menuId: ID;
+  cuisine: Cuisine;
+  sections: MenuSection[];
+  itemCount: number;
+  /** Cheapest item, for the "from ₹x" line on the tab. */
+  fromPrice: number;
+  /** True when nothing on this menu contains meat or fish. */
+  isAllVeg: boolean;
+}
+
+export function getRestaurantById(restaurantId: ID): Restaurant | undefined {
+  return restaurants.find((r) => r.id === restaurantId);
+}
+
+/**
+ * Every menu a restaurant offers, one per cuisine, in the order the cuisines
+ * are listed against it.
+ *
+ * Sections come out in first-appearance order rather than alphabetically:
+ * a menu reads starters, mains, breads, not "Breads, Main Course, Starters".
+ */
+export function getMenusForRestaurant(restaurantId: ID): CuisineMenu[] {
+  return menus
+    .filter((m) => m.restaurantId === restaurantId)
+    .map((menu) => {
+      const cuisine = cuisines.find((c) => c.id === menu.cuisineId);
+      if (!cuisine) return null;
+
+      const items = menuItems.filter((i) => i.menuId === menu.id);
+      const order: string[] = [];
+      const grouped = new Map<string, MenuItem[]>();
+      for (const item of items) {
+        if (!grouped.has(item.category)) {
+          grouped.set(item.category, []);
+          order.push(item.category);
+        }
+        grouped.get(item.category)!.push(item);
+      }
+
+      return {
+        menuId: menu.id,
+        cuisine,
+        sections: order.map((category) => ({ category, items: grouped.get(category)! })),
+        itemCount: items.length,
+        fromPrice: items.reduce((min, i) => Math.min(min, i.price), Infinity),
+        isAllVeg: items.every((i) => i.isVeg),
+      } satisfies CuisineMenu;
+    })
+    .filter((m): m is CuisineMenu => m !== null);
+}
+
+/** Single item lookup — the cart stores ids and rehydrates through this. */
+export function getMenuItemById(menuItemId: ID): MenuItem | undefined {
+  return menuItems.find((i) => i.id === menuItemId);
+}
+
+/** Which cuisine an item came from, for the cart's per-menu grouping. */
+export function getCuisineForMenuItem(menuItemId: ID): Cuisine | undefined {
+  const item = menuItems.find((i) => i.id === menuItemId);
+  if (!item) return undefined;
+  const menu = menus.find((m) => m.id === item.menuId);
+  return menu ? cuisines.find((c) => c.id === menu.cuisineId) : undefined;
 }

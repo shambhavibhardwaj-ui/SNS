@@ -104,10 +104,10 @@ export function LoginPage() {
               <rect x="8" y="26" width="24" height="4" rx="2" fill="#F0DE79" />
               <circle cx="26" cy="11" r="3" fill="#FFF8B5" />
             </svg>
-            <span>Food City</span>
+            <span>SNS</span>
           </div>
 
-          <h1 className="lg-title">Welcome to Food City</h1>
+          <h1 className="lg-title">Welcome to SNS</h1>
           <p className="lg-sub">
             Explore the city. Discover restaurants. Order what you love.
           </p>

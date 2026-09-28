@@ -16,6 +16,8 @@ export interface SideNavProps {
   /** Home and Explore both return to the city; the rest are stubs for now. */
   onHome: () => void;
   cartCount?: number;
+  /** Opens the cart. Null until there is a cart to open. */
+  onCart?: (() => void) | null;
 }
 
 interface NavItem {
@@ -34,14 +36,14 @@ interface NavItem {
  * destination has not been built yet are marked `aria-disabled` rather than
  * wired to nothing, so the demo never implies a working feature.
  */
-export function SideNav({ collapsed, onToggle, onHome, cartCount = 0 }: SideNavProps) {
+export function SideNav({ collapsed, onToggle, onHome, onCart = null, cartCount = 0 }: SideNavProps) {
   const items: NavItem[] = [
     { key: 'home', label: 'Home', Icon: Home, onSelect: onHome },
     { key: 'search', label: 'Search', Icon: Search, onSelect: null },
     { key: 'explore', label: 'Explore', Icon: Compass, onSelect: onHome },
     { key: 'favorites', label: 'Favorites', Icon: Heart, onSelect: null },
     { key: 'orders', label: 'Orders', Icon: ReceiptText, onSelect: null },
-    { key: 'cart', label: 'Cart', Icon: ShoppingBag, onSelect: null, badge: cartCount },
+    { key: 'cart', label: 'Cart', Icon: ShoppingBag, onSelect: onCart, badge: cartCount },
     { key: 'profile', label: 'Profile', Icon: User, onSelect: null },
   ];
 

@@ -3,17 +3,30 @@ import { ArrowLeft, Heart, ReceiptText, UserRound } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { FoodCityExperience } from './FoodCityExperience';
+import { RestaurantMenu } from './RestaurantMenu';
+import { CartPage } from './CartPage';
+import { CheckoutPage } from './CheckoutPage';
+import { OrderConfirmation } from './OrderConfirmation';
 
 /**
  * The customer area.
  *
- * `/customer` is the Food City experience itself — the spec's customer home is
- * the city, not a separate dashboard. The account pages hang off it.
+ * `/customer` is the SNS city experience itself — the spec's customer home is
+ * the city, not a separate dashboard. The account pages and the ordering
+ * journey hang off it.
+ *
+ * Every route here is relative, so the same tree serves a signed-out visitor
+ * under "/" and a signed-in customer under "/customer" without either knowing
+ * which base it is mounted on.
  */
 export function CustomerApp() {
   return (
     <Routes>
       <Route path="/" element={<FoodCityExperience />} />
+      <Route path="restaurant/:restaurantId" element={<RestaurantMenu />} />
+      <Route path="cart" element={<CartPage />} />
+      <Route path="checkout" element={<CheckoutPage />} />
+      <Route path="order/:orderId" element={<OrderConfirmation />} />
       <Route
         path="profile"
         element={<AccountPage title="Profile" Icon={UserRound} blurb="Your name, email and profile picture, taken from your Google account." />}
@@ -48,7 +61,7 @@ function AccountPage({
       <div className="ac-inner">
         <Link to="/customer" className="rl-back">
           <ArrowLeft size={16} strokeWidth={2.2} />
-          Back to Food City
+          Back to SNS
         </Link>
 
         <header className="ac-head">

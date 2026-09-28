@@ -90,7 +90,11 @@ coordinates.
 
 The rule that matters: a restaurant belongs to one district but offers many cuisines via
 `restaurantCuisines`, and each (restaurant, cuisine) pair gets its own `Menu`. **Menus are
-never merged.** Mumbai Spice (North Indian + Chinese) is the worked example in the seed.
+never merged.** Mumbai Spice is the worked example — North Indian, Mughlai and Chaat, three
+separate menus. `data/menus.ts` builds one `Menu` row per (restaurant, cuisine) pair from a
+per-cuisine dish catalogue, so a combined list cannot be produced even by accident, and
+`getMenusForRestaurant` returns an array of per-cuisine menus rather than a flat item list —
+the rule is in the return type, not only in the UI.
 
 ## Auth and roles
 
@@ -112,7 +116,7 @@ only — a service-role key must never reach the bundle. With neither set the ap
 
 ## Current state
 
-**Customer — Food City (public, no sign-in needed).** True 2:1 dimetric isometric city on a
+**Customer — the SNS city (public, no sign-in needed).** True 2:1 dimetric isometric city on a
 diorama slab, depth-sorted by `gx + gy`. Ten cuisine districts, each with its own
 architecture rather than a recoloured box — cone, dome-and-tandoor, pizza oven, tiered
 eaves, stucco arches, greenhouse, lighthouse, leaf gable, stone parapet, tiled eaves. One
@@ -128,9 +132,16 @@ health, activity timeline, top performers, cross-cutting filters and CSV export.
 
 **Delivery.** Home, assigned orders, completed deliveries, earnings, profile.
 
-**Not built yet:** restaurant menus with cuisine tabs, cart, checkout, order confirmation,
-search, Foodie AI, the restaurant owner's own dashboard, and any real backend reads — every
-screen still reads mock data through the services.
+**Customer — ordering.** Restaurant page with one tab per cuisine and a separate menu
+behind each, cart grouped by cuisine, checkout with address validation, and an order
+confirmation carrying the same grouping through to the receipt. A cart holds one
+restaurant at a time; switching is asked for, not done silently.
+
+**Not built yet:** search, Foodie AI, order history, the restaurant owner's own dashboard,
+and any real backend reads — every screen still reads mock data through the services.
+Payment is not integrated and is not simulated: cash on delivery is the only method that
+means anything, and the others are disabled rather than shown as working. Placed orders
+live in memory, so a reload loses them.
 
 Stubs, deliberately inert and marked `aria-disabled`: top-bar search, the cart control, and
 the "Ask Foodie AI" launcher.
@@ -187,8 +198,15 @@ figures).
   rather than merely asserted.
 - Run `npm run build` and `npx oxlint src/` before committing.
 
+## Naming
+
+The product is **SNS**. The illustrated isometric map inside it is "the city" — it was
+called Food City until the brand settled, so the code still carries that name in places
+that are not user-visible: the `components/foodcity/` directory, the `FoodCity` component
+and the `fc-` CSS prefix. Those are identifiers, not copy; renaming them is churn with no
+user-visible effect. Nothing a customer reads says "Food City".
+
 ## Open questions
 
-- What SNS stands for (the logo tagline currently says "Restaurant Onboarding")
 - Real team member names
 - Real fee percentages and the concession amount from the client

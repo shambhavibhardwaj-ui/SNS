@@ -6,6 +6,8 @@ import {
   getRestaurantsByDistrict,
 } from '../../services/restaurantService';
 import type { Restaurant } from '../../data/types';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../cart/useCart';
 import { SideNav } from '../layout/SideNav';
 import { FoodieAIBar } from '../ui/FoodieAIBar';
 import { CityMap } from './CityMap';
@@ -22,7 +24,7 @@ interface FoodCityProps {
 }
 
 /**
- * The Food City landing experience.
+ * The SNS city landing experience.
  *
  * The map is an interactive canvas — drag, wheel, pinch, zoom buttons and a
  * reset — and clicking a district is a two-beat move: the camera flies into the
@@ -30,6 +32,12 @@ interface FoodCityProps {
  * entry point only; it does not follow the customer into the ordering flow.
  */
 export function FoodCity({ onEnterDistrict }: FoodCityProps) {
+  const navigate = useNavigate();
+  const { totals } = useCart();
+  const cartCount = totals.itemCount;
+  /* Relative: works under "/" for a visitor and "/customer" when signed in. */
+  const openCart = () => navigate('cart');
+
   const summaries = useMemo(() => getDistrictSummaries(), []);
   const stats = useMemo(() => getCityStats(), []);
   const restaurantsByDistrict = useMemo(
@@ -101,6 +109,8 @@ export function FoodCity({ onEnterDistrict }: FoodCityProps) {
       <aside className="fc-aside" data-collapsed={collapsed || undefined}>
         <div className="fc-aside-scroll">
           <SideNav
+            onCart={openCart}
+            cartCount={cartCount}
             collapsed={collapsed}
             onToggle={() => setCollapsed((c) => !c)}
             onHome={resetCamera}
@@ -122,9 +132,7 @@ export function FoodCity({ onEnterDistrict }: FoodCityProps) {
           ) : (
             <div className="fc-guide">
               <p className="fc-hero-eyebrow">Pick a street, not a list</p>
-              <h1 className="fc-hero-title">
-                Food<span>City</span>
-              </h1>
+              <h1 className="fc-hero-title">SNS</h1>
               <p className="fc-hero-sub">
                 {stats.restaurants} kitchens across {stats.districts} neighbourhoods.
                 Wander in and see who&rsquo;s cooking.

@@ -45,7 +45,7 @@ export function RestaurantListing({
       <header className="rl-hero">
         <button type="button" className="rl-back" onClick={onBackToCity}>
           <ArrowLeft size={16} strokeWidth={2.2} />
-          Back to Food City
+          Back to SNS
         </button>
 
         <div className="rl-hero-body">

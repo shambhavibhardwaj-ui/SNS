@@ -26,7 +26,7 @@ export interface Cuisine {
 /**
  * table: districts
  *
- * A district is a neighbourhood of the Food City map. It groups the cuisines that
+ * A district is a neighbourhood of the SNS city map. It groups the cuisines that
  * are sold there; a restaurant sits in exactly one district but may serve cuisines
  * beyond that district's headline list.
  */

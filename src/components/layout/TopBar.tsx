@@ -17,7 +17,7 @@ export function TopBar({ compact = false }: { compact?: boolean }) {
           <circle cx="26" cy="11" r="3" fill="#E8A33D" />
         </svg>
         <span className="fc-brand-text">
-          <span className="fc-brand-name">Food City</span>
+          <span className="fc-brand-name">SNS</span>
           <span className="fc-brand-sub">RestaurantOnboarding</span>
         </span>
       </a>

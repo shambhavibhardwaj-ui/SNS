@@ -331,7 +331,7 @@ export function AdminAnalytics() {
           <div>
             <h3>Orders by cuisine</h3>
             <p className="dh-block-sub">
-              The ten Food City categories. Select one to filter the whole page.
+              The ten SNS cuisine categories. Select one to filter the whole page.
             </p>
           </div>
         </div>
