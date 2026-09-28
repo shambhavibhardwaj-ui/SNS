@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Bell, LogOut, Menu, Search, X, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { AccountButton } from '../components/auth/AccountButton';
@@ -46,6 +46,29 @@ export function DashboardShell({
 }) {
   const { profile, signOut } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { pathname } = useLocation();
+
+  /*
+   * The header names the section you are actually in.
+   *
+   * It used to be a fixed string, so every screen said "Overview" while the
+   * page below it said something else — two headings disagreeing. Longest
+   * matching nav path wins, so /admin/restaurants/applications picks
+   * "Restaurant Applications" rather than the shorter /admin that also
+   * prefixes it.
+   */
+  const items = groups.flatMap((g) => g.items);
+
+  const current = items
+    .filter((item) => pathname === item.to || pathname.startsWith(`${item.to}/`))
+    .sort((a, b) => b.to.length - a.to.length)[0];
+
+  const heading = current?.label ?? title;
+
+  /* The shortest nav path is the section's own index — the one link whose
+     description belongs in the header rather than on the page. */
+  const homeTo = items.reduce((a, b) => (b.to.length < a.to.length ? b : a)).to;
+  const isIndex = !current || current.to === homeTo;
 
   /* Escape closes the drawer, and it never stays open across a navigation. */
   useEffect(() => {
@@ -138,8 +161,9 @@ export function DashboardShell({
           </button>
 
           <div className="db-top-title">
-            <h1 className="db-title">{title}</h1>
-            {lede ? <p className="db-lede">{lede}</p> : null}
+            <h1 className="db-title">{heading}</h1>
+            {/* Only on the index: every other page carries its own. */}
+            {lede && isIndex ? <p className="db-lede">{lede}</p> : null}
           </div>
 
           <div className="db-top-tools">

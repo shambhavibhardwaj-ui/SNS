@@ -33,7 +33,6 @@ export function ActiveDeliveries() {
   return (
     <section className="dh">
       <header className="dh-head">
-        <h2>Active Deliveries</h2>
         <p>Move an order along as you pick it up and drop it off.</p>
       </header>
 

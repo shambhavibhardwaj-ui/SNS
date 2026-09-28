@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  AlertTriangle, Archive, Bike, ClipboardList, Clock, FileSearch,
+  AlertTriangle, Bike, ClipboardList, Clock, FileSearch,
   IndianRupee, Store, TrendingUp, Users, UtensilsCrossed,
 } from 'lucide-react';
 import { ApplicationsPanel } from '../../components/admin/ApplicationsPanel';
@@ -43,11 +43,13 @@ export function AdminHome() {
       {/* 1 — PLATFORM OVERVIEW */}
       <StatCards
         stats={[
-          { label: 'Total restaurants', value: String(overview.totalRestaurants), hint: 'all states', Icon: Store },
+          /* Eight, not nine: four across is the row a person reads at a glance,
+             and nine left a stranded card on a second row. Offboarded moves
+             into the total's supporting line rather than being dropped. */
+          { label: 'Total restaurants', value: String(overview.totalRestaurants), hint: `all states · ${overview.offboarded} offboarded`, Icon: Store },
           { label: 'Active restaurants', value: String(overview.activeRestaurants), hint: 'taking orders', Icon: UtensilsCrossed },
           { label: 'Pending applications', value: String(overview.pendingApplications), hint: 'awaiting first look', Icon: FileSearch },
           { label: 'Under review', value: String(overview.underReview), hint: 'being assessed', Icon: Clock },
-          { label: 'Offboarded', value: String(overview.offboarded), hint: 'no longer trading', Icon: Archive },
           { label: 'Total customers', value: overview.totalCustomers.toLocaleString('en-IN'), hint: `${customers.newThisWeek} new this week`, Icon: Users },
           { label: 'Delivery partners', value: String(overview.totalDeliveryPartners), hint: `${delivery.active} active`, Icon: Bike },
           { label: 'Orders today', value: overview.ordersToday.toLocaleString('en-IN'), Icon: ClipboardList },

@@ -41,7 +41,6 @@ export function RestaurantApplications() {
   return (
     <section className="dh">
       <header className="dh-head">
-        <h2>Restaurant Applications</h2>
         <p>
           Review and manage restaurant applications.
           {awaitingAction > 0 ? (

@@ -103,7 +103,7 @@ export function AdminAnalytics() {
       {/* 1 — HEADER */}
       <header className="an-head">
         <div>
-          <h2>Analytics</h2>
+          {/* No heading: the shell header already names this section. */}
           <p>Understand how restaurants, customers, orders and delivery operations are performing.</p>
         </div>
         <div className="an-head-tools">

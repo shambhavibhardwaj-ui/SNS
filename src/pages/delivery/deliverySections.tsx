@@ -12,12 +12,12 @@ import {
 } from '../../data/staffMock';
 
 function Page({
-  title,
   lede,
   note,
   children,
 }: {
-  title: string;
+  /** Named by the shell header now, so the page no longer prints it. */
+  title?: string;
   lede: string;
   note?: string;
   children: React.ReactNode;
@@ -25,7 +25,6 @@ function Page({
   return (
     <section className="dh">
       <header className="dh-head">
-        <h2>{title}</h2>
         <p>{lede}</p>
       </header>
       {children}

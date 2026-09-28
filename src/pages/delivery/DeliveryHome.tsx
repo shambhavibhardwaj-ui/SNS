@@ -13,6 +13,8 @@ export function DeliveryHome() {
   return (
     <div className="dh">
       <header className="dh-head">
+        {/* The greeting is the point of this line, so it stays — it is not a
+            repeat of the section name the shell header shows. */}
         <h2>Welcome, {firstName}</h2>
         <p>What is waiting, what is out, and what you have earned today.</p>
       </header>
