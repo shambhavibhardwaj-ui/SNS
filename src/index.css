@@ -310,6 +310,8 @@ body {
 
 .fc-nav-toggle,
 .fc-nav-item {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -332,10 +334,13 @@ body {
   color: var(--teal-300);
 }
 
-.fc-nav-toggle:hover,
-.fc-nav-item:hover {
+.fc-nav-toggle:hover {
   background: rgb(255 255 255 / 0.08);
   color: var(--cream);
+}
+
+.fc-nav-item:hover {
+  color: var(--butter);
 }
 
 .fc-nav-toggle:focus-visible,
@@ -346,8 +351,6 @@ body {
 }
 
 .fc-nav-item[aria-current] {
-  background: rgb(255 248 181 / 0.14);
-  border-color: rgb(255 248 181 / 0.35);
   color: var(--butter);
 }
 
@@ -357,11 +360,17 @@ body {
 }
 
 .fc-nav-item[aria-disabled]:hover {
-  background: none;
   color: var(--teal-200);
 }
 
+/* Sits behind the buttons; they carry their own stacking context. */
+.fc-nav-cursor {
+  background: rgb(255 248 181 / 0.16);
+  border: 1px solid rgb(255 248 181 / 0.34);
+}
+
 .fc-nav-list {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -2328,6 +2337,8 @@ body {
 }
 
 .db-nav-item {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -2340,12 +2351,10 @@ body {
 }
 
 .db-nav-item:hover {
-  background: rgb(255 255 255 / 0.08);
-  color: var(--cream);
+  color: #fff;
 }
 
 .db-nav-item.is-active {
-  background: var(--db-accent);
   color: #fff;
   font-weight: 600;
 }
@@ -2353,15 +2362,6 @@ body {
 .db-nav-item:focus-visible {
   outline: 2px solid var(--butter);
   outline-offset: 2px;
-}
-
-.db-whoami {
-  margin: auto 0 0;
-  padding: 0 10px;
-  font-size: 11.5px;
-  line-height: 1.5;
-  color: var(--teal-300);
-  overflow-wrap: anywhere;
 }
 
 .db-main {
@@ -2442,27 +2442,14 @@ body {
   color: var(--app-ink-faint) !important;
 }
 
-@media (max-width: 880px) {
-  .db {
-    grid-template-columns: 1fr;
-  }
-
-  .db-rail {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .db-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .db-whoami {
-    display: none;
-  }
-}
+/*
+ * A stale block used to live here: it turned the rail into a horizontal
+ * wrapping bar below 880px. That predates the drawer at 980px, and the two
+ * fought — the drawer made the rail a fixed full-height panel while this kept
+ * `flex-wrap: wrap` on the column, so once the links were taller than the
+ * screen they wrapped into a second column and the last two groups sat side
+ * by side. It also styled `.db-whoami`, which no longer exists in the markup.
+ */
 
 /* ==========================================================================
    CUSTOMER ACCOUNT PAGES
@@ -3142,10 +3129,17 @@ body {
 }
 
 .db-nav {
+  position: relative;
   flex: 1;
   overflow-y: auto;
   min-height: 0;
   scrollbar-width: thin;
+}
+
+/* The sliding pill. It sits behind the links, which carry their own stacking
+   context so their labels stay on top of it. */
+.db-nav-cursor {
+  background: var(--db-accent);
 }
 
 .db-rail-foot {
@@ -6648,5 +6642,90 @@ th[data-align='end'] .dt-sort { flex-direction: row-reverse; }
   .ck-primary,
   .rm-back-link {
     transition: none;
+  }
+}
+
+/* ==========================================================================
+   SLIDE TABS
+   --------------------------------------------------------------------------
+   The standalone horizontal tab bar from components/ui/slide-tabs. The
+   sidebars use the same pill through useSlideCursor but style it themselves,
+   because a teal rail and a cream card need different contrast.
+   ========================================================================== */
+
+.sl-tabs {
+  position: relative;
+  display: flex;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 5px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  background: var(--app-surface);
+  list-style: none;
+}
+
+/* The pill. Positioned by transform so it moves on the compositor, sized and
+   faded by the component. */
+.sl-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  display: block;
+  border-radius: 999px;
+  pointer-events: none;
+  transition:
+    transform 260ms cubic-bezier(0.22, 0.75, 0.3, 1),
+    width 260ms cubic-bezier(0.22, 0.75, 0.3, 1),
+    height 260ms cubic-bezier(0.22, 0.75, 0.3, 1),
+    opacity 160ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-cursor {
+    transition: opacity 160ms ease;
+  }
+}
+
+.sl-tabs-cursor {
+  background: var(--teal-700);
+}
+
+.sl-tab {
+  position: relative;
+  z-index: 1;
+}
+
+.sl-tab-button {
+  display: block;
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--app-ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  /* No transition on colour: the pill arrives on a spring, and a fading label
+     under a moving pill reads as lag. */
+}
+
+.sl-tab:hover .sl-tab-button,
+.sl-tab[data-on] .sl-tab-button {
+  color: #fff;
+}
+
+.sl-tab-button:focus-visible {
+  outline: 2px solid var(--teal-500);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .sl-tab-button {
+    padding: 8px 13px;
+    font-size: 12px;
   }
 }

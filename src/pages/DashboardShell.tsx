@@ -3,6 +3,8 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Bell, LogOut, Menu, Search, X, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { AccountButton } from '../components/auth/AccountButton';
+import { SlideCursor } from '../components/ui/slide-tabs';
+import { SLIDE_ITEM_ATTR, useSlideCursor } from '../components/ui/use-slide-cursor';
 
 export interface DashboardSection {
   to: string;
@@ -65,6 +67,14 @@ export function DashboardShell({
 
   const heading = current?.label ?? title;
 
+  /*
+   * The active pill slides between links instead of blinking from one to the
+   * next, and follows the pointer on the way. It rests on whichever link the
+   * route says is current, so it always ends up telling the truth about where
+   * you are.
+   */
+  const { setContainer, position, moveTo, rest } = useSlideCursor(current?.to);
+
   /* The shortest nav path is the section's own index — the one link whose
      description belongs in the header rather than on the page. */
   const homeTo = items.reduce((a, b) => (b.to.length < a.to.length ? b : a)).to;
@@ -103,7 +113,14 @@ export function DashboardShell({
           </button>
         </div>
 
-        <nav className="db-nav" aria-label={`${title} sections`}>
+        <nav
+          className="db-nav"
+          aria-label={`${title} sections`}
+          ref={setContainer}
+          onMouseLeave={rest}
+        >
+          <SlideCursor position={position} className="db-nav-cursor" />
+
           {groups.map((group, i) => (
             <div key={group.title ?? i} className="db-nav-group">
               {group.title ? <p className="db-nav-title">{group.title}</p> : null}
@@ -114,6 +131,10 @@ export function DashboardShell({
                   end
                   className={({ isActive }) => `db-nav-item${isActive ? ' is-active' : ''}`}
                   onClick={() => setDrawerOpen(false)}
+                  onMouseEnter={(e) => moveTo(e.currentTarget)}
+                  /* Names this link for the pill; the hook rests on whichever
+                     one matches the current route. */
+                  {...{ [SLIDE_ITEM_ATTR]: to }}
                 >
                   <Icon size={16} strokeWidth={2} />
                   <span>{label}</span>

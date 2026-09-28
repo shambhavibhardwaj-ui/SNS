@@ -9,6 +9,8 @@ import {
   ShoppingBag,
   User,
 } from 'lucide-react';
+import { SlideCursor } from '../ui/slide-tabs';
+import { SLIDE_ITEM_ATTR, useSlideCursor } from '../ui/use-slide-cursor';
 
 export interface SideNavProps {
   collapsed: boolean;
@@ -47,6 +49,14 @@ export function SideNav({ collapsed, onToggle, onHome, onCart = null, cartCount 
     { key: 'profile', label: 'Profile', Icon: User, onSelect: null },
   ];
 
+  /*
+   * Same sliding pill as the staff rail. It rests on Home — the only item with
+   * a current destination — and follows the pointer over the rest, including
+   * the stubs: the movement is a hover affordance, not a claim that the item
+   * goes anywhere.
+   */
+  const { setContainer, position, moveTo, rest } = useSlideCursor('home');
+
   return (
     <nav className="fc-nav" aria-label="Main">
       <button
@@ -60,7 +70,9 @@ export function SideNav({ collapsed, onToggle, onHome, onCart = null, cartCount 
         <span className="fc-nav-label">Collapse</span>
       </button>
 
-      <ul className="fc-nav-list">
+      <ul className="fc-nav-list" ref={setContainer} onMouseLeave={rest}>
+        <SlideCursor position={position} className="fc-nav-cursor" />
+
         {items.map(({ key, label, Icon, onSelect, badge }) => (
           <li key={key}>
             <button
@@ -70,6 +82,8 @@ export function SideNav({ collapsed, onToggle, onHome, onCart = null, cartCount 
               aria-disabled={onSelect ? undefined : true}
               aria-current={key === 'home' ? 'page' : undefined}
               title={onSelect ? label : `${label} — arrives in a later step`}
+              onMouseEnter={(e) => moveTo(e.currentTarget)}
+              {...{ [SLIDE_ITEM_ATTR]: key }}
             >
               <span className="fc-nav-icon">
                 <Icon size={18} strokeWidth={2} />
