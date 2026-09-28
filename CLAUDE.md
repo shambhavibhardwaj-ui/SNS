@@ -38,10 +38,9 @@ seven-day window — and an average can answer neither. The thresholds live in o
 Fee percentages and the concession amount render as "Not set". The client has not given us
 those numbers; inventing one would put a figure in front of an admin that nobody agreed.
 
-> **Known inconsistency.** Newer code (`adminService`, `analyticsService`, `data/admin/*`,
-> `AdminHome`) calls the two rating rules **RULE-05 and RULE-06**. They are the same two
-> rules as RULE-01 and RULE-02 above — an alias, not a fifth and sixth rule. The numbering
-> above is the client's and is canonical. Worth normalising to one scheme.
+These four numbers are the whole `RULE-nn` namespace — there is no RULE-05 or above, and
+nothing else in the codebase should claim one. The requirement that a restaurant may carry
+several cuisines with separate menus is core, but it is not a numbered rule.
 
 ## AI features
 
@@ -193,4 +192,3 @@ figures).
 - What SNS stands for (the logo tagline currently says "Restaurant Onboarding")
 - Real team member names
 - Real fee percentages and the concession amount from the client
-- Whether to normalise RULE-05/06 back to RULE-01/02 across the code

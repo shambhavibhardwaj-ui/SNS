@@ -11,7 +11,7 @@
  *   - **Comparisons.** "+12.4% vs previous period" is the current window
  *     measured against the window immediately before it, from the same series.
  *     A stored change figure is a number nobody can reproduce.
- *   - **Rule verdicts.** RULE-05 and RULE-06 are not re-implemented here; they
+ *   - **Rule verdicts.** RULE-01 and RULE-02 are not re-implemented here; they
  *     come from `adminService`, which counts qualifying orders. One definition,
  *     used by the overview, the applications queue and this page.
  */

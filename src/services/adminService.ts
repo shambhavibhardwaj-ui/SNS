@@ -31,14 +31,14 @@ import type {
 /* ------------------------------------------------------- rule thresholds -- */
 
 /**
- * RULE-05: below 3★ on MORE THAN 5 orders requires an improvement plan.
+ * RULE-01: below 3★ on MORE THAN 5 orders requires an improvement plan.
  * Strictly more than five — five low-rated orders does not trip it.
  */
 export const LOW_RATING_BELOW = 3;
 export const LOW_RATING_MIN_ORDERS = 5;
 
 /**
- * RULE-06: above 4★ across 10 orders in ONE WEEK earns a fee concession.
+ * RULE-02: above 4★ across 10 orders in ONE WEEK earns a fee concession.
  * The window is what makes this hard to fake with an average.
  */
 export const HIGH_RATING_ABOVE = 4;
@@ -115,7 +115,7 @@ export function getApplication(id: string): RestaurantApplication | undefined {
   return restaurantApplications.find((a) => a.id === id);
 }
 
-/* ------------------------------------------------- RULE-05: low ratings -- */
+/* ------------------------------------------------- RULE-01: low ratings -- */
 
 export interface AttentionRow {
   restaurantId: string;
@@ -125,7 +125,7 @@ export interface AttentionRow {
 }
 
 /**
- * Restaurants that have tripped RULE-05.
+ * Restaurants that have tripped RULE-01.
  *
  * Counts orders rated below 3★ and keeps those with more than five. A single
  * bad night does not qualify — that is the point of the order threshold.
@@ -154,7 +154,7 @@ export function getImprovementPlans(): ImprovementPlan[] {
   return improvementPlans;
 }
 
-/* --------------------------------------------- RULE-06: fee concession -- */
+/* --------------------------------------------- RULE-02: fee concession -- */
 
 export interface ConcessionRow {
   restaurantId: string;
@@ -165,7 +165,7 @@ export interface ConcessionRow {
 }
 
 /**
- * Restaurants measured against RULE-06.
+ * Restaurants measured against RULE-02.
  *
  * Counts orders rated above 4★ inside a seven-day window; ten or more
  * qualifies. Returns the near-misses too, so the admin can see who is close

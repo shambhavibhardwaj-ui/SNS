@@ -317,7 +317,7 @@ export const recentActivity: ActivityEntry[] = [
   { time: '09:42', kind: 'application', text: 'ABC Kitchen application approved', href: '/admin/restaurants/applications' },
   { time: '09:31', kind: 'application', text: 'New restaurant application submitted — Lantern Wok', href: '/admin/restaurants/applications' },
   { time: '09:20', kind: 'order', text: 'Order #10482 delivered', href: '/admin/orders' },
-  { time: '09:12', kind: 'rule', text: 'Spice House crossed the RULE-05 threshold', href: '/admin/improvement-plans' },
+  { time: '09:12', kind: 'rule', text: 'Spice House crossed the RULE-01 threshold', href: '/admin/improvement-plans' },
   { time: '08:56', kind: 'delivery', text: 'New delivery partner registered — PedalPost', href: '/admin/delivery-partners' },
   { time: '08:41', kind: 'rule', text: 'Forno Rosso reached 10 high-rated orders this week', href: '/admin/fees' },
   { time: '08:27', kind: 'restaurant', text: 'Maíz y Humo moved to Needs Changes', href: '/admin/restaurants/applications' },

@@ -37,7 +37,11 @@ export interface RestaurantApplication {
   phone: string;
   email: string;
   address: string;
-  /** RULE-01 of the brief: a restaurant may register more than one cuisine. */
+  /**
+   * A restaurant may register more than one cuisine, each with its own menu.
+   * The core requirement of the brief — deliberately not given a RULE-nn
+   * number, which is reserved for the four numbered client rules.
+   */
   cuisines: string[];
   description: string;
   operatingHours: string;
@@ -83,8 +87,8 @@ export interface PlatformOrder {
  * table: ratings — one row per rated order.
  *
  * Kept as individual rows rather than per-restaurant averages because both
- * business rules count *orders*, not averages: RULE-05 needs the number of
- * orders below 3★, and RULE-06 needs the number above 4★ inside one week.
+ * business rules count *orders*, not averages: RULE-01 needs the number of
+ * orders below 3★, and RULE-02 needs the number above 4★ inside one week.
  * An average cannot answer either.
  */
 export interface RatedOrder {

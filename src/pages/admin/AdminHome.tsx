@@ -87,7 +87,7 @@ export function AdminHome() {
         />
       </section>
 
-      {/* 5 — LOW RATING ALERTS (RULE-05) */}
+      {/* 5 — LOW RATING ALERTS (RULE-01) */}
       <section className="dh-block">
         <div className="dh-block-head">
           <div>
@@ -129,7 +129,7 @@ export function AdminHome() {
         </div>
       </section>
 
-      {/* 6 — SERVICE FEE CONCESSION (RULE-06) */}
+      {/* 6 — SERVICE FEE CONCESSION (RULE-02) */}
       <section className="dh-block">
         <div className="dh-block-head">
           <div>

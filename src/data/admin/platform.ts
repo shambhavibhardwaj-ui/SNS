@@ -10,7 +10,7 @@ import type {
 /**
  * "Now" for the mock data.
  *
- * Fixed rather than `new Date()` so the rule derivations are stable: RULE-06
+ * Fixed rather than `new Date()` so the rule derivations are stable: RULE-02
  * counts orders inside a seven-day window, and a moving today would silently
  * change which restaurants qualify between page loads.
  */
@@ -85,8 +85,8 @@ const RATING_PROFILES: {
   { id: 'r-harbour-shack', name: 'The Harbour Shack', midRated: 18, lowRated: 1, highRatedThisWeek: 6, highRatedOlder: 70 },
   /*
    * Deliberately all below both thresholds: at most 5 low-rated orders
-   * (RULE-05 needs more than 5) and at most 5 high-rated ones this week
-   * (RULE-06 needs 10). Adding restaurants must not quietly change who the
+   * (RULE-01 needs more than 5) and at most 5 high-rated ones this week
+   * (RULE-02 needs 10). Adding restaurants must not quietly change who the
    * rules catch.
    */
   { id: 'r-pasta-fresca', name: 'Pasta Fresca', midRated: 15, lowRated: 3, highRatedThisWeek: 5, highRatedOlder: 47 },
@@ -117,7 +117,7 @@ export const ratedOrders: RatedOrder[] = RATING_PROFILES.flatMap((p) => {
       ratedAt: daysAgo(3 + (n += 1)),
     });
   }
-  /* Neither rule counts these: RULE-05 wants below 3, RULE-06 above 4. They
+  /* Neither rule counts these: RULE-01 wants below 3, RULE-02 above 4. They
      exist so the ratings distribution has a middle, as real ones do. */
   for (let i = 0; i < p.midRated; i += 1) {
     rows.push({
@@ -129,7 +129,7 @@ export const ratedOrders: RatedOrder[] = RATING_PROFILES.flatMap((p) => {
     });
   }
 
-  /* Inside the seven-day window RULE-06 looks at. */
+  /* Inside the seven-day window RULE-02 looks at. */
   for (let i = 0; i < p.highRatedThisWeek; i += 1) {
     rows.push({
       orderId: `${p.id}-hi-${i}`,
@@ -190,7 +190,7 @@ export const deliveryPartners: DeliveryPartner[] = [
   { id: 'd-4', name: 'NightOwl Couriers', activeDeliveries: 0, completedDeliveries: 94, status: 'Suspended' },
 ];
 
-/** table: improvement_plans — one per restaurant that has tripped RULE-05. */
+/** table: improvement_plans — one per restaurant that has tripped RULE-01. */
 export const improvementPlans: ImprovementPlan[] = [
   { restaurantId: 'r-abc', restaurant: 'ABC Kitchen', status: 'Plan Required', raisedAt: daysAgo(4) },
   { restaurantId: 'r-spice-house', restaurant: 'Spice House', status: 'Plan Submitted', raisedAt: daysAgo(12) },
