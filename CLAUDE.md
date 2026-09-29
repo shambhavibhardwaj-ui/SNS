@@ -184,6 +184,11 @@ one CSS block keyed off `.db[data-theme='plum']`, which redefines the brand toke
 that subtree: anything already written as `var(--teal-700)` resolves to a plum there, and
 the accent that was magenta becomes tangerine. `DashboardShell` takes a `theme` prop, so
 the delivery dashboard and the customer city keep the house teal without a second shell.
+
+The staff rail collapses by section: a `NavGroup` with a title and more than one link
+becomes a `components/ui/animated-dropdown` that opens in flow, and one with a single link
+(or no title, as the delivery rail has) stays flat. The section holding the current page
+opens itself; a choice made by hand sticks until the route moves to a different section.
 Tangerine is light — white on it is about 2.2:1 — so labels sitting on the accent are dark
 plum, not white.
 

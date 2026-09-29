@@ -12,11 +12,18 @@ import {
   AdminOrders, AdminRatings, AdminRestaurants, AdminServiceFees, AdminSettings,
 } from './adminSections';
 
-/** Grouped so fourteen links stay navigable. */
+/**
+ * Sections, not a list.
+ *
+ * A group with several links collapses behind its own heading; a group with
+ * one link is just that link. Twelve links in a single column was the whole
+ * problem.
+ */
 const NAV: NavGroup[] = [
   { title: 'Overview', items: [{ to: '/admin', label: 'Dashboard', Icon: LayoutDashboard }] },
   {
     title: 'Restaurants',
+    Icon: Store,
     items: [
       { to: '/admin/restaurants/applications', label: 'Restaurant Applications', Icon: FileSearch },
       { to: '/admin/restaurants/active', label: 'Active Restaurants', Icon: Store },
@@ -25,6 +32,7 @@ const NAV: NavGroup[] = [
   },
   {
     title: 'Operations',
+    Icon: ClipboardList,
     items: [
       { to: '/admin/orders', label: 'Orders', Icon: ClipboardList },
       { to: '/admin/customers', label: 'Customers', Icon: Users },
@@ -33,6 +41,7 @@ const NAV: NavGroup[] = [
   },
   {
     title: 'Performance',
+    Icon: Star,
     items: [
       { to: '/admin/ratings', label: 'Ratings & Reviews', Icon: Star },
       { to: '/admin/improvement-plans', label: 'Improvement Plans', Icon: TrendingUp },

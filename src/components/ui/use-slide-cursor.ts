@@ -28,6 +28,16 @@ export const SLIDE_ITEM_ATTR = 'data-slide-item';
 export function measureInto(container: HTMLElement, target: HTMLElement): SlidePosition {
   const c = container.getBoundingClientRect();
   const t = target.getBoundingClientRect();
+  /*
+   * A target that is not on screen gets no pill.
+   *
+   * A link inside a closed section still reports its own height — the section
+   * clips it with `overflow: hidden` rather than removing it — so the box
+   * alone does not say whether it is visible. The inherited `visibility` does,
+   * and it flips at the end of the close, which is also when the transition
+   * fires `rest()` again.
+   */
+  if (t.height === 0 || getComputedStyle(target).visibility === 'hidden') return HIDDEN;
   return {
     left: t.left - c.left + container.scrollLeft,
     top: t.top - c.top + container.scrollTop,

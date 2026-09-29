@@ -6801,3 +6801,112 @@ th[data-align='end'] .dt-sort { flex-direction: row-reverse; }
   background: color-mix(in srgb, #f89847 24%, transparent);
   color: #7f1633;
 }
+
+/* --------------------------------------------- collapsible nav sections -- */
+
+.nd {
+  display: block;
+}
+
+.nd + .nd,
+.db-nav-group + .nd,
+.nd + .db-nav-group {
+  margin-top: 6px;
+}
+
+.nd-trigger {
+  /* Same stacking as a link: the pill is absolutely positioned, so a static
+     header would be painted underneath it. */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 13px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  color: var(--teal-200);
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.nd-trigger:hover,
+.nd-trigger[data-active] {
+  color: #fff;
+}
+
+.nd-trigger:focus-visible {
+  outline: 2px solid var(--butter);
+  outline-offset: 2px;
+}
+
+.nd-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.nd-chevron {
+  flex: none;
+  color: var(--teal-300);
+  transition: transform 240ms cubic-bezier(0.22, 0.75, 0.3, 1);
+}
+
+.nd[data-open] .nd-chevron {
+  transform: rotate(180deg);
+}
+
+/*
+ * The open/close. A grid row from `0fr` to `1fr` animates to the content's
+ * real height with nobody measuring it — `height: auto` cannot be transitioned
+ * and a fixed max-height either clips or eases against a number that is wrong.
+ */
+.nd-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 240ms cubic-bezier(0.22, 0.75, 0.3, 1);
+}
+
+.nd[data-open] .nd-panel {
+  grid-template-rows: 1fr;
+}
+
+.nd-inner {
+  overflow: hidden;
+  /* Delayed to the end of the close, so the links stop taking focus only once
+     they are actually out of sight. */
+  visibility: hidden;
+  transition: visibility 0s linear 240ms;
+}
+
+.nd[data-open] .nd-inner {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+/* Children sit in from the section head, so the hierarchy is legible without
+   a second heading above them. */
+.nd-inner .db-nav-item {
+  padding-left: 30px;
+  font-size: 13.5px;
+}
+
+.nd-inner .db-nav-item:first-child {
+  margin-top: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nd-panel,
+  .nd-chevron {
+    transition: none;
+  }
+
+  .nd-inner {
+    transition: none;
+  }
+}

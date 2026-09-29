@@ -5,6 +5,7 @@ import { useAuth } from '../auth/useAuth';
 import { AccountButton } from '../components/auth/AccountButton';
 import { SlideCursor } from '../components/ui/slide-tabs';
 import { SLIDE_ITEM_ATTR, useSlideCursor } from '../components/ui/use-slide-cursor';
+import { AnimatedDropdown } from '../components/ui/animated-dropdown';
 
 export interface DashboardSection {
   to: string;
@@ -15,6 +16,8 @@ export interface DashboardSection {
 export interface NavGroup {
   /** Omitted for a single ungrouped list. */
   title?: string;
+  /** Shown beside the title when the group collapses into a section. */
+  Icon?: LucideIcon;
   items: DashboardSection[];
 }
 
@@ -82,6 +85,43 @@ export function DashboardShell({
    */
   const { setContainer, position, moveTo, rest } = useSlideCursor(current?.to);
 
+  /*
+   * Which section is open.
+   *
+   * Twelve links in one column was the complaint, so a section with more than
+   * one link collapses; a section with exactly one is its own link and needs
+   * no header. The section holding the current page is open by default, and a
+   * choice made by hand sticks — until the route moves to a different section,
+   * at which point the overrides are dropped and the new section opens. That
+   * is why the overrides carry the key they were made under rather than living
+   * in an effect that fights the route.
+   */
+  const groupKey = (group: NavGroup, i: number) => group.title ?? `group-${i}`;
+
+  /*
+   * Which section holds the current page.
+   *
+   * Found from `current` — the longest-matching link — rather than by prefix
+   * matching the groups again. `/admin` is a prefix of every admin route, so a
+   * fresh scan handed the win to whichever group owned it, and the section you
+   * were actually in stayed shut.
+   */
+  const activeKey = current
+    ? (groups
+        .map((group, i) => ({ group, key: groupKey(group, i) }))
+        .find(({ group }) => group.items.includes(current))?.key ?? null)
+    : null;
+
+  const [openState, setOpenState] = useState<{
+    key: string | null;
+    map: Record<string, boolean>;
+  }>({ key: activeKey, map: {} });
+
+  const overrides = openState.key === activeKey ? openState.map : {};
+  const isOpen = (key: string) => overrides[key] ?? key === activeKey;
+  const toggleGroup = (key: string) =>
+    setOpenState({ key: activeKey, map: { ...overrides, [key]: !isOpen(key) } });
+
   /* The shortest nav path is the section's own index — the one link whose
      description belongs in the header rather than on the page. */
   const homeTo = items.reduce((a, b) => (b.to.length < a.to.length ? b : a)).to;
@@ -129,30 +169,59 @@ export function DashboardShell({
           aria-label={`${title} sections`}
           ref={setContainer}
           onMouseLeave={rest}
+          /* A section opening moves every link below it, and the height is a
+             CSS transition, so the pill re-measures when it finishes. */
+          onTransitionEnd={rest}
         >
           <SlideCursor position={position} className="db-nav-cursor" />
 
-          {groups.map((group, i) => (
-            <div key={group.title ?? i} className="db-nav-group">
-              {group.title ? <p className="db-nav-title">{group.title}</p> : null}
-              {group.items.map(({ to, label, Icon }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  end
-                  className={({ isActive }) => `db-nav-item${isActive ? ' is-active' : ''}`}
-                  onClick={() => setDrawerOpen(false)}
-                  onMouseEnter={(e) => moveTo(e.currentTarget)}
-                  /* Names this link for the pill; the hook rests on whichever
-                     one matches the current route. */
-                  {...{ [SLIDE_ITEM_ATTR]: to }}
-                >
-                  <Icon size={16} strokeWidth={2} />
-                  <span>{label}</span>
-                </NavLink>
-              ))}
-            </div>
-          ))}
+          {groups.map((group, i) => {
+            const key = groupKey(group, i);
+
+            const link = ({ to, label, Icon }: DashboardSection) => (
+              <NavLink
+                key={to}
+                to={to}
+                end
+                className={({ isActive }) => `db-nav-item${isActive ? ' is-active' : ''}`}
+                onClick={() => setDrawerOpen(false)}
+                onMouseEnter={(e) => moveTo(e.currentTarget)}
+                /* Names this link for the pill; the hook rests on whichever
+                   one matches the current route. */
+                {...{ [SLIDE_ITEM_ATTR]: to }}
+              >
+                <Icon size={16} strokeWidth={2} />
+                <span>{label}</span>
+              </NavLink>
+            );
+
+            /*
+             * Flat when there is nothing to collapse *under*: a single link
+             * needs no header, and an untitled group has no name to give one
+             * (the delivery rail is one such list, and it is short enough to
+             * read whole).
+             */
+            if (!group.title || group.items.length === 1) {
+              return (
+                <div key={key} className="db-nav-group">
+                  {group.items.map(link)}
+                </div>
+              );
+            }
+
+            return (
+              <AnimatedDropdown
+                key={key}
+                label={group.title}
+                Icon={group.Icon}
+                open={isOpen(key)}
+                active={key === activeKey}
+                onToggle={() => toggleGroup(key)}
+              >
+                {group.items.map(link)}
+              </AnimatedDropdown>
+            );
+          })}
         </nav>
 
         {profile ? (
