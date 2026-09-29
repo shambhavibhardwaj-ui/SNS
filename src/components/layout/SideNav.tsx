@@ -1,14 +1,4 @@
-import {
-  Compass,
-  Heart,
-  Home,
-  PanelLeftClose,
-  PanelLeftOpen,
-  ReceiptText,
-  Search,
-  ShoppingBag,
-  User,
-} from 'lucide-react';
+import { Home, PanelLeftClose, PanelLeftOpen, ShoppingBag } from 'lucide-react';
 import { SlideCursor } from '../ui/slide-tabs';
 import { SLIDE_ITEM_ATTR, useSlideCursor } from '../ui/use-slide-cursor';
 
@@ -35,18 +25,19 @@ interface NavItem {
  * Primary navigation for the city.
  *
  * Collapses to an icon rail so the city gets the width back. Items whose
- * destination has not been built yet are marked `aria-disabled` rather than
+ * destination has not been built yet are left out rather than
  * wired to nothing, so the demo never implies a working feature.
  */
 export function SideNav({ collapsed, onToggle, onHome, onCart = null, cartCount = 0 }: SideNavProps) {
   const items: NavItem[] = [
+    /*
+     * Only what works. Search, Favorites, Orders and Profile were disabled
+     * placeholders, and Explore just repeated Home — six greyed-out rows that
+     * filled the panel and led nowhere. Profile also duplicated the account
+     * button in the top bar. They come back as they are built.
+     */
     { key: 'home', label: 'Home', Icon: Home, onSelect: onHome },
-    { key: 'search', label: 'Search', Icon: Search, onSelect: null },
-    { key: 'explore', label: 'Explore', Icon: Compass, onSelect: onHome },
-    { key: 'favorites', label: 'Favorites', Icon: Heart, onSelect: null },
-    { key: 'orders', label: 'Orders', Icon: ReceiptText, onSelect: null },
     { key: 'cart', label: 'Cart', Icon: ShoppingBag, onSelect: onCart, badge: cartCount },
-    { key: 'profile', label: 'Profile', Icon: User, onSelect: null },
   ];
 
   /*

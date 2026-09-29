@@ -35,6 +35,7 @@ export function DashboardShell({
   kicker,
   groups,
   accent,
+  theme,
   showSearch = false,
   children,
 }: {
@@ -43,6 +44,12 @@ export function DashboardShell({
   kicker: string;
   groups: NavGroup[];
   accent: string;
+  /**
+   * Names a palette for this dashboard. The whole recolour lives in one CSS
+   * block keyed off it, so a section can have its own colours without a second
+   * copy of the shell.
+   */
+  theme?: string;
   showSearch?: boolean;
   children?: ReactNode;
 }) {
@@ -91,7 +98,11 @@ export function DashboardShell({
   }, [drawerOpen]);
 
   return (
-    <div className="db" style={{ '--db-accent': accent } as React.CSSProperties}>
+    <div
+      className="db"
+      data-theme={theme}
+      style={{ '--db-accent': accent } as React.CSSProperties}
+    >
       {drawerOpen ? (
         <div className="db-scrim" onClick={() => setDrawerOpen(false)} role="presentation" />
       ) : null}

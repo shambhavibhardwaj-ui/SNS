@@ -50,7 +50,8 @@ export function AdminDashboard() {
       lede="Monitor restaurant onboarding, platform activity and operations."
       kicker="RestaurantOnboarding"
       groups={NAV}
-      accent="#FF258E"
+      accent="#F89847"
+      theme="plum"
       showSearch
     >
       <Routes>

@@ -179,6 +179,14 @@ accents, and sit outside that budget.
 `index.css` defines two token sets: the brand `--teal-*` / `--butter*` / `--cream*` family,
 and an `--app-*` family for the light ordering and dashboard surfaces.
 
+**The admin section runs its own palette** — Tangerine `#F89847` and Plum `#7F1633`. It is
+one CSS block keyed off `.db[data-theme='plum']`, which redefines the brand tokens inside
+that subtree: anything already written as `var(--teal-700)` resolves to a plum there, and
+the accent that was magenta becomes tangerine. `DashboardShell` takes a `theme` prop, so
+the delivery dashboard and the customer city keep the house teal without a second shell.
+Tangerine is light — white on it is about 2.2:1 — so labels sitting on the accent are dark
+plum, not white.
+
 Fonts: Fraunces (headings), Plus Jakarta Sans and Inter (body), IBM Plex Mono (labels and
 figures).
 
