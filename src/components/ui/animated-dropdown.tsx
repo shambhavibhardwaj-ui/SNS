@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from 'react';
+import { useId, type MouseEvent, type ReactNode } from 'react';
 import { ChevronDown, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +26,8 @@ export interface AnimatedDropdownProps {
   onToggle: () => void;
   /** True when the current page lives inside this section. */
   active?: boolean;
+  /** The header is a row like any other, so the sliding pill can follow it. */
+  onMouseEnter?: (event: MouseEvent<HTMLButtonElement>) => void;
   children: ReactNode;
   className?: string;
 }
@@ -36,6 +38,7 @@ export function AnimatedDropdown({
   open,
   onToggle,
   active,
+  onMouseEnter,
   children,
   className,
 }: AnimatedDropdownProps) {
@@ -50,6 +53,7 @@ export function AnimatedDropdown({
         aria-expanded={open}
         aria-controls={panelId}
         onClick={onToggle}
+        onMouseEnter={onMouseEnter}
       >
         {Icon ? <Icon size={16} strokeWidth={2} aria-hidden="true" /> : null}
         <span className="nd-label">{label}</span>

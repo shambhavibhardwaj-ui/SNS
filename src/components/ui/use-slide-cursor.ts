@@ -123,7 +123,19 @@ export function useSlideCursor(restKey?: string | null) {
     return () => window.removeEventListener('resize', onResize);
   }, [rest]);
 
-  return { setContainer, position, moveTo, rest };
+  /**
+   * Re-measure where the pill already belongs, without disturbing a hover.
+   *
+   * For layout that moved under it — a section opening, a list that grew —
+   * where `rest()` would be wrong, because `rest()` also means "the pointer
+   * has left" and would drag the pill off whatever it is currently following.
+   */
+  const resettle = useCallback(() => {
+    if (hoveringRef.current) return;
+    rest();
+  }, [rest]);
+
+  return { setContainer, position, moveTo, rest, resettle };
 }
 
 function same(a: SlidePosition, b: SlidePosition): boolean {

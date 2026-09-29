@@ -83,7 +83,7 @@ export function DashboardShell({
    * route says is current, so it always ends up telling the truth about where
    * you are.
    */
-  const { setContainer, position, moveTo, rest } = useSlideCursor(current?.to);
+  const { setContainer, position, moveTo, rest, resettle } = useSlideCursor(current?.to);
 
   /*
    * Which section is open.
@@ -169,9 +169,20 @@ export function DashboardShell({
           aria-label={`${title} sections`}
           ref={setContainer}
           onMouseLeave={rest}
-          /* A section opening moves every link below it, and the height is a
-             CSS transition, so the pill re-measures when it finishes. */
-          onTransitionEnd={rest}
+          /*
+           * A section opening moves every link below it, so the pill
+           * re-measures once that height transition finishes.
+           *
+           * Filtered by property, and deliberately not `rest`. Transitions
+           * bubble, and the pill has transitions of its own — so every hover
+           * ended with the pill's own `width` finishing, bubbling up here, and
+           * calling `rest()`, which means "the pointer has left". The pill
+           * jumped back to the current page mid-hover and would not follow the
+           * cursor.
+           */
+          onTransitionEnd={(e) => {
+            if (e.propertyName === 'grid-template-rows') resettle();
+          }}
         >
           <SlideCursor position={position} className="db-nav-cursor" />
 
@@ -217,6 +228,7 @@ export function DashboardShell({
                 open={isOpen(key)}
                 active={key === activeKey}
                 onToggle={() => toggleGroup(key)}
+                onMouseEnter={(e) => moveTo(e.currentTarget)}
               >
                 {group.items.map(link)}
               </AnimatedDropdown>
