@@ -101,101 +101,50 @@ body {
 }
 
 /*
- * The landscape, now behind the whole screen rather than only the map.
+ * The ground the city sits on, and the grid over it.
  *
- * Fixed to the shell rather than the canvas, so panning the town moves it
- * across a horizon that stays put — which is how distance reads.
- *
- * Raw, the photograph would fight everything: it is lime green, white and pale
- * blue against a world meant to be roughly sixty per cent deep teal, and the
- * butter district labels sit where its brightest hills are. A teal gradient
- * composited over it with `color` takes hue from the gradient and shading from
- * the photograph, so the hills keep their form and lose their palette.
+ * This was a photograph of hills for a while. It never belonged: raw it is
+ * lime green, white and pale blue against a world meant to be roughly sixty
+ * per cent deep teal, so it had to be composited under a teal gradient with
+ * `color` to survive at all — and it still cost two megabytes of video to
+ * move. The grid is drawn, so it is in the palette by construction, it moves
+ * for free, and it answers the pointer, which a landscape cannot.
  */
-.fc-backdrop {
-  position: absolute;
-  inset: 0;
+.fc-shell {
+  background-image: linear-gradient(
+    180deg,
+    var(--teal-700) 0%,
+    var(--teal-800) 46%,
+    var(--teal-900) 88%
+  );
+}
+
+/*
+ * Fixed to the shell rather than to the map, so panning the town moves the
+ * city across a field that stays put — the same reason the horizon did.
+ */
+.gp.fc-grid {
+  /* Doubled selector on purpose: `.gp` defines these too, and it is written
+     thousands of lines further down, so a single class here would lose on
+     source order. */
   z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(
-      180deg,
-      var(--teal-500) 0%,
-      var(--teal-600) 34%,
-      var(--teal-800) 72%
-    ),
-    url('./assets/material-hills.jpg');
-  background-size: cover, cover;
-  background-position: center top, center 18%;
-  background-repeat: no-repeat;
-  background-blend-mode: color;
-  opacity: 0.9;
-  /* Contains the tint's blend mode, so it reaches the loop and nothing else. */
-  isolation: isolate;
-}
-
-/*
- * The moving version. Layered over the still rather than replacing it, so the
- * first frame is painted before a byte of video has arrived and there is still
- * a landscape if it never does.
- */
-.fc-backdrop-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Matches the still's framing, so the swap does not shift the horizon. */
-  object-position: center 18%;
-  opacity: 0;
-  transition: opacity 900ms ease;
-}
-
-.fc-backdrop-video[data-ready] {
-  opacity: 1;
-}
-
-/*
- * The same teal treatment the still gets, but as a layer rather than a
- * background blend — `background-blend-mode` composites background layers
- * within one element and cannot reach a `<video>`. `mix-blend-mode` can, and
- * `isolation` above keeps it from reaching the city as well.
- */
-.fc-backdrop-tint {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    var(--teal-500) 0%,
-    var(--teal-600) 34%,
-    var(--teal-800) 72%
-  );
-  mix-blend-mode: color;
-}
-
-/* Settles the lower part back toward flat teal, so the city's slab has
-   somewhere to land and the hills stay where hills belong. */
-.fc-backdrop::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    transparent 46%,
-    var(--teal-900) 92%
-  );
+  /* Deep teal is dark, so the hairlines want more than the component's
+     default 8% of a light ink to read at all. */
+  --gp-line: color-mix(in srgb, var(--butter) 14%, transparent);
+  /* No fade at the foot: the slab lands on this, and a gap would show as a
+     band of bare teal under the city. */
+  mask-image: none;
 }
 
 /* Everything the shell draws sits above it. */
-.fc-shell > *:not(.fc-backdrop) {
+.fc-shell > *:not(.fc-grid) {
   position: relative;
   z-index: 1;
 }
 
-/* The ordering half is a different visual language and covers the landscape
+/* The ordering half is a different visual language and covers the field
    completely, so there is nothing to paint behind it. */
-.fc-shell[data-view='listing'] .fc-backdrop {
+.fc-shell[data-view='listing'] .fc-grid {
   display: none;
 }
 

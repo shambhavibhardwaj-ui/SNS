@@ -1,36 +1,25 @@
 # Third-party assets
 
-## material-hills.jpg
+**There are none.** Every drawn element in the project is original SVG, CSS or
+canvas work.
 
-Backdrop behind the isometric city (`.fc-map-wrap::before` in `src/index.css`).
+## Removed: material-hills.jpg / material-hills.mp4
 
-- **Source:** GetLayers — https://getlayers.ai
-- **Original:** `material-hills.jpg`, 2400×1792, unwatermarked source still
-- **In the repo:** resized to 1600×1194 and re-encoded at quality 45 (~150 KB).
-  It is heavily tinted and partly transparent in use, so compression artefacts
-  do not show.
-## material-hills.mp4
+A photographic landscape (GetLayers, https://getlayers.ai) sat behind the city
+for a few commits and has been taken out again — recover it from `9aa934b` if
+it is ever wanted. It went for three reasons, in order of weight:
 
-The moving version of the same backdrop, layered over the still.
+1. Its licence was never settled. The download carried a copyright line and no
+   explicit grant, so redistribution and modification needed confirming with
+   GetLayers and never were. Nothing else in the project had that question
+   hanging over it.
+2. It was not in the palette. Lime green, white and pale blue against a world
+   meant to be roughly sixty per cent deep teal — it only worked composited
+   under a teal gradient with `background-blend-mode: color`, which is a lot of
+   machinery to hide most of a photograph.
+3. It cost 2.1 MB of H.264 to move, and had to be withheld from narrow screens
+   and from anyone asking for reduced motion, so a third of visitors saw a
+   still anyway.
 
-- **Same source and licence question as above.**
-- **Original:** 2888×2160, 30 fps, 14.07 s, ~26 Mbps, 44 MB, with an audio track
-- **In the repo:** 1280×958, re-encoded with ffmpeg and ~2.1 MB:
-
-  ```bash
-  ffmpeg -i material-hills.mp4 -an -vf "scale=1280:-2" \
-    -c:v libx264 -preset slower -crf 28 -profile:v high \
-    -pix_fmt yuv420p -g 60 -movflags +faststart material-hills.mp4
-  ```
-
-  All 422 frames are kept, so the loop's seam is intact — trimming it would
-  put a visible jump at every pass. The audio is dropped: a background loop
-  has no use for it, and a silent track is what keeps autoplay allowed.
-
-  A VP9/WebM version was tried and came out *larger* (2.4 MB) on this content,
-  so there is only the one file.
-
-**Check the licence before this goes anywhere public.** The download carries a
-copyright line and no explicit grant, so the terms for redistribution,
-modification and commercial use need confirming with GetLayers. Everything else
-in the project is original work.
+`components/ui/grid-pulse` replaced it: drawn on a canvas, in the house colours
+by construction, and it answers the pointer, which a photograph cannot.
