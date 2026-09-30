@@ -36,6 +36,9 @@ export function FoodCityExperience() {
 
   return (
     <div className="fc-shell" id="top" data-view={view.name}>
+      {/* Behind everything: the landscape the city sits in. */}
+      <div className="fc-backdrop" aria-hidden="true" />
+
       <TopBar compact={view.name !== 'city'} />
 
       {view.name === 'city' ? (

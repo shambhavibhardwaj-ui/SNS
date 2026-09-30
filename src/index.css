@@ -90,10 +90,72 @@ body {
 /* ---------------------------------------------------------------- shell -- */
 
 .fc-shell {
+  position: relative;
   display: grid;
   grid-template-rows: auto 1fr;
   height: 100%;
   overflow: hidden;
+  background: var(--teal-900);
+  /* Contains the tint's blend mode, so it cannot reach the city. */
+  isolation: isolate;
+}
+
+/*
+ * The landscape, now behind the whole screen rather than only the map.
+ *
+ * Fixed to the shell rather than the canvas, so panning the town moves it
+ * across a horizon that stays put — which is how distance reads.
+ *
+ * Raw, the photograph would fight everything: it is lime green, white and pale
+ * blue against a world meant to be roughly sixty per cent deep teal, and the
+ * butter district labels sit where its brightest hills are. A teal gradient
+ * composited over it with `color` takes hue from the gradient and shading from
+ * the photograph, so the hills keep their form and lose their palette.
+ */
+.fc-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      180deg,
+      var(--teal-500) 0%,
+      var(--teal-600) 34%,
+      var(--teal-800) 72%
+    ),
+    url('./assets/material-hills.jpg');
+  background-size: cover, cover;
+  background-position: center top, center 18%;
+  background-repeat: no-repeat;
+  background-blend-mode: color;
+  opacity: 0.9;
+}
+
+/* Settles the lower part back toward flat teal, so the city's slab has
+   somewhere to land and the hills stay where hills belong. */
+.fc-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 46%,
+    var(--teal-900) 92%
+  );
+}
+
+/* Everything the shell draws sits above it. */
+.fc-shell > *:not(.fc-backdrop) {
+  position: relative;
+  z-index: 1;
+}
+
+/* The ordering half is a different visual language and covers the landscape
+   completely, so there is nothing to paint behind it. */
+.fc-shell[data-view='listing'] .fc-backdrop {
+  display: none;
 }
 
 /* --------------------------------------------------------------- topbar -- */
@@ -104,7 +166,11 @@ body {
   align-items: center;
   gap: 24px;
   padding: 14px 26px;
-  background: var(--teal-900);
+  /* Translucent, so the landscape runs behind the chrome instead of stopping
+     at the map. Still mostly dark: the labels on it are pale, and a panel that
+     let the bright hills through would lose them. */
+  background: rgb(4 48 47 / 0.78);
+  backdrop-filter: blur(18px) saturate(1.1);
   border-bottom: 1px solid rgb(255 255 255 / 0.08);
   color: var(--cream);
   z-index: 3;
@@ -264,7 +330,10 @@ body {
   grid-template-rows: minmax(0, 1fr) auto;
   flex: 0 0 372px;
   transition: flex-basis 320ms cubic-bezier(0.2, 0.7, 0.3, 1);
-  background: var(--teal-800);
+  /* Deep enough that the pale labels on it hold up wherever the hills are
+     bright behind. Glass that lets too much through loses its own text. */
+  background: rgb(4 48 47 / 0.8);
+  backdrop-filter: blur(22px) saturate(1.15);
   border-right: 1px solid rgb(255 255 255 / 0.07);
   color: var(--cream);
   overflow: hidden;
@@ -775,69 +844,11 @@ body {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
-  background: var(--teal-900);
-  isolation: isolate;
+  /* Transparent: the shell paints the landscape behind everything now. */
+  background: transparent;
   cursor: grab;
   /* The city handles its own panning and pinch-zoom. */
   touch-action: none;
-}
-
-/*
- * The landscape behind the city.
- *
- * Fixed to the viewport rather than the canvas, so panning the city moves the
- * town across a horizon that stays put — which is how distance reads.
- *
- * The photograph is lime green, white and pale blue, and dropped in raw it
- * would fight the teal world and swamp the butter district labels. Two
- * background layers handle that inside this one element: a teal gradient over
- * the image, composited with `color`, which takes its hue from the gradient
- * and its shading from the photograph. The hills keep their form and lose
- * their palette. `background-blend-mode` is contained to the element, unlike
- * `mix-blend-mode`, which would have blended the city itself into the sky.
- */
-.fc-map-wrap::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background-image:
-    linear-gradient(
-      180deg,
-      var(--teal-500) 0%,
-      var(--teal-600) 34%,
-      var(--teal-800) 72%
-    ),
-    url('./assets/material-hills.jpg');
-  background-size: cover, cover;
-  /* Sits the horizon above the slab rather than behind it. */
-  background-position: center top, center 18%;
-  background-repeat: no-repeat;
-  background-blend-mode: color;
-  /* Enough to read as landscape; not so much that it competes with the town. */
-  opacity: 0.9;
-}
-
-/* The ground the slab sits on stays flat colour, so the diorama has somewhere
-   to land and the hills stay where hills belong. */
-.fc-map-wrap::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    transparent 40%,
-    var(--teal-900) 86%
-  );
-}
-
-/* Everything the city draws sits above both. */
-.fc-map-wrap > * {
-  position: relative;
-  z-index: 1;
 }
 
 .fc-map-wrap[data-panning] {
