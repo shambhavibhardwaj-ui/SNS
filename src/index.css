@@ -101,14 +101,12 @@ body {
 }
 
 /*
- * The ground the city sits on, and the grid over it.
+ * The ground the city sits on.
  *
- * This was a photograph of hills for a while. It never belonged: raw it is
- * lime green, white and pale blue against a world meant to be roughly sixty
- * per cent deep teal, so it had to be composited under a teal gradient with
- * `color` to survive at all — and it still cost two megabytes of video to
- * move. The grid is drawn, so it is in the palette by construction, it moves
- * for free, and it answers the pointer, which a landscape cannot.
+ * Flat teal, deepening toward the foot so the diorama's slab has something to
+ * sit against. Two other things have stood here — a photograph of hills and a
+ * pulse grid — and both drew attention the city had already earned. The map
+ * is the picture; this is the wall it hangs on.
  */
 .fc-shell {
   background-image: linear-gradient(
@@ -117,35 +115,6 @@ body {
     var(--teal-800) 46%,
     var(--teal-900) 88%
   );
-}
-
-/*
- * Fixed to the shell rather than to the map, so panning the town moves the
- * city across a field that stays put — the same reason the horizon did.
- */
-.gp.fc-grid {
-  /* Doubled selector on purpose: `.gp` defines these too, and it is written
-     thousands of lines further down, so a single class here would lose on
-     source order. */
-  z-index: 0;
-  /* Deep teal is dark, so the hairlines want more than the component's
-     default 8% of a light ink to read at all. */
-  --gp-line: color-mix(in srgb, var(--butter) 14%, transparent);
-  /* No fade at the foot: the slab lands on this, and a gap would show as a
-     band of bare teal under the city. */
-  mask-image: none;
-}
-
-/* Everything the shell draws sits above it. */
-.fc-shell > *:not(.fc-grid) {
-  position: relative;
-  z-index: 1;
-}
-
-/* The ordering half is a different visual language and covers the field
-   completely, so there is nothing to paint behind it. */
-.fc-shell[data-view='listing'] .fc-grid {
-  display: none;
 }
 
 /* --------------------------------------------------------------- topbar -- */

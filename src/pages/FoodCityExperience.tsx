@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GridPulse } from '@/components/ui/grid-pulse';
 import { FoodCity } from '../components/foodcity/FoodCity';
 import { TopBar } from '../components/layout/TopBar';
 import { RestaurantListing } from './RestaurantListing';
@@ -37,19 +36,6 @@ export function FoodCityExperience() {
 
   return (
     <div className="fc-shell" id="top" data-view={view.name}>
-      {/*
-        Behind everything: a grid that takes colour where the pointer passes.
-        It replaced a photographic landscape — which had to be tinted hard to
-        stop it fighting the palette, and cost two megabytes to move. This is
-        drawn, so it is the house colours by construction and weighs nothing.
-
-        The band runs butter 52° down to soft pink 330°, through salmon — the
-        component subtracts the span, so a positive number turns that way.
-        Going the other way would travel through green and blue, which are not
-        ours to spend, and a first attempt that did came out lime.
-      */}
-      <GridPulse className="fc-grid" hueTop={52} hueSpan={82} cell={30} />
-
       <TopBar compact={view.name !== 'city'} />
 
       {view.name === 'city' ? (
