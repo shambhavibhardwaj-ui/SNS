@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CityBackdrop } from '../components/foodcity/CityBackdrop';
 import { FoodCity } from '../components/foodcity/FoodCity';
 import { TopBar } from '../components/layout/TopBar';
 import { RestaurantListing } from './RestaurantListing';
@@ -37,7 +38,7 @@ export function FoodCityExperience() {
   return (
     <div className="fc-shell" id="top" data-view={view.name}>
       {/* Behind everything: the landscape the city sits in. */}
-      <div className="fc-backdrop" aria-hidden="true" />
+      <CityBackdrop />
 
       <TopBar compact={view.name !== 'city'} />
 

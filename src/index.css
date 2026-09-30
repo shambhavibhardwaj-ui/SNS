@@ -130,6 +130,47 @@ body {
   background-repeat: no-repeat;
   background-blend-mode: color;
   opacity: 0.9;
+  /* Contains the tint's blend mode, so it reaches the loop and nothing else. */
+  isolation: isolate;
+}
+
+/*
+ * The moving version. Layered over the still rather than replacing it, so the
+ * first frame is painted before a byte of video has arrived and there is still
+ * a landscape if it never does.
+ */
+.fc-backdrop-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Matches the still's framing, so the swap does not shift the horizon. */
+  object-position: center 18%;
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+
+.fc-backdrop-video[data-ready] {
+  opacity: 1;
+}
+
+/*
+ * The same teal treatment the still gets, but as a layer rather than a
+ * background blend — `background-blend-mode` composites background layers
+ * within one element and cannot reach a `<video>`. `mix-blend-mode` can, and
+ * `isolation` above keeps it from reaching the city as well.
+ */
+.fc-backdrop-tint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--teal-500) 0%,
+    var(--teal-600) 34%,
+    var(--teal-800) 72%
+  );
+  mix-blend-mode: color;
 }
 
 /* Settles the lower part back toward flat teal, so the city's slab has
