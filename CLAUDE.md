@@ -167,8 +167,10 @@ redraw on every render and the tooltip would disagree with the line under the cu
 ## Design
 
 Two visual languages, on purpose. The city is an illustrated isometric world; everything
-past it — listings, dashboards, analytics — is a clean, practical interface. Original SVG
-throughout, no external art.
+past it — listings, dashboards, analytics — is a clean, practical interface. Every drawn
+element is original SVG. The one exception is the photographic backdrop behind the city,
+which is third-party — see `src/assets/ATTRIBUTION.md`, including the licence question
+that still needs answering.
 
 Brand palette in `src/theme/brand.ts`, mirrored as CSS custom properties: deep teal
 `#0A6A66`, butter `#FFF8B5`, soft pink `#FCA5D1`, hot magenta `#FF258E`, soft salmon

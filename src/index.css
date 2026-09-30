@@ -776,9 +776,68 @@ body {
   min-width: 0;
   overflow: hidden;
   background: var(--teal-900);
+  isolation: isolate;
   cursor: grab;
   /* The city handles its own panning and pinch-zoom. */
   touch-action: none;
+}
+
+/*
+ * The landscape behind the city.
+ *
+ * Fixed to the viewport rather than the canvas, so panning the city moves the
+ * town across a horizon that stays put — which is how distance reads.
+ *
+ * The photograph is lime green, white and pale blue, and dropped in raw it
+ * would fight the teal world and swamp the butter district labels. Two
+ * background layers handle that inside this one element: a teal gradient over
+ * the image, composited with `color`, which takes its hue from the gradient
+ * and its shading from the photograph. The hills keep their form and lose
+ * their palette. `background-blend-mode` is contained to the element, unlike
+ * `mix-blend-mode`, which would have blended the city itself into the sky.
+ */
+.fc-map-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(
+      180deg,
+      var(--teal-500) 0%,
+      var(--teal-600) 34%,
+      var(--teal-800) 72%
+    ),
+    url('./assets/material-hills.jpg');
+  background-size: cover, cover;
+  /* Sits the horizon above the slab rather than behind it. */
+  background-position: center top, center 18%;
+  background-repeat: no-repeat;
+  background-blend-mode: color;
+  /* Enough to read as landscape; not so much that it competes with the town. */
+  opacity: 0.9;
+}
+
+/* The ground the slab sits on stays flat colour, so the diorama has somewhere
+   to land and the hills stay where hills belong. */
+.fc-map-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 40%,
+    var(--teal-900) 86%
+  );
+}
+
+/* Everything the city draws sits above both. */
+.fc-map-wrap > * {
+  position: relative;
+  z-index: 1;
 }
 
 .fc-map-wrap[data-panning] {
