@@ -2,6 +2,7 @@ import { Link, Route, Routes } from 'react-router-dom';
 import { ArrowLeft, Heart, ReceiptText, UserRound } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
+import { GridPulse } from '@/components/ui/grid-pulse';
 import { FoodCityExperience } from './FoodCityExperience';
 import { RestaurantMenu } from './RestaurantMenu';
 import { CartPage } from './CartPage';
@@ -58,6 +59,18 @@ function AccountPage({
 
   return (
     <div className="ac-page">
+      {/*
+        A narrow band inside the brand teal — 168° to 202° — rather than the
+        component's default 270° of spectrum.
+
+        Butter to teal was the first attempt and it was wrong: interpolating
+        between them travels through green, which is not in this palette, and
+        the middle of the field came out lime. Staying inside one hue family
+        cannot wander somewhere it does not belong, and the tint ladder still
+        gives the sweep depth.
+      */}
+      <GridPulse hueTop={168} hueSpan={-34} cell={26} />
+
       <div className="ac-inner">
         <Link to="/customer" className="rl-back">
           <ArrowLeft size={16} strokeWidth={2.2} />
@@ -69,8 +82,9 @@ function AccountPage({
             <Icon size={20} strokeWidth={1.9} />
           </span>
           <div>
-            <h1>{title}</h1>
-            <p>{blurb}</p>
+            {/* `data-grid-avoid` marks the lines the light holds back from. */}
+            <h1 data-grid-avoid className="gp-guard">{title}</h1>
+            <p data-grid-avoid className="gp-guard">{blurb}</p>
           </div>
         </header>
 
@@ -94,7 +108,7 @@ function AccountPage({
             </div>
           </dl>
         ) : (
-          <p className="ac-empty">
+          <p data-grid-avoid className="ac-empty gp-guard">
             Nothing here yet — this fills in once the ordering flow is built.
           </p>
         )}
