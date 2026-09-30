@@ -60,70 +60,123 @@ export const platformRestaurants: AdminRestaurant[] = [
 ];
 
 /**
- * Rating profiles, expanded into one row per rated order below.
+ * Rating profiles — **one row per (restaurant, cuisine)**, expanded into one
+ * row per rated order below.
  *
- * Deliberately includes cases that do NOT qualify — Maíz y Humo sits at four
- * low-rated orders and Anna's at eight high ones this week — so the thresholds
- * are shown to bite rather than merely asserted.
+ * Split by cuisine because that is the grain the menus are already at, and it
+ * is the grain the interesting questions live at. The numbers are arranged so
+ * the two readings of the same rules can be compared honestly:
+ *
+ *   - **Indian Spice House** is the case that makes the argument. Its Mughlai
+ *     menu earns the fee concession while its Biryani menu needs an
+ *     improvement plan, in the same kitchen, in the same week. Read per
+ *     restaurant, it is simultaneously rewarded and penalised, which is not an
+ *     instruction anyone can act on.
+ *   - **Corner Wok** fails per restaurant — seven low-rated orders — but
+ *     neither Cantonese (4) nor Sichuan (3) fails on its own. A plan aimed at
+ *     the whole kitchen would have no target.
+ *   - **Anna's Tiffin Room** earns the concession per restaurant on ten
+ *     high-rated orders this week, but neither of its menus earned it alone
+ *     (5 and 5).
+ *   - **Spice House** cooks one cuisine, so both readings agree. The finer
+ *     grain must not invent a difference where there is none.
+ *
+ * Because both rules count orders, a cuisine can only ever trip a threshold
+ * its restaurant has already tripped — the restaurant's total is the sum. The
+ * finer grain therefore never catches *more*; it says *where*, and it stops a
+ * whole kitchen wearing the consequences of one menu.
  */
 const RATING_PROFILES: {
   id: string;
   name: string;
+  cuisine: string;
   /** Rated 3 or 3.5 — below neither rule's threshold, but real feedback. */
   midRated: number;
   lowRated: number;
   highRatedThisWeek: number;
   highRatedOlder: number;
 }[] = [
-  { id: 'r-abc', name: 'ABC Kitchen', midRated: 14, lowRated: 6, highRatedThisWeek: 2, highRatedOlder: 18 },
-  { id: 'r-spice-house', name: 'Spice House', midRated: 19, lowRated: 8, highRatedThisWeek: 1, highRatedOlder: 12 },
-  { id: 'r-corner-wok', name: 'Corner Wok', midRated: 16, lowRated: 7, highRatedThisWeek: 3, highRatedOlder: 20 },
-  { id: 'r-maiz', name: 'Maíz y Humo', midRated: 21, lowRated: 4, highRatedThisWeek: 2, highRatedOlder: 9 },
-  { id: 'r-indian-spice-house', name: 'Indian Spice House', midRated: 26, lowRated: 1, highRatedThisWeek: 11, highRatedOlder: 140 },
-  { id: 'r-forno-rosso', name: 'Forno Rosso', midRated: 31, lowRated: 2, highRatedThisWeek: 10, highRatedOlder: 165 },
-  { id: 'r-annas-tiffin', name: "Anna's Tiffin Room", midRated: 24, lowRated: 0, highRatedThisWeek: 8, highRatedOlder: 150 },
-  { id: 'r-harbour-shack', name: 'The Harbour Shack', midRated: 18, lowRated: 1, highRatedThisWeek: 6, highRatedOlder: 70 },
-  /*
-   * Deliberately all below both thresholds: at most 5 low-rated orders
-   * (RULE-01 needs more than 5) and at most 5 high-rated ones this week
-   * (RULE-02 needs 10). Adding restaurants must not quietly change who the
-   * rules catch.
-   */
-  { id: 'r-pasta-fresca', name: 'Pasta Fresca', midRated: 15, lowRated: 3, highRatedThisWeek: 5, highRatedOlder: 47 },
-  { id: 'r-casa-verde', name: 'Casa Verde', midRated: 13, lowRated: 3, highRatedThisWeek: 5, highRatedOlder: 38 },
-  { id: 'r-bao-bar', name: 'Bao & Bun Bar', midRated: 17, lowRated: 2, highRatedThisWeek: 5, highRatedOlder: 52 },
-  { id: 'r-tide-table', name: 'Tide Table', midRated: 12, lowRated: 5, highRatedThisWeek: 4, highRatedOlder: 31 },
-  { id: 'r-satvik', name: 'Satvik Rasoi', midRated: 20, lowRated: 1, highRatedThisWeek: 5, highRatedOlder: 61 },
-  { id: 'r-ahimsa', name: 'Ahimsa Bhojanalay', midRated: 9, lowRated: 0, highRatedThisWeek: 5, highRatedOlder: 29 },
-  { id: 'r-jain-thali', name: 'Shravak Thali House', midRated: 7, lowRated: 2, highRatedThisWeek: 3, highRatedOlder: 17 },
-  { id: 'r-leaf-bowl', name: 'Leaf & Bowl', midRated: 22, lowRated: 3, highRatedThisWeek: 5, highRatedOlder: 74 },
-  { id: 'r-green-grain', name: 'Green Grain Kitchen', midRated: 11, lowRated: 5, highRatedThisWeek: 4, highRatedOlder: 33 },
-  { id: 'r-macaron', name: 'Maison Macaron', midRated: 28, lowRated: 1, highRatedThisWeek: 5, highRatedOlder: 96 },
-  { id: 'r-scoop-street', name: 'Scoop Street', midRated: 23, lowRated: 2, highRatedThisWeek: 4, highRatedOlder: 83 },
-  { id: 'r-idli-express', name: 'Idli Express', midRated: 18, lowRated: 4, highRatedThisWeek: 5, highRatedOlder: 58 },
+  /* Concentrated fault: the North Indian menu carries all six. */
+  { id: 'r-abc', name: 'ABC Kitchen', cuisine: 'North Indian', midRated: 9, lowRated: 6, highRatedThisWeek: 2, highRatedOlder: 12 },
+  { id: 'r-abc', name: 'ABC Kitchen', cuisine: 'Biryani', midRated: 5, lowRated: 0, highRatedThisWeek: 0, highRatedOlder: 6 },
+
+  /* One cuisine, so both readings agree. */
+  { id: 'r-spice-house', name: 'Spice House', cuisine: 'North Indian', midRated: 19, lowRated: 8, highRatedThisWeek: 1, highRatedOlder: 12 },
+
+  /* Diffuse fault: seven across the kitchen, neither menu above five. */
+  { id: 'r-corner-wok', name: 'Corner Wok', cuisine: 'Cantonese', midRated: 9, lowRated: 4, highRatedThisWeek: 2, highRatedOlder: 12 },
+  { id: 'r-corner-wok', name: 'Corner Wok', cuisine: 'Sichuan', midRated: 7, lowRated: 3, highRatedThisWeek: 1, highRatedOlder: 8 },
+
+  { id: 'r-maiz', name: 'Maíz y Humo', cuisine: 'Tex-Mex', midRated: 12, lowRated: 3, highRatedThisWeek: 1, highRatedOlder: 5 },
+  { id: 'r-maiz', name: 'Maíz y Humo', cuisine: 'BBQ & Grill', midRated: 9, lowRated: 1, highRatedThisWeek: 1, highRatedOlder: 4 },
+
+  /* Rewarded and penalised at once, until you look per cuisine. */
+  { id: 'r-indian-spice-house', name: 'Indian Spice House', cuisine: 'North Indian', midRated: 10, lowRated: 0, highRatedThisWeek: 0, highRatedOlder: 60 },
+  { id: 'r-indian-spice-house', name: 'Indian Spice House', cuisine: 'Mughlai', midRated: 10, lowRated: 1, highRatedThisWeek: 11, highRatedOlder: 60 },
+  { id: 'r-indian-spice-house', name: 'Indian Spice House', cuisine: 'Biryani', midRated: 6, lowRated: 6, highRatedThisWeek: 0, highRatedOlder: 20 },
+
+  { id: 'r-forno-rosso', name: 'Forno Rosso', cuisine: 'Pizza', midRated: 31, lowRated: 2, highRatedThisWeek: 10, highRatedOlder: 165 },
+
+  /* Earns the concession as a restaurant; neither menu earned it alone. */
+  { id: 'r-annas-tiffin', name: "Anna's Tiffin Room", cuisine: 'South Indian', midRated: 12, lowRated: 0, highRatedThisWeek: 5, highRatedOlder: 75 },
+  { id: 'r-annas-tiffin', name: "Anna's Tiffin Room", cuisine: 'Dosa & Idli', midRated: 12, lowRated: 0, highRatedThisWeek: 5, highRatedOlder: 75 },
+
+  { id: 'r-harbour-shack', name: 'The Harbour Shack', cuisine: 'Seafood', midRated: 11, lowRated: 1, highRatedThisWeek: 4, highRatedOlder: 45 },
+  { id: 'r-harbour-shack', name: 'The Harbour Shack', cuisine: 'Grill', midRated: 7, lowRated: 0, highRatedThisWeek: 2, highRatedOlder: 25 },
+
+  { id: 'r-pasta-fresca', name: 'Pasta Fresca', cuisine: 'Italian', midRated: 15, lowRated: 3, highRatedThisWeek: 5, highRatedOlder: 47 },
+  { id: 'r-casa-verde', name: 'Casa Verde', cuisine: 'Mexican', midRated: 13, lowRated: 3, highRatedThisWeek: 5, highRatedOlder: 38 },
+
+  { id: 'r-bao-bar', name: 'Bao & Bun Bar', cuisine: 'Dim Sum', midRated: 10, lowRated: 1, highRatedThisWeek: 3, highRatedOlder: 30 },
+  { id: 'r-bao-bar', name: 'Bao & Bun Bar', cuisine: 'Cantonese', midRated: 7, lowRated: 1, highRatedThisWeek: 2, highRatedOlder: 22 },
+
+  { id: 'r-tide-table', name: 'Tide Table', cuisine: 'Coastal', midRated: 7, lowRated: 3, highRatedThisWeek: 2, highRatedOlder: 18 },
+  { id: 'r-tide-table', name: 'Tide Table', cuisine: 'Seafood', midRated: 5, lowRated: 2, highRatedThisWeek: 2, highRatedOlder: 13 },
+
+  { id: 'r-satvik', name: 'Satvik Rasoi', cuisine: 'Pure Veg', midRated: 12, lowRated: 1, highRatedThisWeek: 3, highRatedOlder: 36 },
+  { id: 'r-satvik', name: 'Satvik Rasoi', cuisine: 'Thali', midRated: 8, lowRated: 0, highRatedThisWeek: 2, highRatedOlder: 25 },
+
+  { id: 'r-ahimsa', name: 'Ahimsa Bhojanalay', cuisine: 'Jain', midRated: 5, lowRated: 0, highRatedThisWeek: 3, highRatedOlder: 17 },
+  { id: 'r-ahimsa', name: 'Ahimsa Bhojanalay', cuisine: 'Gujarati', midRated: 4, lowRated: 0, highRatedThisWeek: 2, highRatedOlder: 12 },
+
+  { id: 'r-jain-thali', name: 'Shravak Thali House', cuisine: 'Jain', midRated: 7, lowRated: 2, highRatedThisWeek: 3, highRatedOlder: 17 },
+
+  { id: 'r-leaf-bowl', name: 'Leaf & Bowl', cuisine: 'Salads & Bowls', midRated: 13, lowRated: 2, highRatedThisWeek: 3, highRatedOlder: 44 },
+  { id: 'r-leaf-bowl', name: 'Leaf & Bowl', cuisine: 'Plant-Based', midRated: 9, lowRated: 1, highRatedThisWeek: 2, highRatedOlder: 30 },
+
+  { id: 'r-green-grain', name: 'Green Grain Kitchen', cuisine: 'Salads & Bowls', midRated: 11, lowRated: 5, highRatedThisWeek: 4, highRatedOlder: 33 },
+
+  { id: 'r-macaron', name: 'Maison Macaron', cuisine: 'Desserts', midRated: 17, lowRated: 1, highRatedThisWeek: 3, highRatedOlder: 58 },
+  { id: 'r-macaron', name: 'Maison Macaron', cuisine: 'Bakery', midRated: 11, lowRated: 0, highRatedThisWeek: 2, highRatedOlder: 38 },
+
+  { id: 'r-scoop-street', name: 'Scoop Street', cuisine: 'Ice Cream', midRated: 23, lowRated: 2, highRatedThisWeek: 4, highRatedOlder: 83 },
+
+  { id: 'r-idli-express', name: 'Idli Express', cuisine: 'Dosa & Idli', midRated: 11, lowRated: 3, highRatedThisWeek: 3, highRatedOlder: 35 },
+  { id: 'r-idli-express', name: 'Idli Express', cuisine: 'South Indian', midRated: 7, lowRated: 1, highRatedThisWeek: 2, highRatedOlder: 23 },
 ];
 
-/** table: ratings — one row per rated order. */
+/** table: ratings — one row per rated order, carrying the menu it came from. */
 export const ratedOrders: RatedOrder[] = RATING_PROFILES.flatMap((p) => {
   const rows: RatedOrder[] = [];
+  const slug = p.cuisine.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const base = { restaurantId: p.id, restaurant: p.name, cuisine: p.cuisine };
   let n = 0;
 
   for (let i = 0; i < p.lowRated; i += 1) {
     rows.push({
-      orderId: `${p.id}-low-${i}`,
-      restaurantId: p.id,
-      restaurant: p.name,
+      ...base,
+      orderId: `${p.id}-${slug}-low-${i}`,
       rating: i % 2 === 0 ? 2 : 1,
       ratedAt: daysAgo(3 + (n += 1)),
     });
   }
+
   /* Neither rule counts these: RULE-01 wants below 3, RULE-02 above 4. They
      exist so the ratings distribution has a middle, as real ones do. */
   for (let i = 0; i < p.midRated; i += 1) {
     rows.push({
-      orderId: `${p.id}-mid-${i}`,
-      restaurantId: p.id,
-      restaurant: p.name,
+      ...base,
+      orderId: `${p.id}-${slug}-mid-${i}`,
       rating: i % 2 === 0 ? 3 : 3.5,
       ratedAt: daysAgo(2 + (i % 50)),
     });
@@ -132,23 +185,23 @@ export const ratedOrders: RatedOrder[] = RATING_PROFILES.flatMap((p) => {
   /* Inside the seven-day window RULE-02 looks at. */
   for (let i = 0; i < p.highRatedThisWeek; i += 1) {
     rows.push({
-      orderId: `${p.id}-hi-${i}`,
-      restaurantId: p.id,
-      restaurant: p.name,
+      ...base,
+      orderId: `${p.id}-${slug}-hi-${i}`,
       rating: i % 3 === 0 ? 5 : 4.5,
       ratedAt: daysAgo(i % 7),
     });
   }
+
   /* Outside it, so they must not count toward the concession. */
   for (let i = 0; i < p.highRatedOlder; i += 1) {
     rows.push({
-      orderId: `${p.id}-old-${i}`,
-      restaurantId: p.id,
-      restaurant: p.name,
+      ...base,
+      orderId: `${p.id}-${slug}-old-${i}`,
       rating: 4.5,
       ratedAt: daysAgo(8 + (i % 60)),
     });
   }
+
   return rows;
 });
 

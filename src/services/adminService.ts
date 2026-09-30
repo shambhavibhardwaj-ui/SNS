@@ -197,6 +197,184 @@ export function getConcessionCandidates(): ConcessionRow[] {
     .sort((a, b) => b.qualifyingOrders - a.qualifyingOrders);
 }
 
+/* ------------------------------------------- the same rules, per cuisine -- */
+
+/**
+ * RULE-01 and RULE-02 again, counted per (restaurant, cuisine) instead of per
+ * restaurant.
+ *
+ * **This is an extension, not a replacement.** The client's rules are written
+ * about a restaurant, and the functions above still answer them exactly as
+ * written; these sit alongside so the two readings can be compared before
+ * anyone proposes changing the rules.
+ *
+ * Why it is worth comparing: a restaurant runs a separate menu per cuisine, so
+ * "this restaurant is rated below 3★ on more than 5 orders" can mean two quite
+ * different things — one menu is bad, or every menu is mediocre. Only the
+ * second deserves a plan aimed at the whole kitchen.
+ *
+ * Note the direction. Both rules count orders, and a restaurant's count is the
+ * sum of its cuisines', so a cuisine can only trip a threshold its restaurant
+ * has already tripped. The finer grain never catches more — it localises, and
+ * it stops a kitchen being penalised for one menu.
+ */
+
+export interface CuisineAttentionRow extends AttentionRow {
+  cuisine: string;
+  averageRating: number;
+}
+
+/** Menus rated below 3★ on more than five orders. */
+export function getCuisinesRequiringAttention(): CuisineAttentionRow[] {
+  const counts = new Map<string, { id: string; name: string; cuisine: string; ratings: number[] }>();
+
+  for (const r of ratedOrders) {
+    if (r.rating >= LOW_RATING_BELOW) continue;
+    const key = `${r.restaurantId}::${r.cuisine}`;
+    const entry = counts.get(key) ?? {
+      id: r.restaurantId,
+      name: r.restaurant,
+      cuisine: r.cuisine,
+      ratings: [],
+    };
+    entry.ratings.push(r.rating);
+    counts.set(key, entry);
+  }
+
+  return [...counts.values()]
+    .filter((v) => v.ratings.length > LOW_RATING_MIN_ORDERS)
+    .map((v) => ({
+      restaurantId: v.id,
+      restaurant: v.name,
+      cuisine: v.cuisine,
+      lowRatedOrders: v.ratings.length,
+      averageRating: Number(
+        (v.ratings.reduce((sum, n) => sum + n, 0) / v.ratings.length).toFixed(2),
+      ),
+      plan: improvementPlans.find((p) => p.restaurantId === v.id) ?? null,
+    }))
+    .sort((a, b) => b.lowRatedOrders - a.lowRatedOrders);
+}
+
+export interface CuisineConcessionRow extends ConcessionRow {
+  cuisine: string;
+}
+
+/** Menus rated above 4★ on ten orders inside the seven-day window. */
+export function getCuisineConcessionCandidates(): CuisineConcessionRow[] {
+  const cutoff = new Date(MOCK_TODAY.getTime() - HIGH_RATING_WINDOW_DAYS * 86_400_000);
+  const byMenu = new Map<string, { id: string; name: string; cuisine: string; ratings: number[] }>();
+
+  for (const r of ratedOrders) {
+    if (r.rating <= HIGH_RATING_ABOVE) continue;
+    if (new Date(r.ratedAt) < cutoff) continue;
+    const key = `${r.restaurantId}::${r.cuisine}`;
+    const entry = byMenu.get(key) ?? {
+      id: r.restaurantId,
+      name: r.restaurant,
+      cuisine: r.cuisine,
+      ratings: [],
+    };
+    entry.ratings.push(r.rating);
+    byMenu.set(key, entry);
+  }
+
+  return [...byMenu.values()]
+    .map((v) => ({
+      restaurantId: v.id,
+      restaurant: v.name,
+      cuisine: v.cuisine,
+      qualifyingOrders: v.ratings.length,
+      averageRating: v.ratings.reduce((sum, n) => sum + n, 0) / v.ratings.length,
+      eligible: v.ratings.length >= HIGH_RATING_MIN_ORDERS,
+    }))
+    .sort((a, b) => b.qualifyingOrders - a.qualifyingOrders);
+}
+
+/**
+ * Where the two readings disagree.
+ *
+ * The honest output of the comparison, and the thing worth taking to the
+ * client: every restaurant a rule catches whose menus, read separately, say
+ * something different.
+ */
+export interface GrainDifference {
+  restaurantId: string;
+  restaurant: string;
+  rule: 'RULE-01' | 'RULE-02';
+  /** What the restaurant-level count was. */
+  restaurantCount: number;
+  /** The same orders split across the restaurant's menus. */
+  perCuisine: { cuisine: string; count: number }[];
+  /** Cuisines that trip the rule on their own. None means the fault is spread. */
+  cuisinesTripped: string[];
+}
+
+export function getGrainDifferences(): GrainDifference[] {
+  const out: GrainDifference[] = [];
+
+  const cuisineAttention = getCuisinesRequiringAttention();
+  for (const row of getRestaurantsRequiringAttention()) {
+    const perCuisine = countBy(
+      ratedOrders.filter(
+        (r) => r.restaurantId === row.restaurantId && r.rating < LOW_RATING_BELOW,
+      ),
+    );
+    const tripped = cuisineAttention
+      .filter((c) => c.restaurantId === row.restaurantId)
+      .map((c) => c.cuisine);
+
+    if (perCuisine.length > 1 || tripped.length !== 1) {
+      out.push({
+        restaurantId: row.restaurantId,
+        restaurant: row.restaurant,
+        rule: 'RULE-01',
+        restaurantCount: row.lowRatedOrders,
+        perCuisine,
+        cuisinesTripped: tripped,
+      });
+    }
+  }
+
+  const cutoff = new Date(MOCK_TODAY.getTime() - HIGH_RATING_WINDOW_DAYS * 86_400_000);
+  const cuisineConcessions = getCuisineConcessionCandidates().filter((c) => c.eligible);
+
+  for (const row of getConcessionCandidates().filter((c) => c.eligible)) {
+    const perCuisine = countBy(
+      ratedOrders.filter(
+        (r) =>
+          r.restaurantId === row.restaurantId &&
+          r.rating > HIGH_RATING_ABOVE &&
+          new Date(r.ratedAt) >= cutoff,
+      ),
+    );
+    const tripped = cuisineConcessions
+      .filter((c) => c.restaurantId === row.restaurantId)
+      .map((c) => c.cuisine);
+
+    if (perCuisine.length > 1 || tripped.length !== 1) {
+      out.push({
+        restaurantId: row.restaurantId,
+        restaurant: row.restaurant,
+        rule: 'RULE-02',
+        restaurantCount: row.qualifyingOrders,
+        perCuisine,
+        cuisinesTripped: tripped,
+      });
+    }
+  }
+
+  return out;
+}
+
+function countBy(rows: { cuisine: string }[]): { cuisine: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const r of rows) counts.set(r.cuisine, (counts.get(r.cuisine) ?? 0) + 1);
+  return [...counts.entries()]
+    .map(([cuisine, count]) => ({ cuisine, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
 /* -------------------------------------------------- performance, misc -- */
 
 export interface PerformanceRow {

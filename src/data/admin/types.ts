@@ -95,6 +95,16 @@ export interface RatedOrder {
   orderId: string;
   restaurantId: string;
   restaurant: string;
+  /**
+   * Which of the restaurant's cuisines the order came from.
+   *
+   * A restaurant serves several, each with its own menu, so a rating belongs
+   * to a menu and not just to a kitchen. Without this the rules can only ask
+   * "is this restaurant bad?" when the useful question is "which of its menus
+   * is?". It is the cuisine's name, matching one entry in the restaurant's
+   * `cuisines`; in Supabase it becomes an FK to the menu.
+   */
+  cuisine: string;
   rating: number;
   ratedAt: string;
 }

@@ -38,6 +38,9 @@ import { MOCK_TODAY, platformRestaurants, ratedOrders } from '../data/admin/plat
 import { restaurantApplications } from '../data/admin/applications';
 import {
   getConcessionCandidates,
+  getCuisineConcessionCandidates,
+  getCuisinesRequiringAttention,
+  getGrainDifferences,
   getRestaurantsRequiringAttention,
   HIGH_RATING_ABOVE,
   HIGH_RATING_MIN_ORDERS,
@@ -45,6 +48,9 @@ import {
   LOW_RATING_BELOW,
   LOW_RATING_MIN_ORDERS,
   type ConcessionRow,
+  type CuisineAttentionRow,
+  type CuisineConcessionRow,
+  type GrainDifference,
 } from './adminService';
 import {
   DELIVERY_MODEL_LABEL,
@@ -851,12 +857,17 @@ export interface RuleMonitor {
   improvement: {
     threshold: { below: number; minOrders: number };
     rows: { restaurantId: string; restaurant: string; lowRatedOrders: number; averageRating: number; planStatus: string }[];
+    /** The same rule counted per menu. An extension, not the client's rule. */
+    byCuisine: CuisineAttentionRow[];
   };
   concession: {
     threshold: { above: number; minOrders: number; windowDays: number };
     rows: ConcessionRow[];
     eligible: ConcessionRow[];
+    byCuisine: CuisineConcessionRow[];
   };
+  /** Restaurants where reading per menu says something different. */
+  differences: GrainDifference[];
 }
 
 /**
@@ -886,6 +897,7 @@ export function getBusinessRuleMonitor(): RuleMonitor {
     improvement: {
       threshold: { below: LOW_RATING_BELOW, minOrders: LOW_RATING_MIN_ORDERS },
       rows: attention,
+      byCuisine: getCuisinesRequiringAttention(),
     },
     concession: {
       threshold: {
@@ -895,7 +907,9 @@ export function getBusinessRuleMonitor(): RuleMonitor {
       },
       rows: candidates,
       eligible: candidates.filter((c) => c.eligible),
+      byCuisine: getCuisineConcessionCandidates().filter((c) => c.eligible),
     },
+    differences: getGrainDifferences(),
   };
 }
 

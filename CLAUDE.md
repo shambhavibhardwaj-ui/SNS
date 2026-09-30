@@ -42,6 +42,34 @@ These four numbers are the whole `RULE-nn` namespace — there is no RULE-05 or 
 nothing else in the codebase should claim one. The requirement that a restaurant may carry
 several cuisines with separate menus is core, but it is not a numbered rule.
 
+### The same rules read per menu — a proposal, not a change
+
+`ratings` carries the cuisine the order came from, so RULE-01 and RULE-02 can also be
+counted per **(restaurant, cuisine)**: `getCuisinesRequiringAttention()` and
+`getCuisineConcessionCandidates()` in `adminService`, shown on the analytics page under
+"The same two rules, read per menu".
+
+**The client's rules are untouched.** They are written about a restaurant and the original
+functions still answer them exactly as written. The finer reading sits alongside so the two
+can be compared before anyone proposes rewriting anything — `getGrainDifferences()` returns
+every restaurant where they disagree.
+
+Why it is worth comparing, from the seed as it stands:
+
+- **Indian Spice House** — its Mughlai menu earns the concession while its Biryani menu
+  needs a plan, in the same week. Read per restaurant it is flagged and rewarded at once,
+  which is not an instruction anyone can act on.
+- **Corner Wok** — seven low-rated orders as a restaurant, but Cantonese has four and
+  Sichuan three. A plan aimed at the kitchen has no target.
+- **Anna's Tiffin Room** — earns the concession on ten high-rated orders, but neither menu
+  earned it alone (five and five).
+- **Spice House** — one cuisine, so both readings agree. The finer grain must not invent a
+  difference where there is none.
+
+Both rules count orders and a restaurant's count is the sum of its menus', so a menu can
+only trip a threshold its restaurant already tripped. Reading per menu never catches
+*more* — it says *where*, and it stops a kitchen carrying the consequence of one menu.
+
 ## AI features
 
 - **Improvement-plan draft:** when RULE-01 fires, read recent customer feedback and draft a plan. The restaurant edits and submits it — never auto-submit.

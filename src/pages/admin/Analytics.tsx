@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   AlertTriangle, ArrowUpRight, BadgePercent, Bike, ClipboardList, Clock,
-  Download, FileSearch, RotateCcw, Star, Store, TrendingUp, Users, UtensilsCrossed,
+  Download, FileSearch, Layers, RotateCcw, Star, Store, TrendingUp, Users, UtensilsCrossed,
 } from 'lucide-react';
 import { DataTable, StatusPill, type Column } from '../../components/dashboard/DataTable';
 import { BarChart } from '../../components/analytics/BarChart';
@@ -642,6 +642,114 @@ export function AdminAnalytics() {
             {rules.concession.eligible.length} of {rules.concession.rows.length} restaurants meet the
             condition. The concession amount itself is not shown because the client has not specified
             it — inventing a percentage here would put a number in front of an admin that nobody agreed.
+          </p>
+        </div>
+
+        {/* The extension: the same two rules, counted per menu. */}
+        <div className="an-rule is-proposal">
+          <div className="an-rule-head">
+            <Layers size={16} aria-hidden="true" />
+            <h4>
+              The same two rules, read per menu
+              <span className="an-rule-tag">Proposal — not the client&rsquo;s rule</span>
+            </h4>
+          </div>
+
+          <p className="an-rule-intro">
+            A restaurant runs a separate menu for each cuisine it serves, so &ldquo;rated below{' '}
+            {rules.improvement.threshold.below}★ on more than {rules.improvement.threshold.minOrders}{' '}
+            orders&rdquo; can mean one menu is bad or every menu is mediocre — and only the second
+            deserves a plan aimed at the whole kitchen. Counting the same orders per menu says
+            <em> which</em>. The rules above are unchanged and still answer the client&rsquo;s
+            question; this is here so the two can be compared before anyone proposes rewriting them.
+          </p>
+
+          <div className="an-two">
+            <div>
+              <h5 className="an-rule-sub">Menus needing an improvement plan</h5>
+              {rules.improvement.byCuisine.length ? (
+                <ul className="an-rule-rows">
+                  {rules.improvement.byCuisine.map((r) => (
+                    <li key={`${r.restaurantId}-${r.cuisine}`}>
+                      <div>
+                        <strong>
+                          {r.restaurant}
+                          <span className="an-rule-menu">{r.cuisine}</span>
+                        </strong>
+                        <span>
+                          {r.lowRatedOrders} qualifying orders · average {r.averageRating.toFixed(1)}★
+                        </span>
+                      </div>
+                      <Link to="/admin/improvement-plans" className="an-rule-cta">Plan</Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="an-empty">No menu currently meets this condition.</p>
+              )}
+            </div>
+
+            <div>
+              <h5 className="an-rule-sub">Menus earning a fee concession</h5>
+              {rules.concession.byCuisine.length ? (
+                <ul className="an-rule-rows">
+                  {rules.concession.byCuisine.map((r) => (
+                    <li key={`${r.restaurantId}-${r.cuisine}`}>
+                      <div>
+                        <strong>
+                          {r.restaurant}
+                          <span className="an-rule-menu">{r.cuisine}</span>
+                        </strong>
+                        <span>
+                          {r.qualifyingOrders} qualifying orders · average {r.averageRating.toFixed(1)}★
+                        </span>
+                      </div>
+                      <Link to="/admin/fees" className="an-rule-cta">Fees</Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="an-empty">No menu currently meets this condition.</p>
+              )}
+            </div>
+          </div>
+
+          <h5 className="an-rule-sub an-rule-sub-wide">Where the two readings disagree</h5>
+          {rules.differences.length ? (
+            <ul className="an-grain">
+              {rules.differences.map((d) => (
+                <li key={`${d.rule}-${d.restaurantId}`}>
+                  <p className="an-grain-head">
+                    <span className="an-grain-rule">{d.rule}</span>
+                    <strong>{d.restaurant}</strong>
+                    <span className="an-grain-count">
+                      {d.restaurantCount} as a restaurant
+                    </span>
+                  </p>
+                  <p className="an-grain-split">
+                    {d.perCuisine.map((c) => (
+                      <span key={c.cuisine} data-tripped={d.cuisinesTripped.includes(c.cuisine) || undefined}>
+                        {c.cuisine} <strong>{c.count}</strong>
+                      </span>
+                    ))}
+                  </p>
+                  <p className="an-grain-note">
+                    {d.cuisinesTripped.length === 0
+                      ? 'No single menu reaches the threshold on its own — the fault is spread across the kitchen, and a plan aimed at one menu would have no target.'
+                      : `Only ${d.cuisinesTripped.join(' and ')} reaches it. The rest of the kitchen is not at fault, and would carry the consequence anyway.`}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="an-empty">Both readings agree on every restaurant.</p>
+          )}
+
+          <p className="dh-inline-note">
+            Both rules count orders, and a restaurant&rsquo;s count is the sum of its menus&rsquo;, so
+            a menu can only ever trip a threshold its restaurant has already tripped. Reading per menu
+            never catches more — it says where, and it stops a kitchen carrying the consequence of one
+            menu. Whether that is the rule the client wants is their decision, not ours.
           </p>
         </div>
       </section>

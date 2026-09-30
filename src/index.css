@@ -7021,3 +7021,144 @@ th[data-align='end'] .dt-sort { flex-direction: row-reverse; }
     transition: none;
   }
 }
+
+/* ------------------------------------------- rules read per menu (extension) -- */
+
+/* Marked apart from the rules above it: those answer the client's question,
+   this is a proposal about changing the question. */
+.an-rule.is-proposal {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--teal-600) 34%, var(--app-line));
+  background: color-mix(in srgb, var(--teal-600) 3%, var(--app-surface));
+}
+
+.an-rule-tag {
+  margin-left: 10px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--teal-600) 14%, transparent);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--teal-800);
+}
+
+.an-rule-intro {
+  margin: 0 0 18px;
+  max-width: 78ch;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--app-ink-soft);
+}
+
+.an-rule-intro em {
+  font-style: italic;
+  color: var(--app-ink);
+}
+
+.an-rule-sub {
+  margin: 0 0 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--app-ink-faint);
+}
+
+.an-rule-sub-wide {
+  margin-top: 26px;
+}
+
+/* The menu name, riding along with the restaurant it belongs to. */
+.an-rule-menu {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--teal-600) 12%, transparent);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--teal-800);
+}
+
+/* ---------------------------------------------------- the disagreements -- */
+
+.an-grain {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.an-grain li {
+  padding: 14px 16px;
+  border: 1px solid var(--app-line);
+  border-radius: 14px;
+  background: var(--app-surface);
+}
+
+.an-grain-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 9px;
+  margin: 0;
+}
+
+.an-grain-rule {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--app-ink-faint);
+}
+
+.an-grain-head strong {
+  font-size: 14px;
+  color: var(--app-ink);
+}
+
+.an-grain-count {
+  margin-left: auto;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--app-ink-soft);
+}
+
+.an-grain-split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 11px 0 0;
+}
+
+.an-grain-split span {
+  padding: 4px 10px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  font-size: 11.5px;
+  color: var(--app-ink-soft);
+}
+
+.an-grain-split span strong {
+  margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+  color: var(--app-ink);
+}
+
+/* The menu that actually trips the threshold, where one does. */
+.an-grain-split span[data-tripped] {
+  border-color: color-mix(in srgb, var(--magenta) 38%, transparent);
+  background: color-mix(in srgb, var(--magenta) 9%, transparent);
+  color: var(--app-ink);
+}
+
+.an-grain-note {
+  margin: 11px 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--app-ink-faint);
+}
