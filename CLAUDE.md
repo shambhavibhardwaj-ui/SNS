@@ -239,9 +239,16 @@ there is no third-party art left in the project.
 The sign-in screen's left panel is `components/ui/cloud-sky` — a WebGL sky of drifting
 clouds, adapted from an Originkit component. It replaced a flat SVG skyline that repeated
 the real isometric city badly. It stops for `prefers-reduced-motion`, paints one frame and
-pauses in a hidden tab, and falls back to flat teal where WebGL is unavailable. **Do not add
-`loseContext()` to its cleanup** — StrictMode runs effects twice, `getContext` returns the
-same context object per canvas, and that call kills the context the second run draws into.
+pauses in a hidden tab, and falls back to its flat background colour where WebGL is
+unavailable. **Do not add `loseContext()` to its cleanup** — StrictMode runs effects twice,
+`getContext` returns the same context object per canvas, and that call kills the context the
+second run draws into.
+
+**That sky is sky blue (`#0075FF` to `#B4D2F0`), and it is the one deliberate exception to
+the palette** — asked for, and kept because it is scenery rather than interface. Nothing on
+it carries state, and the card beside it is still cream and teal. Blue does not spread from
+here: anything with a meaning to show uses the brand tokens. The colours are props, so the
+exception is one call site and not a new token.
 
 Brand palette in `src/theme/brand.ts`, mirrored as CSS custom properties: deep teal
 `#0A6A66`, butter `#FFF8B5`, soft pink `#FCA5D1`, hot magenta `#FF258E`, soft salmon

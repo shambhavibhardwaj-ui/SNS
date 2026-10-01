@@ -251,10 +251,17 @@ export interface CloudSkyProps {
   pointer?: { parallax?: number; wind?: number; damping?: number };
 }
 
-/* House defaults: deep teal sky, butter-warmed cloud, sun low and to the
-   right so the light falls across the panel the way the city's does. */
+/*
+ * The component's own blue, kept.
+ *
+ * This is the one surface in the product that sits outside the teal palette,
+ * by request. It gets away with it because it is a photograph-like sky rather
+ * than an interface colour: nothing on it carries meaning, and the sign-in
+ * card beside it is still cream and teal. Treat it as the exception it is —
+ * blue should not spread from here into anything that has a state to show.
+ */
 const CLOUD_DEFAULTS = { softness: 170, shadow: 80, cirrus: 70 };
-const SUN_DEFAULTS = { x: 84, y: 16, glow: 'rgba(255, 248, 181, 0.85)' };
+const SUN_DEFAULTS = { x: 84, y: 16, glow: 'rgba(232, 243, 255, 0.9)' };
 const POINTER_DEFAULTS = { parallax: 140, wind: 120, damping: 24 };
 
 type Settings = {
@@ -267,9 +274,9 @@ type Settings = {
 export function CloudSky({
   className,
   style,
-  background = '#04302F',
-  baseColor = '#0E8480',
-  accentColor = '#FFFDF4',
+  background = '#0075FF',
+  baseColor = '#B4D2F0',
+  accentColor = '#FFFFFF',
   density = 62,
   speed = 46,
   size = 128,
@@ -406,10 +413,12 @@ export function CloudSky({
       }
       gl.viewport(0, 0, bw, bh);
 
-      const zen = parseColor(s.zenith, [0.016, 0.188, 0.184, 1]);
-      const hor = parseColor(s.horizon, [0.055, 0.518, 0.502, 1]);
+      /* These fallbacks only fire on an unparseable colour string, but they
+         should still be the defaults rather than some other sky. */
+      const zen = parseColor(s.zenith, [0, 0.459, 1, 1]);
+      const hor = parseColor(s.horizon, [0.706, 0.824, 0.941, 1]);
       const cld = parseColor(s.cloud, [1, 1, 1, 1]);
-      const glow = parseColor(s.glow, [1, 0.973, 0.71, 0.85]);
+      const glow = parseColor(s.glow, [0.91, 0.953, 1, 0.9]);
 
       gl.uniform2f(u('uRes'), bw, bh);
       gl.uniform1f(u('uNearX'), nearX);
