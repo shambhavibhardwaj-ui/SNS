@@ -244,11 +244,18 @@ unavailable. **Do not add `loseContext()` to its cleanup** — StrictMode runs e
 `getContext` returns the same context object per canvas, and that call kills the context the
 second run draws into.
 
-**That sky is sky blue (`#0075FF` to `#B4D2F0`), and it is the one deliberate exception to
-the palette** — asked for, and kept because it is scenery rather than interface. Nothing on
-it carries state, and the card beside it is still cream and teal. Blue does not spread from
-here: anything with a meaning to show uses the brand tokens. The colours are props, so the
-exception is one call site and not a new token.
+**The whole sign-in screen is blue, and it is the one deliberate exception to the palette.**
+Asked for. The sky runs `#0075FF` to `#B4D2F0`; the panel beside it redefines the `--app-*`
+and `--teal-*` tokens inside `.lg-page`, the same technique the admin uses for plum — so
+every rule already reads them and `var(--teal-800)` resolves to a deep blue here and stays
+teal everywhere else.
+
+Scoped to `.lg-page` on purpose: a blue token at `:root` would follow the user into the city
+and the dashboards, which are not blue. The one screen a person sees before they are anyone
+is allowed its own weather; everything past it is the house palette.
+
+Two things stay put. The SNS mark keeps its plum and butter — a logo does not take the
+theme. And errors stay crimson: a failure must not read as the accent colour.
 
 Brand palette in `src/theme/brand.ts`, mirrored as CSS custom properties: deep teal
 `#0A6A66`, butter `#FFF8B5`, soft pink `#FCA5D1`, hot magenta `#FF258E`, soft salmon

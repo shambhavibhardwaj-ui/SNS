@@ -2051,7 +2051,45 @@ body {
 
 /* ------------------------------------------------------------ login page -- */
 
+/*
+ * The sign-in screen runs its own palette.
+ *
+ * Same technique as the admin's plum theme: one block redefines the `--app-*`
+ * and `--teal-*` tokens inside this subtree, so every rule below already reads
+ * them and nothing has to be rewritten rule by rule. Anything written as
+ * `var(--teal-800)` resolves to a deep blue here and stays teal everywhere
+ * else.
+ *
+ * It is scoped to `.lg-page` rather than added to `:root` for exactly that
+ * reason — a blue token at the root would follow the user into the city and
+ * the dashboards, which are not blue.
+ *
+ * The blues are pulled off the sky beside them: the zenith is the accent, the
+ * horizon the light surfaces. Ink is navy rather than the house slate, because
+ * a warm grey on a cool ground reads as a mistake rather than a neutral.
+ */
 .lg-page {
+  --app-bg: #f4f8fe;
+  --app-surface: #ffffff;
+  --app-line: #d7e4f6;
+  --app-line-soft: #eaf1fc;
+  --app-ink: #10243d;
+  --app-ink-soft: #4a6484;
+  /* Lifted twice. This tier carries 11.5px role notes, and the obvious blue
+     sat at about 3:1 — so does the cream theme's own faint ink, which is a
+     separate problem. Here at least it clears 4.5:1. */
+  --app-ink-faint: #5a7391;
+
+  /* The sky's own blue, as the accent. The deepest is the one that takes white
+     text — on the submit button and the headings. */
+  --teal-800: #0b4fa8;
+  --teal-700: #0a5fcc;
+  --teal-600: #0075ff;
+
+  /* Shadows carry the ground's hue, or cards look pasted on. */
+  --shadow-card: 0 1px 2px rgb(11 79 168 / 0.06), 0 12px 28px -12px rgb(11 79 168 / 0.2);
+  --shadow-card-hover: 0 2px 4px rgb(11 79 168 / 0.08), 0 22px 44px -16px rgb(11 79 168 / 0.3);
+
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   min-height: 100dvh;
