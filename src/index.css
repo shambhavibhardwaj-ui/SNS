@@ -7082,3 +7082,182 @@ th[data-align='end'] .dt-sort { flex-direction: row-reverse; }
   color: var(--app-ink-faint);
 }
 
+
+/* ==========================================================================
+   DELIVERY SERVICES
+   Only the shapes this tab introduces. Everything else on the page — cards,
+   tables, pills, filters, the KPI grid, the flow diagram — is the admin's
+   existing furniture, so there is nothing here to restyle it with.
+   ========================================================================== */
+
+/* A table cell that opens the detail view. Looks like the name it shows,
+   not like a button, until you are on it. */
+.dt-link {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  font-weight: 650;
+  color: var(--app-ink);
+  cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid transparent;
+}
+
+.dt-link:hover,
+.dt-link:focus-visible {
+  color: var(--teal-700);
+  border-bottom-color: currentColor;
+}
+
+/* An inactive partner's salary line: still shown, visibly not counted. */
+.dt-money[data-muted] {
+  color: var(--app-ink-soft);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+/* ------------------------------------------------------------- donut -- */
+
+.an-donut {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  flex-wrap: wrap;
+}
+
+.an-donut-ring {
+  flex: 0 0 auto;
+}
+
+.an-donut-track {
+  stroke: var(--app-line-soft);
+}
+
+.an-donut-arc {
+  /* Rounded ends would overlap the neighbour at these thicknesses and make a
+     small slice look bigger than its share. */
+  stroke-linecap: butt;
+  stroke: var(--app-ink-soft);
+  transition: stroke-width 140ms ease;
+}
+
+/*
+ * Four states, four tones already in use elsewhere in the admin: the ring
+ * borrows the pill palette rather than bringing a fifth set of colours.
+ */
+.an-donut-arc[data-tone='available'],
+.an-donut-arc[data-tone='covered'] { stroke: var(--app-veg); }
+.an-donut-arc[data-tone='on-delivery'] { stroke: var(--teal-600); }
+.an-donut-arc[data-tone='on-leave'],
+.an-donut-arc[data-tone='pending'] { stroke: var(--butter-shade); }
+.an-donut-arc[data-tone='inactive'] { stroke: var(--app-line); }
+.an-donut-arc[data-tone='expired'] { stroke: var(--magenta); }
+
+.an-donut-total {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+  fill: var(--app-ink);
+}
+
+.an-donut-caption {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  fill: var(--app-ink-soft);
+}
+
+.an-donut-key {
+  flex: 1 1 180px;
+  min-width: 0;
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.an-donut-key li {
+  display: grid;
+  grid-template-columns: 10px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.an-donut-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--app-ink-soft);
+}
+
+.an-donut-dot[data-tone='available'],
+.an-donut-dot[data-tone='covered'] { background: var(--app-veg); }
+.an-donut-dot[data-tone='on-delivery'] { background: var(--teal-600); }
+.an-donut-dot[data-tone='on-leave'],
+.an-donut-dot[data-tone='pending'] { background: var(--butter-shade); }
+.an-donut-dot[data-tone='inactive'] { background: var(--app-line); }
+.an-donut-dot[data-tone='expired'] { background: var(--magenta); }
+
+.an-donut-label { color: var(--app-ink-soft); }
+.an-donut-key strong { font-family: var(--font-mono); font-weight: 600; }
+.an-donut-key em {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--app-ink-soft);
+  min-width: 34px;
+  text-align: right;
+}
+
+/* ------------------------------------------------------------ shifts -- */
+
+.an-shifts {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.an-shift-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 7px;
+}
+
+.an-shift-head .dt-mono {
+  font-size: 12px;
+  color: var(--app-ink-soft);
+}
+
+.an-shift-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--app-line-soft);
+}
+
+.an-shift-bar span[data-tone='available'] { background: var(--app-veg); }
+.an-shift-bar span[data-tone='on-delivery'] { background: var(--teal-600); }
+.an-shift-bar span[data-tone='on-leave'] { background: var(--butter-shade); }
+
+.an-shift-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 7px 0 0;
+  font-size: 12px;
+  color: var(--app-ink-soft);
+}
+
+.an-shift-key strong {
+  margin-left: auto;
+  color: var(--app-ink);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}

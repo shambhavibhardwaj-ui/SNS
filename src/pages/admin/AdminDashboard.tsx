@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import {
   Archive, BadgePercent, BarChart3, Bike, ClipboardList, FileSearch,
   LayoutDashboard, Settings, Star, Store, TrendingUp, Users,
@@ -7,8 +7,9 @@ import { DashboardShell, type NavGroup } from '../DashboardShell';
 import { AdminHome } from './AdminHome';
 import { RestaurantApplications } from './RestaurantApplications';
 import { AdminAnalytics } from './Analytics';
+import { DeliveryServices } from './DeliveryServices';
 import {
-  AdminCustomers, AdminDeliveryServices, AdminImprovementPlans,
+  AdminCustomers, AdminImprovementPlans,
   AdminOrders, AdminRatings, AdminRestaurants, AdminServiceFees, AdminSettings,
 } from './adminSections';
 
@@ -36,7 +37,11 @@ const NAV: NavGroup[] = [
     items: [
       { to: '/admin/orders', label: 'Orders', Icon: ClipboardList },
       { to: '/admin/customers', label: 'Customers', Icon: Users },
-      { to: '/admin/delivery-partners', label: 'Delivery Partners', Icon: Bike },
+      /* One entry, not two. The old /admin/delivery-partners screen was a
+         four-row table of courier companies also titled "Delivery Services";
+         keeping both would put two near-identical names in one group. Its
+         route still resolves — it redirects — so no existing link breaks. */
+      { to: '/admin/delivery', label: 'Delivery Services', Icon: Bike },
     ],
   },
   {
@@ -70,7 +75,8 @@ export function AdminDashboard() {
         <Route path="restaurants/offboarded" element={<AdminRestaurants offboarded />} />
         <Route path="orders" element={<AdminOrders />} />
         <Route path="customers" element={<AdminCustomers />} />
-        <Route path="delivery-partners" element={<AdminDeliveryServices />} />
+        <Route path="delivery" element={<DeliveryServices />} />
+        <Route path="delivery-partners" element={<Navigate to="/admin/delivery" replace />} />
         <Route path="ratings" element={<AdminRatings />} />
         <Route path="improvement-plans" element={<AdminImprovementPlans />} />
         <Route path="fees" element={<AdminServiceFees />} />

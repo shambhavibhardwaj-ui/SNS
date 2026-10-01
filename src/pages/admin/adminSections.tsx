@@ -10,14 +10,12 @@ import {
   adminCustomers,
   adminOrders,
   adminRestaurants,
-  deliveryServices,
   improvementPlans,
   ratings,
   serviceFees,
   type AdminCustomerRow,
   type AdminOrderRow,
   type AdminRestaurantRow,
-  type DeliveryServiceRow,
   type ImprovementPlanRow,
   type RatingRow,
   type ServiceFeeRow,
@@ -140,32 +138,6 @@ export function AdminOrders() {
   return (
     <Page title="Orders" lede="Every order, with its status and who is delivering it.">
       <DataTable caption="Orders" columns={ORDER_COLUMNS} rows={adminOrders} rowKey={(r) => r.id} />
-    </Page>
-  );
-}
-
-/* ---------------------------------------------------- delivery services -- */
-
-const DELIVERY_COLUMNS: Column<DeliveryServiceRow>[] = [
-  { key: 'partner', header: 'Delivery partner', cell: (r) => <strong>{r.partner}</strong> },
-  { key: 'active', header: 'Active', align: 'end', cell: (r) => r.active },
-  { key: 'completed', header: 'Completed', align: 'end', cell: (r) => r.completed.toLocaleString('en-IN') },
-  { key: 'coverage', header: 'Coverage', secondary: true, cell: (r) => r.coverage },
-  { key: 'status', header: 'Status', cell: (r) => <StatusPill value={r.status} /> },
-];
-
-export function AdminDeliveryServices() {
-  return (
-    <Page
-      title="Delivery Services"
-      lede="Aggregator partners, and restaurants running their own delivery staff."
-    >
-      <DataTable
-        caption="Delivery services"
-        columns={DELIVERY_COLUMNS}
-        rows={deliveryServices}
-        rowKey={(r) => r.partner}
-      />
     </Page>
   );
 }

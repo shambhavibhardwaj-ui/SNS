@@ -134,10 +134,17 @@ export function StatusPill({ value }: { value: string }) {
 
 function toneFor(value: string): 'good' | 'warn' | 'bad' | 'busy' | 'idle' {
   const v = value.toLowerCase();
-  if (['active', 'delivered', 'accepted', 'completed'].includes(v)) return 'good';
-  if (['cancelled', 'suspended', 'required'].includes(v)) return 'bad';
-  if (['paused', 'pending', 'dormant', 'onboarding'].includes(v)) return 'warn';
-  if (['out for delivery', 'preparing', 'picked up', 'confirmed', 'submitted', 'assigned'].includes(v)) {
+  /* Delivery-workforce states are folded in here rather than given a second
+     pill: "Available" and "Active" should not read differently on two admin
+     screens just because one is about riders and the other about kitchens. */
+  if (['active', 'delivered', 'accepted', 'completed', 'available', 'covered', 'paid'].includes(v)) {
+    return 'good';
+  }
+  if (['cancelled', 'suspended', 'required', 'expired', 'on hold'].includes(v)) return 'bad';
+  if (['paused', 'pending', 'dormant', 'onboarding', 'on leave', 'processing'].includes(v)) {
+    return 'warn';
+  }
+  if (['out for delivery', 'preparing', 'picked up', 'confirmed', 'submitted', 'assigned', 'on delivery'].includes(v)) {
     return 'busy';
   }
   return 'idle';

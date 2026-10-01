@@ -15,10 +15,14 @@ import {
 } from '../../data/admin/types';
 import {
   getApplicationStatusCounts, getConcessionCandidates, getCustomerTotals,
-  getDeliveryModelSplit, getDeliveryOverview, getImprovementPlans, getPlatformOverview,
+  getDeliveryModelSplit, getImprovementPlans, getPlatformOverview,
   getRecentCustomers, getRecentOrders, getRestaurantPerformance,
   getRestaurantsRequiringAttention, HIGH_RATING_MIN_ORDERS, LOW_RATING_MIN_ORDERS,
 } from '../../services/adminService';
+/* The workforce figures come from the delivery service, which owns them —
+   adminService's own delivery summary counts courier *companies*, which is a
+   different thing from the riders this card is about. */
+import { getDeliveryOverview } from '../../services/deliveryService';
 
 export function AdminHome() {
   const [reviewing, setReviewing] = useState<RestaurantApplication | null>(null);
@@ -51,7 +55,7 @@ export function AdminHome() {
           { label: 'Pending applications', value: String(overview.pendingApplications), hint: 'awaiting first look', Icon: FileSearch },
           { label: 'Under review', value: String(overview.underReview), hint: 'being assessed', Icon: Clock },
           { label: 'Total customers', value: overview.totalCustomers.toLocaleString('en-IN'), hint: `${customers.newThisWeek} new this week`, Icon: Users },
-          { label: 'Delivery partners', value: String(overview.totalDeliveryPartners), hint: `${delivery.active} active`, Icon: Bike },
+          { label: 'Delivery partners', value: String(delivery.totalPartners), hint: `${delivery.activePartners} active · ${delivery.onDelivery} on delivery`, Icon: Bike },
           { label: 'Orders today', value: overview.ordersToday.toLocaleString('en-IN'), Icon: ClipboardList },
           { label: 'Orders this week', value: overview.ordersThisWeek.toLocaleString('en-IN'), Icon: TrendingUp },
         ]}
@@ -185,15 +189,21 @@ export function AdminHome() {
       {/* 8 — DELIVERY OVERVIEW */}
       <section className="dh-block">
         <div className="dh-block-head">
-          <h3>Delivery overview</h3>
-          <Link to="/admin/delivery-partners">Delivery partners</Link>
+          <div>
+            <h3>Delivery overview</h3>
+            <p className="dh-block-sub">
+              The workforce at a glance. Salary, insurance and per-partner performance are in
+              Delivery Services.
+            </p>
+          </div>
+          <Link to="/admin/delivery">Delivery Services</Link>
         </div>
         <div className="dh-split">
           <StatCards
             stats={[
-              { label: 'Delivery partners', value: String(delivery.total), Icon: Bike },
-              { label: 'Active partners', value: String(delivery.active), Icon: Bike },
-              { label: 'Out for delivery', value: String(delivery.outForDelivery), Icon: ClipboardList },
+              { label: 'Delivery partners', value: String(delivery.totalPartners), hint: `${delivery.inactive} inactive`, Icon: Bike },
+              { label: 'Active partners', value: String(delivery.activePartners), hint: `${delivery.available} available`, Icon: Bike },
+              { label: 'On delivery', value: String(delivery.onDelivery), hint: 'carrying an order now', Icon: ClipboardList },
             ]}
           />
           <div className="dm-split">
@@ -236,7 +246,7 @@ export function AdminHome() {
           <Link to="/admin/restaurants/active" className="dh-action">View restaurants</Link>
           <Link to="/admin/orders" className="dh-action">View orders</Link>
           <Link to="/admin/customers" className="dh-action">View customers</Link>
-          <Link to="/admin/delivery-partners" className="dh-action">View delivery partners</Link>
+          <Link to="/admin/delivery" className="dh-action">Delivery Services</Link>
           <Link to="/admin/improvement-plans" className="dh-action">View improvement plans</Link>
         </div>
       </section>

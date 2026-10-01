@@ -21,6 +21,7 @@ Object-oriented programming is how the code is written, not a computation model.
 | Rating | Star ratings, written feedback, rating history |
 | Performance | Checks RULE-01 and RULE-02, triggers plans and concessions |
 | Fee | Aggregator fee, own-delivery fee, service-fee concession |
+| Delivery workforce | Delivery partners, their status, salary and insurance |
 
 ## Business rules (from the client — do not change without asking)
 
@@ -99,6 +100,7 @@ src/data/        Relational mock data. Shaped like the tables these become:
                  surrogate ids, FKs, join tables.
   data/admin/    Platform-side seed — restaurants, orders, ratings, applications,
                  delivery partners, analytics series.
+src/data/        (also deliveryData.ts — the delivery workforce)
 src/services/    The only way the UI reads data. Components must never import
                  src/data directly. Swapping in Supabase changes these bodies,
                  not the components.
@@ -153,10 +155,24 @@ rotation; a merged collapsible sidebar. Clicking a district opens its restaurant
 where the visual language deliberately drops to a clean light ordering interface.
 
 **Admin.** Home/overview, restaurant applications (tabs, search, sort, session decisions),
-the management tables, and `/admin/analytics` — KPIs, order and revenue trends, onboarding
+the management tables, `/admin/analytics` — KPIs, order and revenue trends, onboarding
 funnel and process diagram, order lifecycle, cuisine and restaurant tables, delivery-model
 comparison, customer growth and conversion, ratings, business-rule monitoring, platform
-health, activity timeline, top performers, cross-cutting filters and CSV export.
+health, activity timeline, top performers, cross-cutting filters and CSV export — and
+`/admin/delivery`, Delivery Services.
+
+**Delivery Services** (`/admin/delivery`) is a tab in that same shell, not a second
+dashboard: the workforce of 24 riders, a status ring, shift cover, the salary bill, delivery
+performance at three grains, orders per partner, the delivery status flow, insurance cover
+with an expiry watch, and the two delivery models compared. `/admin/delivery-partners`
+redirects to it — that route used to hold a four-row table of courier *companies*, also
+titled "Delivery Services", and two near-identical names in one nav group helped nobody.
+
+**Note the two senses of "delivery partner".** `data/admin/types.ts` has one — a courier
+*company*, QuickDrop and the rest, which the platform buys capacity from.
+`data/deliveryData.ts` has the other — a *person* who rides, with a salary, an insurance
+policy and a shift. They are different tables that the brief gives the same English name,
+so the rider rows call the company a `provider` and keep `partner` for the person.
 
 **Delivery.** Home, assigned orders, completed deliveries, earnings, profile.
 
@@ -173,6 +189,27 @@ live in memory, so a reload loses them.
 
 Stubs, deliberately inert and marked `aria-disabled`: top-bar search, the cart control, and
 the "Ask Foodie AI" launcher.
+
+## Delivery salary
+
+Every delivery partner is on the same flat **₹1,800 a month**, which is why no partner row
+carries a `salary` field — a per-row number could silently disagree with the constant. The
+bill is headcount × `BASE_MONTHLY_SALARY`, computed on read in `deliveryService`, so adding
+a partner moves the card, the analytics panel and the eight-month graph together and none of
+them can drift.
+
+Who counts is one decision in one place, `isSalaryEligible()`: a rider **on leave is still
+paid**, an **inactive one is not**. That is why the eligible count (21) is not the headcount
+(24), and the page shows both so the gap is visible rather than mysterious.
+
+The salary history counts, for each month, the eligible riders who had joined by the end of
+it — real growth from the joining dates, not a drawn curve. Its one honest limit: a rider
+inactive *today* is treated as having been ineligible throughout, because the mock rows
+carry no employment history. Real data would carry a status log.
+
+Delivery *performance* reads the same `dailySeries` the analytics page does, rather than a
+series of its own. Every order on this platform is a delivery, so a second set of numbers
+would let two admin pages report different totals for the same events.
 
 ## Analytics
 
