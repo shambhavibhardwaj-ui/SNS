@@ -2059,15 +2059,10 @@ body {
 }
 
 .lg-art {
-  position: relative;
-  overflow: hidden;
-  background: var(--teal-800);
-}
-
-.lg-skyline {
-  width: 100%;
-  height: 100%;
-  display: block;
+  /* The component sets position, overflow and its own background; this is
+     only the hole it fills. A min-height keeps the canvas measurable on the
+     first frame, before the grid has resolved a row. */
+  min-height: 100%;
 }
 
 .lg-panel {

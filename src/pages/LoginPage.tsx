@@ -4,6 +4,7 @@ import { Bike, Lock, Mail, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { homeForRole } from '../services/authService';
 import { RouteSpinner } from '../auth/RequireRole';
+import { CloudSky } from '../components/ui/cloud-sky';
 
 const ROLES = [
   {
@@ -91,9 +92,15 @@ export function LoginPage() {
 
   return (
     <main className="lg-page">
-      <div className="lg-art" aria-hidden="true">
-        <LoginSkyline />
-      </div>
+      {/*
+        The sign-in panel's weather.
+
+        It replaced a flat SVG skyline, which repeated the city badly: the
+        real isometric town is three clicks away and far better drawn, so a
+        simplified copy of it here only invited the comparison. Sky is the one
+        part of that world this screen can own outright.
+      */}
+      <CloudSky className="lg-art" />
 
       <div className="lg-panel">
         <div className="lg-card">
@@ -283,47 +290,3 @@ function SetupNotice() {
   );
 }
 
-/** A slice of the city skyline, so the sign-in screen belongs to the product. */
-function LoginSkyline() {
-  return (
-    <svg viewBox="0 0 520 420" preserveAspectRatio="xMidYMid slice" className="lg-skyline">
-      <defs>
-        <linearGradient id="lg-sky" x1="0" y1="0" x2="0.3" y2="1">
-          <stop offset="0%" stopColor="#0E8480" />
-          <stop offset="60%" stopColor="#0A6A66" />
-          <stop offset="100%" stopColor="#04302F" />
-        </linearGradient>
-      </defs>
-      <rect width="520" height="420" fill="url(#lg-sky)" />
-      {[
-        { x: 60, y: 250, w: 92, h: 120, roof: '#FCA5D1', wall: '#FFF1F4' },
-        { x: 168, y: 210, w: 104, h: 160, roof: '#C2643F', wall: '#FAF0DC' },
-        { x: 288, y: 246, w: 88, h: 124, roof: '#04302F', wall: '#F7EDDC' },
-        { x: 392, y: 226, w: 96, h: 144, roof: '#0A6A66', wall: '#F1F5F2' },
-      ].map((b, i) => (
-        <g key={i}>
-          <rect x={b.x} y={b.y} width={b.w} height={b.h} rx={4} fill={b.wall} opacity={0.94} />
-          <path d={`M ${b.x - 9} ${b.y} L ${b.x + b.w / 2} ${b.y - 30} L ${b.x + b.w + 9} ${b.y} Z`} fill={b.roof} />
-          {[0, 1].map((r) =>
-            [0, 1].map((c) => (
-              <rect
-                key={`${r}-${c}`}
-                x={b.x + 16 + c * (b.w - 52)}
-                y={b.y + 26 + r * 40}
-                width={24}
-                height={22}
-                rx={3}
-                fill="#FFF8B5"
-                opacity={(i + r + c) % 3 === 0 ? 0.95 : 0.42}
-              />
-            )),
-          )}
-        </g>
-      ))}
-      <rect x={0} y={370} width={520} height={50} fill="#04302F" opacity={0.5} />
-      {[40, 130, 240, 350, 460].map((x) => (
-        <circle key={x} cx={x} cy={392} r={4} fill="#FFF8B5" opacity={0.5} />
-      ))}
-    </svg>
-  );
-}

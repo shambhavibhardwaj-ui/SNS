@@ -233,9 +233,15 @@ redraw on every render and the tooltip would disagree with the line under the cu
 
 Two visual languages, on purpose. The city is an illustrated isometric world; everything
 past it — listings, dashboards, analytics — is a clean, practical interface. Every drawn
-element is original SVG. The one exception is the photographic backdrop behind the city,
-which is third-party — see `src/assets/ATTRIBUTION.md`, including the licence question
-that still needs answering.
+element is original SVG, canvas or shader work; `src/assets/ATTRIBUTION.md` records that
+there is no third-party art left in the project.
+
+The sign-in screen's left panel is `components/ui/cloud-sky` — a WebGL sky of drifting
+clouds, adapted from an Originkit component. It replaced a flat SVG skyline that repeated
+the real isometric city badly. It stops for `prefers-reduced-motion`, paints one frame and
+pauses in a hidden tab, and falls back to flat teal where WebGL is unavailable. **Do not add
+`loseContext()` to its cleanup** — StrictMode runs effects twice, `getContext` returns the
+same context object per canvas, and that call kills the context the second run draws into.
 
 Brand palette in `src/theme/brand.ts`, mirrored as CSS custom properties: deep teal
 `#0A6A66`, butter `#FFF8B5`, soft pink `#FCA5D1`, hot magenta `#FF258E`, soft salmon
