@@ -2324,13 +2324,83 @@ body {
   color: var(--app-ink-faint);
 }
 
+/*
+ * Phones: the sky becomes the top of the screen, not a strip above a page.
+ *
+ * Stacked, the two halves used to meet at a hard horizontal edge 180px down —
+ * a band of weather sitting on a form, with a visible seam between them. Three
+ * changes fix that, and none of them touch the desktop layout.
+ */
 @media (max-width: 880px) {
   .lg-page {
     grid-template-columns: 1fr;
+    /* Rows, not `auto 1fr`: the panel is taller than the viewport once the
+       role list is in it, and it needs to size to its content and scroll the
+       page rather than scroll inside itself. */
+    grid-template-rows: auto auto;
   }
 
   .lg-art {
-    height: 180px;
+    /* A proportion of the screen, bounded. 180px was a letterbox on a tall
+       phone and most of the display on a landscape one. */
+    height: clamp(190px, 32vh, 290px);
+    min-height: 0;
+    /* Dissolve the foot into the page instead of ending on a line. The sky is
+       already at its palest down there, so the fade has almost no distance to
+       travel and reads as haze rather than as a gradient. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent);
+    mask-image: linear-gradient(to bottom, #000 58%, transparent);
+  }
+
+  .lg-panel {
+    /* Up into the fade, so the first thing under the sky is content and not
+       a gap. */
+    margin-top: -26px;
+    /* Top-aligned: centring a column that overflows the viewport pushes its
+       head off the top of the screen. Still centred horizontally — a landscape
+       phone is wide enough that a full-width form would be a 700px line
+       length. */
+    place-items: start center;
+    padding: 4px 20px 28px;
+    /* The home indicator sits over the last role note otherwise. */
+    padding-bottom: calc(28px + env(safe-area-inset-bottom));
+  }
+
+  .lg-brand {
+    margin-bottom: 18px;
+  }
+
+  .lg-sub {
+    margin: 10px 0 22px;
+  }
+}
+
+/*
+ * Short screens, where height is the scarce axis: a small phone held upright
+ * (an SE is 568 tall) and any phone turned sideways.
+ *
+ * `32vh` is already small there, but the clamp's own floor stopped it getting
+ * small enough and the sign-in button fell about 35px below the fold — the one
+ * thing a person came here to press, needing a scroll to find. Measured at
+ * 320x568: the button's foot sits at 603 with a 190px sky and at 553 with a
+ * 140px one.
+ */
+@media (max-width: 880px) and (max-height: 700px) {
+  .lg-art {
+    height: 140px;
+  }
+}
+
+/* Sideways, there is less still. The role list is reference material and can
+   give up its breathing room first. */
+@media (max-width: 880px) and (max-height: 480px) {
+  .lg-art {
+    height: 112px;
+  }
+
+  .lg-roles {
+    margin-top: 22px;
+    padding-top: 16px;
   }
 }
 
