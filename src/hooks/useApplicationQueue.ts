@@ -1,5 +1,7 @@
-import { useCallback, useMemo, useState } from 'react';
-import { restaurantApplications } from '../data/admin/applications';
+import { useCallback, useMemo, useState, useSyncExternalStore } from 'react';
+import {
+  decideApplication, getDecidedIds, getDecisionLog, getQueueWithDecisions, getVersion, subscribe,
+} from '../services/applicationQueue';
 import {
   APPLICATION_STATUSES,
   type ApplicationStatus,
@@ -16,27 +18,45 @@ export interface Decision {
 }
 
 /**
- * The application queue, with the decisions an admin has made in this session.
+ * The application queue, filtered, sorted and searchable.
  *
- * Decisions are held here rather than mutating the mock array, so the seed data
- * stays a fixture and the table reflects what the admin just did. This hook is
- * the seam: `decide` becomes a Supabase update and `rows` becomes a query, and
- * nothing in the components changes.
+ * The rows come from `services/applicationQueue`, which is shared with the
+ * restaurant owner's dashboard — so an application the owner submits appears
+ * here, and a decision made here is written back onto their record. Before
+ * that, these were two unconnected arrays and neither side could ever hear the
+ * other.
+ *
+ * Subscribed rather than copied into state: the two dashboards are on
+ * different routes and must agree. `getVersion` is the snapshot because
+ * `useSyncExternalStore` compares by identity, and the row array is rebuilt on
+ * every read — returning it would look changed every time and never settle.
+ *
+ * This hook is still the seam. `decide` becomes a Supabase update and the
+ * store's `subscribe` becomes a realtime channel; no component changes.
  */
 export function useApplicationQueue() {
-  const [decisions, setDecisions] = useState<Record<string, Decision>>({});
+  const version = useSyncExternalStore(subscribe, getVersion, getVersion);
   const [filter, setFilter] = useState<StatusFilter>('All');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<SortKey>('newest');
 
-  /** Seed rows with any decision made since the page loaded. */
+  /* `version` is the dependency: it changes on every write to the store. */
   const applied: RestaurantApplication[] = useMemo(
-    () =>
-      restaurantApplications.map((a) => {
-        const d = decisions[a.id];
-        return d ? { ...a, status: d.status, reviewNote: d.reason ?? a.reviewNote } : a;
-      }),
-    [decisions],
+    () => getQueueWithDecisions(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [version],
+  );
+
+  const decidedIds = useMemo(
+    () => getDecidedIds(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [version],
+  );
+
+  const decisionLog = useMemo(
+    () => [...getDecisionLog()].reverse(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [version],
   );
 
   const counts = useMemo(() => {
@@ -76,10 +96,7 @@ export function useApplicationQueue() {
   }, [applied, filter, search, sort]);
 
   const decide = useCallback((id: string, status: ApplicationStatus, reason?: string) => {
-    setDecisions((d) => ({
-      ...d,
-      [id]: { status, reason, decidedAt: new Date().toISOString() },
-    }));
+    decideApplication(id, status, reason);
   }, []);
 
   /** Waiting on the admin: anything not yet finally decided. */
@@ -91,7 +108,8 @@ export function useApplicationQueue() {
   return {
     rows,
     counts,
-    decisions,
+    decidedIds,
+    decisionLog,
     awaitingAction,
     filter,
     setFilter,

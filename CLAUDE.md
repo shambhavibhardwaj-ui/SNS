@@ -190,10 +190,12 @@ so the rider rows call the company a `provider` and keep `partner` for the perso
 
 **Delivery.** Home, assigned orders, completed deliveries, earnings, profile.
 
-**Restaurant owner** (`/restaurant`). The onboarding dashboard: an overview with a five-step
-stepper, a completeness meter and a history log; the details form with a live checklist; the
-delivery-method choice; the document checklist; and a review-and-submit page. It is its own
-dashboard rather than a tab because the actor is different — this is the person applying.
+**Restaurant owner** (`/restaurant`). The onboarding dashboard, in five steps:
+**details → documents → delivery method → submit → admin review**. An overview with the
+stepper, a completeness meter, the admin's verdict when there is one, and a history log; the
+details form with a live checklist; the document checklist; the delivery-method choice; and
+a review-and-submit page. It is its own dashboard rather than a tab because the actor is
+different — this is the person applying.
 
 Its one rule: **the owner should never have to guess.** Every document states its position in
 words, with the date it changed and, when it was returned, the admin's reason in full. The
@@ -252,10 +254,36 @@ Readiness has one deliberate asymmetry. A document that is merely `Uploaded` doe
 block submission — waiting for an admin to verify it is an admin's job, and holding the
 application for it would deadlock, since an admin only looks once it is submitted.
 
-The admin's `ApplicationReview` now carries a Documents section, so one application is one
-page as the brief asks. It is read-only there: verifying a document is its own decision with
-its own audit trail, and folding it into approve/reject would let one click accept five
-documents nobody opened.
+### The two dashboards are joined
+
+`services/applicationQueue.ts` is the seam. The owner's record enters the admin queue when
+it is **submitted**, and a decision made in the admin dashboard is written back onto that
+record, so the owner sees it. Before this they were two unconnected arrays and neither side
+could ever hear the other.
+
+It is a module store with `subscribe` + `useSyncExternalStore`, not React state, because two
+dashboards on two routes have to agree. **The snapshot is a version number, not the row
+array** — `useSyncExternalStore` compares by identity and the array is rebuilt on every read,
+so returning it would look changed every time and never settle.
+
+Three behaviours worth keeping:
+
+- A **draft is not in the queue**. Nobody else's business until it is sent.
+- **"Needs changes" takes it back out** and clears `submittedAt`, so an admin is not reviewing
+  an application they have just asked someone to change. Resubmitting clears the old decision
+  with it, or the owner would read "Rejected" above an application back in the queue.
+- Only **Approved or Rejected** completes the "Admin review" step. "Needs changes" is a
+  decision but not an ending.
+
+Decisions on the *seed* rows stay in session state — those fixtures have no owner behind
+them, and the decision log marks which ones were actually written back.
+
+The admin's `ApplicationReview` carries a Documents section, so one application is one page
+as the brief asks. It renders only for the application that came through the restaurant
+dashboard: the seed rows have no documents, and showing one owner's paperwork under another
+applicant's name is worse than showing none. Read-only there — verifying a document is its
+own decision with its own audit trail, and folding it into approve/reject would let one click
+accept five documents nobody opened.
 
 ## Analytics
 

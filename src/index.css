@@ -7982,3 +7982,47 @@ li[data-actor='owner'] > .ob-tl-dot { background: var(--butter-shade); }
   .ar-docs li { grid-template-columns: 1fr auto; }
   .ar-doc-file { grid-column: 1 / -1; }
 }
+
+/* The admin's verdict, on the owner's overview. Above the fold and in its own
+   colour, because once there is an answer it is the only thing on the page the
+   owner came to read. */
+.ob-verdict {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 20px 22px;
+  border: 1px solid var(--app-line);
+  border-left: 4px solid var(--app-ink-faint);
+  border-radius: 16px;
+  background: var(--app-surface);
+}
+
+.ob-verdict[data-decision='approved'] { border-left-color: var(--app-veg); }
+.ob-verdict[data-decision='rejected'] { border-left-color: var(--magenta); }
+.ob-verdict[data-decision='needs-changes'] { border-left-color: var(--butter-shade); }
+
+.ob-verdict-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--app-line-soft);
+  color: var(--app-ink-soft);
+}
+
+.ob-verdict[data-decision='approved'] .ob-verdict-mark { background: var(--app-veg); color: #fff; }
+.ob-verdict[data-decision='rejected'] .ob-verdict-mark { background: var(--magenta); color: #fff; }
+.ob-verdict[data-decision='needs-changes'] .ob-verdict-mark { background: var(--butter-shade); color: #fff; }
+
+.ob-verdict h3 { margin: 0 0 5px; font-size: 16px; }
+.ob-verdict p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--app-ink-soft); }
+
+.ob-verdict-note {
+  margin-top: 9px !important;
+  padding: 11px 13px;
+  border-radius: 11px;
+  background: var(--app-line-soft);
+  font-size: 13px !important;
+}

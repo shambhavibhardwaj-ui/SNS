@@ -31,12 +31,11 @@ const SORTS: { key: SortKey; label: string }[] = [
  */
 export function RestaurantApplications() {
   const {
-    rows, counts, decisions, awaitingAction,
+    rows, counts, decidedIds, decisionLog, awaitingAction,
     filter, setFilter, search, setSearch, sort, setSort, decide,
   } = useApplicationQueue();
 
   const [reviewing, setReviewing] = useState<RestaurantApplication | null>(null);
-  const decidedIds = new Set(Object.keys(decisions));
 
   return (
     <section className="dh">
@@ -118,17 +117,21 @@ export function RestaurantApplications() {
         <div className="aq-log">
           <h3>Decisions this session</h3>
           <ul>
-            {Object.entries(decisions).map(([id, d]) => (
-              <li key={id}>
-                <span className="dt-mono">{id}</span>
+            {decisionLog.map((d, i) => (
+              <li key={`${d.id}-${i}`}>
+                <span className="dt-mono">{d.id}</span>
                 <strong>{d.status}</strong>
                 {d.reason ? <em>“{d.reason}”</em> : null}
+                {d.writtenBack ? (
+                  <span className="dt-pill" data-tone="good">Sent to the owner</span>
+                ) : null}
               </li>
             ))}
           </ul>
           <p>
-            Held in this page only — decisions are not written back yet. This is where the
-            Supabase update goes.
+            A decision on an application submitted through the restaurant dashboard is written
+            back to that owner’s record and appears on their screen. The seed rows have no owner
+            behind them, so those decisions live in this session only.
           </p>
         </div>
       ) : null}

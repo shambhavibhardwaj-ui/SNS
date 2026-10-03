@@ -22,8 +22,8 @@ import { SubmitApplication } from './SubmitApplication';
 const NAV: NavGroup[] = [{ items: [
   { to: '/restaurant', label: 'Overview', Icon: LayoutDashboard },
   { to: '/restaurant/details', label: 'Restaurant Details', Icon: Store },
-  { to: '/restaurant/delivery', label: 'Delivery Method', Icon: Truck },
   { to: '/restaurant/documents', label: 'Documents', Icon: FileCheck2 },
+  { to: '/restaurant/delivery', label: 'Delivery Method', Icon: Truck },
   { to: '/restaurant/submit', label: 'Submit Application', Icon: Send },
 ] }];
 
@@ -39,8 +39,8 @@ export function RestaurantDashboard() {
       <Routes>
         <Route index element={<OnboardingHome />} />
         <Route path="details" element={<RestaurantDetails />} />
-        <Route path="delivery" element={<DeliveryMethod />} />
         <Route path="documents" element={<Documents />} />
+        <Route path="delivery" element={<DeliveryMethod />} />
         <Route path="submit" element={<SubmitApplication />} />
         <Route path="*" element={<OnboardingHome />} />
       </Routes>

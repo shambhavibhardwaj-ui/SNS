@@ -18,7 +18,7 @@ import {
   platformRestaurants,
   ratedOrders,
 } from '../data/admin/platform';
-import { restaurantApplications } from '../data/admin/applications';
+import { getQueueWithDecisions } from './applicationQueue';
 import type {
   AdminRestaurant,
   ApplicationStatus,
@@ -62,7 +62,7 @@ export interface PlatformOverview {
 export function getPlatformOverview(): PlatformOverview {
   const byState = (s: RestaurantState) => platformRestaurants.filter((r) => r.state === s).length;
   const byStatus = (s: ApplicationStatus) =>
-    restaurantApplications.filter((a) => a.status === s).length;
+    getQueueWithDecisions().filter((a) => a.status === s).length;
 
   return {
     totalRestaurants: platformRestaurants.length,
@@ -80,7 +80,7 @@ export function getPlatformOverview(): PlatformOverview {
 /** Counts for the onboarding status distribution. */
 export function getApplicationStatusCounts(): { status: ApplicationStatus; count: number }[] {
   const counts = new Map<ApplicationStatus, number>();
-  for (const a of restaurantApplications) {
+  for (const a of getQueueWithDecisions()) {
     counts.set(a.status, (counts.get(a.status) ?? 0) + 1);
   }
   return [...counts.entries()]
@@ -96,9 +96,11 @@ export interface ApplicationQuery {
   search?: string;
 }
 
+/* Reads the shared queue, so an application submitted from the restaurant
+   dashboard is in every admin view, not only the applications page. */
 export function listApplications({ status = 'All', search = '' }: ApplicationQuery = {}) {
   const q = search.trim().toLowerCase();
-  return restaurantApplications
+  return getQueueWithDecisions()
     .filter((a) => status === 'All' || a.status === status)
     .filter((a) =>
       !q
@@ -112,7 +114,7 @@ export function listApplications({ status = 'All', search = '' }: ApplicationQue
 }
 
 export function getApplication(id: string): RestaurantApplication | undefined {
-  return restaurantApplications.find((a) => a.id === id);
+  return getQueueWithDecisions().find((a) => a.id === id);
 }
 
 /* ------------------------------------------------- RULE-01: low ratings -- */

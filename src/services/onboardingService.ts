@@ -21,6 +21,7 @@ import {
   type DocumentState, type OwnerApplication,
 } from '../data/onboarding';
 import { MOCK_TODAY } from '../data/admin/platform';
+import { notifySubmitted } from './applicationQueue';
 import { DELIVERY_MODEL_LABEL, type DeliveryModel } from '../data/admin/types';
 
 export type { ApplicationDocument, DocumentState, OwnerApplication };
@@ -165,18 +166,21 @@ export function getReadiness(app = ownerApplication): Readiness {
   const missingDocs = docs.filter((d) => d.kind.required && d.state === 'Missing');
   const returnedDocs = docs.filter((d) => d.state === 'Needs Replacement');
 
+  /* Listed in the order the steps run — details, then documents, then
+     delivery — so working down the list is the same journey as working
+     through the dashboard. */
   const blockers: Readiness['blockers'] = [];
   for (const d of missingDetails) {
     blockers.push({ id: `detail-${String(d.id)}`, label: `${d.label} is empty`, href: '/restaurant/details' });
-  }
-  if (!app.deliveryModel) {
-    blockers.push({ id: 'delivery', label: 'No delivery method chosen', href: '/restaurant/delivery' });
   }
   for (const d of missingDocs) {
     blockers.push({ id: `doc-${d.kindId}`, label: `${d.kind.label} has not been uploaded`, href: '/restaurant/documents' });
   }
   for (const d of returnedDocs) {
     blockers.push({ id: `redo-${d.kindId}`, label: `${d.kind.label} needs replacing`, href: '/restaurant/documents' });
+  }
+  if (!app.deliveryModel) {
+    blockers.push({ id: 'delivery', label: 'No delivery method chosen', href: '/restaurant/delivery' });
   }
 
   const detailsComplete = missingDetails.length === 0;
@@ -221,15 +225,23 @@ export function getStage(app = ownerApplication): Stage {
   const r = getReadiness(app);
   if (r.canSubmit) return 'Ready to submit';
   if (!r.detailsComplete) return 'Details';
-  if (!r.deliveryChosen) return 'Delivery';
-  return 'Documents';
+  if (!r.documentsComplete) return 'Documents';
+  return 'Delivery';
 }
 
 /** The stepper across the top of the dashboard. */
 export function getSteps(app = ownerApplication): StageStep[] {
   const r = getReadiness(app);
   const submitted = Boolean(app.submittedAt);
-  const decided = app.decision !== null;
+  /*
+   * Only a final answer finishes the review step.
+   *
+   * "Needs changes" is a decision but not an ending — the application is back
+   * with the owner and will be read again. Marking the step done there told
+   * them the review was over while they still had work to do, and the step
+   * after it was the one lit up.
+   */
+  const decided = app.decision === 'Approved' || app.decision === 'Rejected';
 
   const mark = (done: boolean, current: boolean): StageStep['state'] =>
     done ? 'done' : current ? 'current' : 'todo';
@@ -242,16 +254,16 @@ export function getSteps(app = ownerApplication): StageStep[] {
       hint: 'Name, owner, contact, address, hours and cuisines.',
     },
     {
-      id: 'delivery',
-      label: 'Delivery method',
-      state: mark(r.deliveryChosen, r.detailsComplete && !r.deliveryChosen),
-      hint: 'Who carries the orders. It sets which fee structure applies.',
-    },
-    {
       id: 'documents',
       label: 'Documents',
-      state: mark(r.documentsComplete, r.detailsComplete && r.deliveryChosen && !r.documentsComplete),
+      state: mark(r.documentsComplete, r.detailsComplete && !r.documentsComplete),
       hint: 'Registration, licence, identification, address and bank details.',
+    },
+    {
+      id: 'delivery',
+      label: 'Delivery method',
+      state: mark(r.deliveryChosen, r.detailsComplete && r.documentsComplete && !r.deliveryChosen),
+      hint: 'Who carries the orders. It sets which fee structure applies.',
     },
     {
       id: 'submit',
@@ -263,7 +275,14 @@ export function getSteps(app = ownerApplication): StageStep[] {
       id: 'review',
       label: 'Admin review',
       state: mark(decided, submitted && !decided),
-      hint: 'A person reads it and approves, returns or rejects it.',
+      /* Once there is an answer the step says what it was, rather than still
+         describing the three things that might happen. */
+      hint:
+        app.decision === 'Approved' ? 'Approved — your restaurant is on the platform.'
+          : app.decision === 'Rejected' ? 'Rejected. The reason is on your overview.'
+            : app.decision === 'Needs Changes' ? 'Returned for changes. Fix them and resubmit.'
+              : submitted ? 'With the platform team now.'
+                : 'A person reads it and approves, returns or rejects it.',
     },
   ];
 }
@@ -391,6 +410,11 @@ export function submitApplication(): { ok: boolean; reason?: string } {
   }
   const at = MOCK_TODAY.toISOString().slice(0, 10);
   ownerApplication.submittedAt = at;
+  /* A resubmission after changes were requested clears the old decision, or
+     the owner would read "Rejected" above an application that is back in the
+     queue. */
+  ownerApplication.decision = null;
+  ownerApplication.decidedAt = null;
   applicationEvents.push({
     id: `ev-${applicationEvents.length + 1}`,
     at,
@@ -398,5 +422,7 @@ export function submitApplication(): { ok: boolean; reason?: string } {
     label: 'Application submitted',
     detail: 'Sent to the platform team for review.',
   });
+  /* Tells the admin dashboard a row has arrived. */
+  notifySubmitted();
   return { ok: true };
 }

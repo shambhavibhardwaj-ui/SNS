@@ -7,6 +7,7 @@ import {
 } from '../../data/admin/types';
 import { ApplicationStatusBadge } from './ApplicationStatusBadge';
 import { getDocuments } from '../../services/onboardingService';
+import { OWNER_APPLICATION_ID } from '../../services/applicationQueue';
 
 type Decision = 'Approved' | 'Rejected' | 'Needs Changes' | 'Under Review';
 
@@ -134,6 +135,13 @@ export function ApplicationReview({
           */}
           <section>
             <h3>Documents</h3>
+            {/*
+              Only the application that came through the restaurant dashboard
+              has real documents behind it. The seed rows are fixtures with no
+              owner, and showing one owner's paperwork under another
+              applicant's name is worse than showing none.
+            */}
+            {application.id === OWNER_APPLICATION_ID ? (
             <ul className="ar-docs">
               {getDocuments().map((d) => (
                 <li key={d.kindId}>
@@ -157,9 +165,15 @@ export function ApplicationReview({
                 </li>
               ))}
             </ul>
+            ) : (
+              <p className="dt-empty">
+                This application predates the restaurant dashboard, so it carries no uploaded
+                documents. Applications submitted through it arrive with their checklist.
+              </p>
+            )}
             <p className="ar-hint">
-              Shown for the demo application. Verifying a document is a separate action from
-              deciding the application, so it is not wired to the buttons below.
+              Verifying a document is a separate action from deciding the application, so it is
+              not wired to the buttons below.
             </p>
           </section>
 

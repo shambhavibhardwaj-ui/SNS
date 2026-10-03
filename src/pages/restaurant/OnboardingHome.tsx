@@ -25,19 +25,63 @@ export function OnboardingHome() {
     <div className="dh ob">
       <StageSteps steps={steps} />
 
+      {/*
+        The answer, when there is one.
+
+        Above everything else, because once an admin has decided it is the only
+        thing on this page the owner came to read. The reason is printed in
+        full for the same reason the document notes are — a verdict without one
+        is the guessing this dashboard exists to end.
+      */}
+      {app.decision ? (
+        <section className="ob-verdict" data-decision={app.decision.toLowerCase().replace(/\s+/g, '-')}>
+          <span className="ob-verdict-mark" aria-hidden="true">
+            {app.decision === 'Approved'
+              ? <CheckCircle2 size={22} strokeWidth={2.4} />
+              : <AlertTriangle size={22} strokeWidth={2.4} />}
+          </span>
+          <div>
+            <h3>
+              {app.decision === 'Approved' ? 'Your application was approved'
+                : app.decision === 'Rejected' ? 'Your application was rejected'
+                  : 'Changes were requested'}
+            </h3>
+            <p>
+              {app.decision === 'Approved'
+                ? `Decided ${app.decidedAt}. Your restaurant is on the platform — menus and orders come next.`
+                : app.decision === 'Rejected'
+                  ? `Decided ${app.decidedAt}.`
+                  : `Reviewed ${app.decidedAt}. Fix the points below and submit again.`}
+            </p>
+            {app.decisionNote ? (
+              <p className="ob-verdict-note">
+                <strong>From the platform team:</strong> {app.decisionNote}
+              </p>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
+
       {/* What is stopping submission, or that nothing is. */}
       <section className="dh-block is-primary">
         <div className="dh-block-head">
           <div>
-            <h3>{overview.canSubmit ? 'Ready to submit' : 'Before you can submit'}</h3>
+            <h3>
+              {overview.submittedAt ? 'With the platform team'
+                : overview.canSubmit ? 'Ready to submit'
+                  : 'Before you can submit'}
+            </h3>
             <p className="dh-block-sub">
-              {overview.canSubmit
-                ? 'Everything required is in. Sending it puts it in the platform team’s queue.'
-                : `${overview.blockers.length} ${overview.blockers.length === 1 ? 'thing needs' : 'things need'} your attention. Each one links to where it is fixed.`}
+              {overview.submittedAt
+                ? `Submitted ${overview.submittedAt}. Nothing is needed from you while they read it.`
+                : overview.canSubmit
+                  ? 'Everything required is in. Sending it puts it in the platform team’s queue.'
+                  : `${overview.blockers.length} ${overview.blockers.length === 1 ? 'thing needs' : 'things need'} your attention. Each one links to where it is fixed.`}
             </p>
           </div>
           <Link to="/restaurant/submit">
-            {overview.canSubmit ? 'Submit application' : 'Review and submit'}
+            {overview.submittedAt ? 'View what you sent'
+              : overview.canSubmit ? 'Submit application' : 'Review and submit'}
           </Link>
         </div>
 
