@@ -8584,3 +8584,190 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   .ob-panel { padding: 20px 18px; }
   .ob-pagehead h1 { font-size: 25px; }
 }
+
+/* ==========================================================================
+   ONBOARDING PALETTE — Pink Lemonade / Slime Margarita
+   Scoped to `.ob-shell`, the same technique the admin uses for plum and the
+   sign-in screen for blue: one block redefines the tokens inside this subtree,
+   so every rule above already reads them.
+   ========================================================================== */
+
+/*
+ * The pair is #FF5097 and #E4F482, and they cannot be used the way the
+ * reference uses them.
+ *
+ * Pink on lime is 2.5:1 and white on pink is 3.0:1 — both fine at the 90px
+ * display sizes of a colour-swatch poster, both unreadable at 13px. So the
+ * two colours do the *filling* here and a near-black plum does the talking:
+ * dark ink on pink is 5:1, dark ink on lime is 14:1. It is the same decision
+ * the admin section already makes about tangerine.
+ *
+ * Lime carries "done" because green already meant done; pink carries the
+ * accent because magenta already did.
+ */
+.ob-shell {
+  --pink: #ff5097;
+  --lime: #e4f482;
+  /* What sits on top of either of them. Never white. */
+  --on-bright: #2b0714;
+
+  --app-bg: #fbfdee;
+  --app-surface: #ffffff;
+  --app-line: #e3e9c4;
+  --app-line-soft: #f1f6dc;
+  --app-ink: #1f1a12;
+  --app-ink-soft: #57533f;
+  --app-ink-faint: #6f6b52;
+
+  /* A deepened pink for anything that is *text*: #FF5097 itself is 2.4:1 on
+     this background and only works as a fill. */
+  --teal-800: #c9306e;
+  /* Deeper still, for text sitting on a pink *tint* rather than on white.
+     #C9306E measures 3.96:1 on a 22% pink wash — fine on cream, short of 4.5
+     there, and pill labels are 11px. */
+  --pink-ink: #ad2a5e;
+  --teal-700: var(--pink);
+  --teal-600: var(--pink);
+  --teal-500: var(--pink);
+  --app-veg: var(--lime);
+
+  --shadow-card: 0 1px 2px rgb(43 7 20 / 0.05), 0 12px 28px -12px rgb(43 7 20 / 0.16);
+  --shadow-card-hover: 0 2px 4px rgb(43 7 20 / 0.07), 0 22px 44px -16px rgb(43 7 20 / 0.24);
+}
+
+/* Headings take the readable pink; body text stays ink. */
+.ob-shell .ob-pagehead h1,
+.ob-shell .ob-panel-head h2,
+.ob-shell .ob-rail-card h2,
+.ob-shell .ob-ready h2 { color: var(--teal-800); }
+
+.ob-shell .ob-logo strong { color: var(--teal-800); }
+.ob-shell .ob-logo-mark { background: var(--pink); }
+
+/* ---- the places that would otherwise put white on a bright colour ---- */
+
+.ob-shell li[data-state='done'] .ob-vstep-mark {
+  border-color: var(--lime);
+  background: var(--lime);
+  color: var(--on-bright);
+}
+
+.ob-shell li[data-state='current'] .ob-vstep-mark,
+.ob-shell li[data-here] .ob-vstep-mark {
+  border-color: var(--pink);
+  background: var(--pink);
+  color: var(--on-bright);
+}
+
+.ob-shell .ob-continue,
+.ob-shell .ob-save,
+.ob-shell .ob-submit,
+.ob-shell .ob-ready-ok {
+  background: var(--pink);
+  color: var(--on-bright);
+}
+
+.ob-shell .ob-upload[data-primary] {
+  background: var(--pink);
+  color: var(--on-bright);
+}
+
+.ob-shell .ob-ready-tick,
+.ob-shell .ob-check-mark[data-on],
+.ob-shell .ob-checklist li[data-filled] > .ob-check-mark {
+  background: var(--lime);
+  color: var(--on-bright);
+}
+
+.ob-shell .ob-sent-mark {
+  background: var(--lime);
+  color: var(--on-bright);
+}
+
+.ob-shell .ob-option[data-on] .ob-option-icon,
+.ob-shell .ob-option-on {
+  background: var(--pink);
+  color: var(--on-bright);
+}
+
+.ob-shell .ob-clear {
+  background: color-mix(in srgb, var(--lime) 40%, transparent);
+  color: #3f5306;
+}
+
+/* ---- fills that carry no text ---- */
+
+.ob-shell .ob-progress-track span { background: var(--pink); }
+.ob-shell .ob-vsteps li[data-state='done']:not(:last-child)::before { background: var(--lime); }
+.ob-shell .ob-aside-list svg { color: var(--teal-800); }
+
+/*
+ * Pink means one thing: you have to do something.
+ *
+ * The first pass gave "awaiting review" pink too, and next to "needs
+ * replacement" the two pills read as the same state at a glance — which on
+ * this page is the whole failure it was built to prevent. Waiting is not a
+ * task, so it goes neutral, and pink is left to mean the row that wants you.
+ */
+.ob-shell .ob-doc[data-state='verified'] { border-left-color: var(--lime); }
+.ob-shell .ob-doc[data-state='uploaded'] { border-left-color: var(--app-line); }
+.ob-shell .ob-doc[data-state='needs-replacement'] { border-left-color: var(--pink); }
+
+.ob-shell .ob-doc-state[data-state='verified'] {
+  background: color-mix(in srgb, var(--lime) 55%, transparent);
+  color: #3f5306;
+}
+
+.ob-shell .ob-doc-state[data-state='uploaded'] {
+  background: var(--app-line-soft);
+  color: var(--app-ink-soft);
+}
+
+.ob-shell .ob-upload[data-primary] { border-color: transparent; }
+
+.ob-shell .ob-doc-state[data-state='needs-replacement'] {
+  background: color-mix(in srgb, var(--pink) 22%, transparent);
+  color: var(--pink-ink);
+}
+
+.ob-shell .ob-doc-note {
+  background: color-mix(in srgb, var(--pink) 11%, transparent);
+  color: #8e1f4d;
+}
+
+.ob-shell .ob-blocker-icon {
+  background: color-mix(in srgb, var(--pink) 20%, transparent);
+  color: var(--pink-ink);
+}
+
+.ob-shell .ob-tally li[data-tone='good'] svg { color: #8aa310; }
+.ob-shell .ob-tally li[data-tone='busy'] svg { color: var(--app-ink-faint); }
+.ob-shell .ob-tally li[data-tone='bad'] svg { color: var(--teal-800); }
+
+.ob-shell .ob-chip[data-on] {
+  border-color: var(--pink);
+  background: color-mix(in srgb, var(--pink) 15%, transparent);
+  color: var(--pink-ink);
+}
+
+.ob-shell .ob-verdict[data-decision='approved'] { border-left-color: var(--lime); }
+.ob-shell .ob-verdict[data-decision='approved'] .ob-verdict-mark {
+  background: var(--lime);
+  color: var(--on-bright);
+}
+
+/* The modal's illustration is where the pair gets to be itself: a block of
+   lime against a block of pink, at the size the reference uses them. */
+.ob-shell .ob-ready-art {
+  background: linear-gradient(150deg, var(--lime) 0%, var(--lime) 46%, var(--pink) 46%, var(--pink) 100%);
+}
+
+.ob-shell .ob-art-paper { fill: #fff; }
+.ob-shell .ob-art-paper.is-front { fill: #fffdf2; }
+.ob-shell .ob-art-photo { fill: var(--pink); }
+.ob-shell .ob-art-line { fill: color-mix(in srgb, var(--on-bright) 18%, transparent); }
+.ob-shell .ob-art-phone { fill: var(--on-bright); }
+.ob-shell .ob-art-screen { fill: #fff; }
+.ob-shell .ob-art-badge rect { fill: var(--lime); }
+.ob-shell .ob-art-tick { stroke: var(--on-bright); }
+.ob-shell .ob-art-badge text { fill: var(--on-bright); }

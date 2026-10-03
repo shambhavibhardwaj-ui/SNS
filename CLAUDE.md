@@ -340,6 +340,21 @@ accents, and sit outside that budget.
 `index.css` defines two token sets: the brand `--teal-*` / `--butter*` / `--cream*` family,
 and an `--app-*` family for the light ordering and dashboard surfaces.
 
+**The onboarding flow runs Pink Lemonade and Slime Margarita** — `#FF5097` and `#E4F482`,
+one block keyed off `.ob-shell`, the same scoped-token technique as the other two sections.
+
+The pair cannot be used the way a colour-swatch poster uses it: pink on lime is 2.5:1 and
+white on pink is 3.0:1 — fine at 90px, unreadable at 13px. So the two colours do the filling
+and a near-black plum (`--on-bright: #2b0714`) does the talking: dark ink on pink measures
+5.99:1. `--teal-800` becomes a deepened `#c9306e` for pink *text*, and `--pink-ink: #ad2a5e`
+is deeper again for text on a pink *tint*, which is a wash pale enough that `#c9306e` only
+reaches 3.96:1 on it. The modal's illustration is where the pair gets to be itself.
+
+Lime carries "done" because green already did; pink carries the accent because magenta did.
+**Pink means one thing: this row wants you.** Giving "awaiting review" pink as well put it
+next to "needs replacement" reading as the same state, which on that page is the exact
+failure it exists to prevent — waiting is not a task, so it is neutral.
+
 **The admin section runs its own palette** — Tangerine `#F89847` and Plum `#7F1633`. It is
 one CSS block keyed off `.db[data-theme='plum']`, which redefines the brand tokens inside
 that subtree: anything already written as `var(--teal-700)` resolves to a plum there, and
