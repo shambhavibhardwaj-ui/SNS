@@ -1,11 +1,10 @@
 import { useRef, useState } from 'react';
 import { AlertTriangle, Check, FileText, Upload, X } from 'lucide-react';
-import { StatCards } from '../../components/dashboard/StatCard';
+import { PageHead, Panel } from './PageHead';
 import {
-  getDocuments, getDocumentSummary, getSteps, removeDocument, uploadDocument,
+  getDocuments, getDocumentSummary, removeDocument, uploadDocument,
   type DocumentRow,
 } from '../../services/onboardingService';
-import { StageSteps } from './StageSteps';
 
 /**
  * Step three: the paperwork.
@@ -36,29 +35,38 @@ export function Documents() {
   };
 
   return (
-    <div className="dh ob">
-      <StageSteps steps={getSteps()} />
-
-      <StatCards
-        stats={[
-          { label: 'Verified', value: `${summary.verified} of ${summary.required}`, hint: 'accepted by the platform team', Icon: Check },
-          { label: 'Awaiting review', value: String(summary.uploaded), hint: 'uploaded, not yet checked', Icon: FileText },
-          { label: 'Needs replacement', value: String(summary.needsReplacement), hint: 'returned with a reason', Icon: AlertTriangle },
-          { label: 'Not uploaded', value: String(summary.missingRequired), hint: 'required documents still missing', Icon: Upload },
-        ]}
+    <>
+      <PageHead
+        title="Restaurant documents"
+        lede="Every row says where it stands and when it changed. If one comes back, the reason is on the row — you should never have to ask what was wrong with it."
       />
 
-      <section className="dh-block">
-        <div className="dh-block-head">
-          <div>
-            <h3>Required documents</h3>
-            <p className="dh-block-sub">
-              Every row says where it stands and when it changed. If one comes back, the reason is
-              on the row — you should never have to ask what was wrong with it.
-            </p>
-          </div>
-        </div>
+      {/* The four states, counted. Small because it is orientation, not the
+          work: the work is the list underneath. */}
+      <ul className="ob-tally">
+        <li data-tone="good">
+          <Check size={15} strokeWidth={2.5} aria-hidden="true" />
+          <strong>{summary.verified}</strong>
+          <span>verified of {summary.required}</span>
+        </li>
+        <li data-tone="busy">
+          <FileText size={15} strokeWidth={2.5} aria-hidden="true" />
+          <strong>{summary.uploaded}</strong>
+          <span>awaiting review</span>
+        </li>
+        <li data-tone="bad">
+          <AlertTriangle size={15} strokeWidth={2.5} aria-hidden="true" />
+          <strong>{summary.needsReplacement}</strong>
+          <span>need replacing</span>
+        </li>
+        <li>
+          <Upload size={15} strokeWidth={2.5} aria-hidden="true" />
+          <strong>{summary.missingRequired}</strong>
+          <span>not uploaded</span>
+        </li>
+      </ul>
 
+      <Panel>
         <ul className="ob-docs">
           {rows.map((row) => (
             <li key={row.kindId} className="ob-doc" data-state={slug(row.state)} data-needs={row.needsOwner || undefined}>
@@ -124,13 +132,13 @@ export function Documents() {
           ))}
         </ul>
 
-        <p className="an-note">
+        <p className="ob-note">
           Files are recorded but not stored — there is no storage bucket yet, so a reload forgets
           them. Accepted formats are PDF, JPG and PNG. Only the platform team can mark a document
           verified; uploading always lands on “Awaiting review”.
         </p>
-      </section>
-    </div>
+      </Panel>
+    </>
   );
 }
 

@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Check, X } from 'lucide-react';
 import { RESTAURANT_TYPES, LOCALITIES, type RestaurantType } from '../../data/onboarding';
 import {
-  getApplication, getDetailChecks, getSteps, saveDetails,
+  getApplication, getDetailChecks, saveDetails,
 } from '../../services/onboardingService';
 import { analyticsCuisines } from '../../data/admin/analytics';
-import { StageSteps } from './StageSteps';
+import { PageHead, Panel } from './PageHead';
 
 /**
  * Step one: who you are and where.
@@ -59,43 +59,47 @@ export function RestaurantDetails() {
   };
 
   return (
-    <div className="dh ob">
-      <StageSteps steps={getSteps({ ...app, ...form })} />
+    <>
+      <PageHead
+        title="Restaurant information"
+        lede="This is what an admin reads first, and what customers see once you are live."
+      />
 
-      <section className="dh-block">
-        <div className="dh-block-head">
-          <div>
-            <h3>Restaurant details</h3>
-            <p className="dh-block-sub">
-              This is what an admin reads first, and what customers see once you are live.
-            </p>
-          </div>
-        </div>
+      <div className="ob-split">
+        <form className="ob-form" onSubmit={onSubmit}>
+          <Panel title="Restaurant name" lede="Customers will see this name on SNS.">
+            <label>
+              <span className="fc-sr-only">Restaurant name</span>
+              <input
+                value={form.restaurantName}
+                onChange={field('restaurantName')}
+                placeholder="Restaurant name*"
+                required
+              />
+            </label>
+          </Panel>
 
-        <div className="ob-split">
-          <form className="ob-form" onSubmit={onSubmit}>
+          <Panel
+            title="Owner details"
+            lede="SNS uses these for every message about your application and, later, your orders."
+          >
             <div className="ob-row">
-              <label>
-                <span>Restaurant name</span>
-                <input value={form.restaurantName} onChange={field('restaurantName')} required />
-              </label>
               <label>
                 <span>Owner or manager name</span>
                 <input value={form.ownerName} onChange={field('ownerName')} required />
-              </label>
-            </div>
-
-            <div className="ob-row">
-              <label>
-                <span>Phone number</span>
-                <input type="tel" value={form.phone} onChange={field('phone')} required />
               </label>
               <label>
                 <span>Email</span>
                 <input type="email" value={form.email} onChange={field('email')} required />
               </label>
             </div>
+            <label>
+              <span>Phone number</span>
+              <input type="tel" value={form.phone} onChange={field('phone')} required />
+            </label>
+          </Panel>
 
+          <Panel title="Where you are" lede="Customers and delivery partners both work from this.">
             <label>
               <span>Restaurant address</span>
               <input value={form.address} onChange={field('address')} required />
@@ -136,9 +140,14 @@ export function RestaurantDetails() {
                 required
               />
             </label>
+          </Panel>
 
+          <Panel
+            title="Menu and cuisines"
+            lede="What you cook. This decides which districts of the city you appear in."
+          >
             <fieldset className="ob-fieldset">
-              <legend>Cuisines</legend>
+              <legend className="fc-sr-only">Cuisines</legend>
               <p className="ob-hint">
                 Pick every cuisine you serve. <strong>Each one gets its own menu</strong> — they are
                 never merged, so a customer browsing Biryani sees only your biryani.
@@ -172,34 +181,34 @@ export function RestaurantDetails() {
                 placeholder="What your kitchen is known for."
               />
             </label>
+          </Panel>
 
-            <div className="ob-actions">
-              <button type="submit" className="ob-save">Save details</button>
-              {saved ? <span className="ob-saved"><Check size={14} strokeWidth={3} /> Saved</span> : null}
-            </div>
-          </form>
+          <div className="ob-actions">
+            <button type="submit" className="ob-save">Save and continue</button>
+            {saved ? <span className="ob-saved"><Check size={14} strokeWidth={3} /> Saved</span> : null}
+          </div>
+        </form>
 
-          {/* Live, so it answers "what have I missed" without a submit. */}
-          <aside className="an-card ob-checklist">
-            <h4 className="an-card-title">Completeness</h4>
-            <ul>
-              {checks.map((c) => (
-                <li key={String(c.id)} data-filled={c.filled || undefined}>
-                  <span className="ob-check-mark" aria-hidden="true">
-                    {c.filled ? <Check size={12} strokeWidth={3} /> : <X size={12} strokeWidth={3} />}
-                  </span>
-                  <span>{c.label}</span>
-                  {c.required ? null : <em className="ob-optional">optional</em>}
-                </li>
-              ))}
-            </ul>
-            <p className="an-note">
-              Saving is not submitting. Nothing reaches the platform team until you send it from
-              the Submit page.
-            </p>
-          </aside>
-        </div>
-      </section>
-    </div>
+        {/* Live, so it answers "what have I missed" without a submit. */}
+        <aside className="ob-checklist">
+          <h4>Completeness</h4>
+          <ul>
+            {checks.map((c) => (
+              <li key={String(c.id)} data-filled={c.filled || undefined}>
+                <span className="ob-check-mark" aria-hidden="true">
+                  {c.filled ? <Check size={12} strokeWidth={3} /> : <X size={12} strokeWidth={3} />}
+                </span>
+                <span>{c.label}</span>
+                {c.required ? null : <em className="ob-optional">optional</em>}
+              </li>
+            ))}
+          </ul>
+          <p className="ob-note">
+            Saving is not submitting. Nothing reaches the platform team until you send it from
+            the Submit step.
+          </p>
+        </aside>
+      </div>
+    </>
   );
 }

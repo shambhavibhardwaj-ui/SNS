@@ -190,7 +190,7 @@ so the rider rows call the company a `provider` and keep `partner` for the perso
 
 **Delivery.** Home, assigned orders, completed deliveries, earnings, profile.
 
-**Restaurant owner** (`/restaurant`). The onboarding dashboard, in five steps:
+**Restaurant owner** (`/restaurant`). A registration flow, in five steps:
 **details → documents → delivery method → submit → admin review**. An overview with the
 stepper, a completeness meter, the admin's verdict when there is one, and a history log; the
 details form with a live checklist; the document checklist; the delivery-method choice; and

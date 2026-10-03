@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { AlertTriangle, Check, Send } from 'lucide-react';
 import { DELIVERY_MODEL_LABEL } from '../../data/admin/types';
 import {
-  getApplication, getDocuments, getReadiness, getSteps, submitApplication,
+  getApplication, getDocuments, getReadiness, submitApplication,
 } from '../../services/onboardingService';
-import { StageSteps } from './StageSteps';
+import { PageHead, Panel } from './PageHead';
 
 /**
  * Step four: send it.
@@ -34,9 +34,9 @@ export function SubmitApplication() {
 
   if (sent) {
     return (
-      <div className="dh ob">
-        <StageSteps steps={getSteps()} />
-        <section className="dh-block is-primary">
+      <>
+        <PageHead title="Submitted" />
+        <Panel>
           <div className="ob-sent">
             <span className="ob-sent-mark" aria-hidden="true"><Check size={26} strokeWidth={3} /></span>
             <h3>Application submitted</h3>
@@ -48,45 +48,39 @@ export function SubmitApplication() {
               You will see the decision on your overview, and any document they return will show
               there with the reason attached. Nothing more is needed from you now.
             </p>
-            <Link to="/restaurant" className="dh-action is-primary">Back to overview</Link>
+            <Link to="/restaurant" className="ob-save">See your application status</Link>
           </div>
-        </section>
-      </div>
+        </Panel>
+      </>
     );
   }
 
   return (
-    <div className="dh ob">
-      <StageSteps steps={getSteps()} />
+    <>
+      <PageHead
+        title="Review and submit"
+        lede="This is exactly what the platform team will see."
+      />
 
-      <section className="dh-block">
-        <div className="dh-block-head">
-          <div>
-            <h3>Review and submit</h3>
-            <p className="dh-block-sub">This is exactly what the platform team will see.</p>
-          </div>
+      {readiness.blockers.length ? (
+        <div className="ob-blockers">
+          <p className="ob-blockers-head">
+            <AlertTriangle size={16} strokeWidth={2} aria-hidden="true" />
+            <strong>Not ready yet.</strong> {readiness.blockers.length}
+            {readiness.blockers.length === 1 ? ' thing is' : ' things are'} outstanding.
+          </p>
+          <ul>
+            {readiness.blockers.map((b) => (
+              <li key={b.id}>
+                <Link to={b.href}>{b.label}</Link>
+              </li>
+            ))}
+          </ul>
         </div>
+      ) : null}
 
-        {readiness.blockers.length ? (
-          <div className="ob-blockers">
-            <p className="ob-blockers-head">
-              <AlertTriangle size={16} strokeWidth={2} aria-hidden="true" />
-              <strong>Not ready yet.</strong> {readiness.blockers.length}
-              {readiness.blockers.length === 1 ? ' thing is' : ' things are'} outstanding.
-            </p>
-            <ul>
-              {readiness.blockers.map((b) => (
-                <li key={b.id}>
-                  <Link to={b.href}>{b.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-
-        <div className="an-card">
-          <h4 className="an-card-title">Restaurant information</h4>
-          <dl className="ar-facts">
+      <Panel title="Restaurant information">
+        <dl className="ar-facts">
             <div><dt>Restaurant</dt><dd>{app.restaurantName || <Blank />}</dd></div>
             <div><dt>Owner</dt><dd>{app.ownerName || <Blank />}</dd></div>
             <div><dt>Phone</dt><dd>{app.phone || <Blank />}</dd></div>
@@ -94,13 +88,12 @@ export function SubmitApplication() {
             <div><dt>Address</dt><dd>{app.address || <Blank />}</dd></div>
             <div><dt>Location</dt><dd>{app.locality || <Blank />}</dd></div>
             <div><dt>Type</dt><dd>{app.restaurantType ?? <Blank />}</dd></div>
-            <div><dt>Hours</dt><dd>{app.operatingHours || <Blank />}</dd></div>
-          </dl>
-        </div>
+          <div><dt>Hours</dt><dd>{app.operatingHours || <Blank />}</dd></div>
+        </dl>
+      </Panel>
 
-        <div className="an-card">
-          <h4 className="an-card-title">Restaurant setup</h4>
-          <dl className="ar-facts">
+      <Panel title="Restaurant setup">
+        <dl className="ar-facts">
             <div>
               <dt>Cuisines</dt>
               <dd>
@@ -119,13 +112,12 @@ export function SubmitApplication() {
                 <span className="ar-hint">Sets which fee structure applies.</span>
               </dd>
             </div>
-            <div><dt>Description</dt><dd>{app.description || <span className="dt-notset">Not provided</span>}</dd></div>
-          </dl>
-        </div>
+          <div><dt>Description</dt><dd>{app.description || <span className="dt-notset">Not provided</span>}</dd></div>
+        </dl>
+      </Panel>
 
-        <div className="an-card">
-          <h4 className="an-card-title">Documents</h4>
-          <ul className="ob-doc-summary">
+      <Panel title="Documents">
+        <ul className="ob-doc-summary">
             {docs.map((d) => (
               <li key={d.kindId} data-state={d.state.toLowerCase().replace(/\s+/g, '-')}>
                 <span>{d.kind.label}</span>
@@ -135,13 +127,13 @@ export function SubmitApplication() {
                       : d.state}
                 </span>
               </li>
-            ))}
-          </ul>
-        </div>
+          ))}
+        </ul>
+      </Panel>
 
-        {error ? <p className="lg-error">{error}</p> : null}
+      {error ? <p className="lg-error">{error}</p> : null}
 
-        <div className="ob-submit-row">
+      <div className="ob-submit-row">
           <button
             type="button"
             className="ob-submit"
@@ -152,13 +144,12 @@ export function SubmitApplication() {
             <Send size={15} strokeWidth={2} />
             Submit application
           </button>
-          <p className="an-note">
-            Once submitted you cannot edit it until the team responds. Documents already verified
-            stay verified.
-          </p>
-        </div>
-      </section>
-    </div>
+        <p className="ob-note">
+          Once submitted you cannot edit it until the team responds. Documents already verified
+          stay verified.
+        </p>
+      </div>
+    </>
   );
 }
 

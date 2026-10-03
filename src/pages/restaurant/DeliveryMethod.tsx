@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Bike, Check, Truck } from 'lucide-react';
 import { DELIVERY_MODEL_LABEL, type DeliveryModel } from '../../data/admin/types';
-import { getApplication, getSteps, setDeliveryModel } from '../../services/onboardingService';
-import { StageSteps } from './StageSteps';
+import { getApplication, setDeliveryModel } from '../../services/onboardingService';
+import { PageHead, Panel } from './PageHead';
 
 const OPTIONS: {
   id: DeliveryModel;
@@ -56,20 +56,13 @@ export function DeliveryMethod() {
   };
 
   return (
-    <div className="dh ob">
-      <StageSteps steps={getSteps()} />
+    <>
+      <PageHead
+        title="Delivery method"
+        lede="You can change this later, but it affects the fee structure on every order, so it is worth reading both."
+      />
 
-      <section className="dh-block">
-        <div className="dh-block-head">
-          <div>
-            <h3>How will your orders be delivered?</h3>
-            <p className="dh-block-sub">
-              You can change this later, but it affects the fee structure on every order, so it is
-              worth reading both.
-            </p>
-          </div>
-        </div>
-
+      <Panel title="How will your orders be delivered?">
         <div className="ob-options" role="radiogroup" aria-label="Delivery method">
           {OPTIONS.map(({ id, Icon, blurb, points }) => {
             const on = chosen === id;
@@ -113,11 +106,11 @@ export function DeliveryMethod() {
           </p>
         ) : null}
 
-        <p className="an-note">
+        <p className="ob-note">
           The fee each model attracts reads “Not set” across the platform. The client has not given
           us those percentages, and this page will not be the one to invent them.
         </p>
-      </section>
-    </div>
+      </Panel>
+    </>
   );
 }
