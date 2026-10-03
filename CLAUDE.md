@@ -246,9 +246,17 @@ would let two admin pages report different totals for the same events.
 
 `data/onboarding.ts` is the owner's side of `data/admin/applications.ts` — the admin file is
 a queue of other people's applications, this is the one belonging to the signed-in owner,
-with the parts an admin never sees. The seed is deliberately part-finished: one document
-verified, one returned with a reason, one never uploaded, so the "needs replacement" path is
-shown to work rather than asserted.
+with the parts an admin never sees.
+
+**It starts empty**: every field blank, every document missing, no history. That is where a
+real owner begins, and while it was pre-filled the empty-form behaviour was never once
+exercised. `email` is blank rather than the account's address — prefilling it from the
+signed-in profile is right and belongs in the service once it reads a real session.
+
+One consequence: **"Needs Replacement" is now unreachable in a demo.** Only an admin can put
+a document in that state and there is no per-document review screen yet — the admin decides
+the whole application. The styling and the copy for it are still there and still correct;
+nothing drives it.
 
 Readiness has one deliberate asymmetry. A document that is merely `Uploaded` does **not**
 block submission — waiting for an admin to verify it is an admin's job, and holding the

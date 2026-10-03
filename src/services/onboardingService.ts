@@ -297,21 +297,12 @@ export interface OwnerOverview {
   documents: DocumentSummary;
   deliveryLabel: string | null;
   cuisineCount: number;
-  /** Days the application has been open, from the first event. */
-  daysOpen: number;
   submittedAt: string | null;
   decision: OwnerApplication['decision'];
 }
 
 export function getOverview(app = ownerApplication): OwnerOverview {
   const r = getReadiness(app);
-  const first = applicationEvents[0]?.at;
-  const daysOpen = first
-    ? Math.max(
-        0,
-        Math.round((MOCK_TODAY.getTime() - new Date(`${first}T00:00:00Z`).getTime()) / 86_400_000),
-      )
-    : 0;
 
   return {
     stage: getStage(app),
@@ -321,7 +312,6 @@ export function getOverview(app = ownerApplication): OwnerOverview {
     documents: getDocumentSummary(app),
     deliveryLabel: app.deliveryModel ? DELIVERY_MODEL_LABEL[app.deliveryModel] : null,
     cuisineCount: app.cuisines.length,
-    daysOpen,
     submittedAt: app.submittedAt,
     decision: app.decision,
   };

@@ -8796,3 +8796,12 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 @media (max-width: 560px) {
   .ob-footer .ob-save { width: 100%; justify-content: center; }
 }
+
+/* The tail of a capped blocker list. Quieter than the rows above it: it is a
+   count, not another thing to click. */
+.ob-blocker-more {
+  background: none !important;
+  padding: 4px 14px !important;
+  font-size: 12.5px;
+  color: var(--app-ink-faint);
+}

@@ -13,6 +13,9 @@ import { PageHead, Panel } from './PageHead';
  * "why not" is a list of specific, clickable blockers rather than a percentage
  * to interpret.
  */
+/** How many outstanding items the status page lists before summarising. */
+const BLOCKERS_SHOWN = 6;
+
 export function OnboardingHome() {
   const app = getApplication();
   const overview = getOverview();
@@ -84,7 +87,13 @@ export function OnboardingHome() {
       >
         {overview.blockers.length ? (
           <ul className="ob-blocker-list">
-            {overview.blockers.map((b) => (
+            {/*
+              Capped. A brand-new account is blocked on all fifteen of its
+              empty fields, and a list that long stops being a to-do and
+              becomes a wall — the rail already says which step to start with.
+              They are in step order, so the first few are the next few.
+            */}
+            {overview.blockers.slice(0, BLOCKERS_SHOWN).map((b) => (
               <li key={b.id}>
                 <span className="ob-blocker-icon" aria-hidden="true">
                   <AlertTriangle size={15} strokeWidth={2.2} />
@@ -93,6 +102,14 @@ export function OnboardingHome() {
                 <Link to={b.href}>Fix this</Link>
               </li>
             ))}
+            {overview.blockers.length > BLOCKERS_SHOWN ? (
+              <li className="ob-blocker-more">
+                <span>
+                  and {overview.blockers.length - BLOCKERS_SHOWN} more, across the steps still
+                  to do
+                </span>
+              </li>
+            ) : null}
           </ul>
         ) : (
           <p className="ob-clear">
@@ -115,6 +132,12 @@ export function OnboardingHome() {
 
       {/* What has happened, newest first. */}
       <Panel title="History" lede="Everything that has happened to this application, and who did it.">
+        {timeline.length === 0 ? (
+          <p className="dt-empty">
+            Nothing yet. Uploading a document, submitting, and every answer from the platform
+            team will appear here with the date and who did it.
+          </p>
+        ) : null}
         <ol className="ob-timeline">
           {timeline.map((e) => (
             <li key={e.id} data-actor={e.actor}>

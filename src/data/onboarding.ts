@@ -21,7 +21,6 @@
  * a `storagePath` rather than a file: the real thing is an object in Supabase
  * Storage, and the row is the record of it.
  */
-import { MOCK_TODAY } from './admin/platform';
 import type { DeliveryModel } from './admin/types';
 
 /* ------------------------------------------------------------ documents -- */
@@ -138,42 +137,46 @@ export interface OwnerApplication {
   decisionNote: string | null;
 }
 
-const daysAgo = (n: number) =>
-  new Date(MOCK_TODAY.getTime() - n * 86_400_000).toISOString().slice(0, 10);
-
 /**
- * The demo owner's application, part-finished on purpose.
+ * The owner's application, empty.
  *
- * It sits where a real one spends most of its life: details filled, delivery
- * chosen, documents half in — one verified, one rejected with a reason, one
- * never uploaded. That is the state the dashboard has to be good at, and an
- * all-green record would have proved nothing.
+ * A new account has filled in nothing, and that is the state this starts in:
+ * every field blank, every document missing, nothing submitted. The dashboard
+ * has to be good at *that* — it is where a real owner actually begins, and a
+ * pre-filled record meant the empty-form behaviour was never once exercised.
+ *
+ * `email` is blank rather than the account's address. Prefilling it from the
+ * signed-in profile is the right behaviour and belongs in the service once it
+ * reads a real session; inventing one here would just be demo data again.
  */
 export const ownerApplication: OwnerApplication = {
   id: 'APP-100',
   ownerUserId: 'demo-restaurant-owner',
 
-  restaurantName: 'ABC Kitchen',
-  ownerName: 'Rahul Desai',
-  phone: '+91 98200 41123',
-  email: 'onboard@mail.com',
-  address: '14 Marigold Court, Tandoor Quarter',
-  locality: 'Tandoor Quarter',
-  description: 'Family kitchen running a clay tandoor and a biryani handi since 1998.',
-  operatingHours: '11:00 – 23:30, daily',
-  restaurantType: 'Casual dining',
+  restaurantName: '',
+  ownerName: '',
+  phone: '',
+  email: '',
+  address: '',
+  locality: '',
+  description: '',
+  operatingHours: '',
+  restaurantType: null,
 
-  deliveryModel: 'aggregator',
-  cuisines: ['North Indian', 'Biryani'],
+  deliveryModel: null,
+  cuisines: [],
 
-  documents: [
-    { kindId: 'registration', state: 'Verified', fileName: 'abc-kitchen-registration.pdf', storagePath: 'applications/APP-100/registration.pdf', uploadedAt: daysAgo(9), reviewedAt: daysAgo(6), reviewNote: null },
-    { kindId: 'fssai', state: 'Verified', fileName: 'fssai-licence-2026.pdf', storagePath: 'applications/APP-100/fssai.pdf', uploadedAt: daysAgo(9), reviewedAt: daysAgo(6), reviewNote: null },
-    { kindId: 'identity', state: 'Uploaded', fileName: 'rahul-desai-id.jpg', storagePath: 'applications/APP-100/identity.jpg', uploadedAt: daysAgo(2), reviewedAt: null, reviewNote: null },
-    { kindId: 'address', state: 'Needs Replacement', fileName: 'electricity-bill.pdf', storagePath: 'applications/APP-100/address.pdf', uploadedAt: daysAgo(9), reviewedAt: daysAgo(5), reviewNote: 'The bill is dated March and we need one from the last 90 days. The name on it also reads “R. Desai” rather than the registered business name.' },
-    { kindId: 'bank', state: 'Missing', fileName: null, storagePath: null, uploadedAt: null, reviewedAt: null, reviewNote: null },
-    { kindId: 'insurance', state: 'Missing', fileName: null, storagePath: null, uploadedAt: null, reviewedAt: null, reviewNote: null },
-  ],
+  /* One row per kind, all missing. Built from the checklist rather than typed
+     out, so adding a document kind cannot leave a gap here. */
+  documents: DOCUMENT_KINDS.map((k) => ({
+    kindId: k.id,
+    state: 'Missing' as DocumentState,
+    fileName: null,
+    storagePath: null,
+    uploadedAt: null,
+    reviewedAt: null,
+    reviewNote: null,
+  })),
 
   submittedAt: null,
   decision: null,
@@ -193,13 +196,14 @@ export interface ApplicationEvent {
   detail?: string;
 }
 
-export const applicationEvents: ApplicationEvent[] = [
-  { id: 'ev-1', at: daysAgo(10), actor: 'owner', label: 'Application started', detail: 'Account created and restaurant details begun.' },
-  { id: 'ev-2', at: daysAgo(9), actor: 'owner', label: 'Documents uploaded', detail: 'Business registration, food licence and address proof.' },
-  { id: 'ev-3', at: daysAgo(6), actor: 'admin', label: 'Two documents verified', detail: 'Business registration and food licence accepted.' },
-  { id: 'ev-4', at: daysAgo(5), actor: 'admin', label: 'Address proof returned', detail: 'Out of date, and the name does not match the registration.' },
-  { id: 'ev-5', at: daysAgo(2), actor: 'owner', label: 'Owner identification uploaded', detail: 'Awaiting review.' },
-];
+/**
+ * Empty until something happens.
+ *
+ * Every entry below is written by the service as the owner or an admin acts —
+ * a document uploaded, an application submitted, a decision returned. Seeding
+ * it would be inventing a history for an account that has none.
+ */
+export const applicationEvents: ApplicationEvent[] = [];
 
 /** The city districts an applicant can pick, for the locality field. */
 export const LOCALITIES = [
