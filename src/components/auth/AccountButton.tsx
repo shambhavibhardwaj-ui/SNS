@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Bike, Heart, LogOut, ReceiptText, ShieldCheck, UserRound } from 'lucide-react';
+import { Bike, Heart, LogOut, ReceiptText, ShieldCheck, Store, UserRound, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../../auth/useAuth';
+import type { AppRole } from '../../services/authService';
 
-const ROLE_BADGE = {
+/* Typed by `AppRole` rather than inferred, so adding a role to the enum fails
+   the build here instead of indexing to `undefined` at runtime. */
+const ROLE_BADGE: Record<AppRole, { label: string; Icon: LucideIcon; to: string }> = {
   admin: { label: 'Admin', Icon: ShieldCheck, to: '/admin' },
   delivery: { label: 'Delivery', Icon: Bike, to: '/delivery' },
+  restaurant: { label: 'Restaurant', Icon: Store, to: '/restaurant' },
   customer: { label: 'Customer', Icon: UserRound, to: '/customer' },
-} as const;
+};
 
 /** Top-bar account control: sign-in prompt, or the signed-in person's menu. */
 export function AccountButton() {

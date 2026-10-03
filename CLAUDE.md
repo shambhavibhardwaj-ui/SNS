@@ -21,6 +21,7 @@ Object-oriented programming is how the code is written, not a computation model.
 | Rating | Star ratings, written feedback, rating history |
 | Performance | Checks RULE-01 and RULE-02, triggers plans and concessions |
 | Fee | Aggregator fee, own-delivery fee, service-fee concession |
+| Onboarding | The owner's own application: details, delivery choice, documents, submission |
 | Delivery workforce | Delivery partners, their status, salary and insurance |
 
 ## Business rules (from the client — do not change without asking)
@@ -137,8 +138,21 @@ which has RLS on and **no policies at all**, so no API request can reach it.
 Role checks in React are cosmetic — they decide what renders. What protects the data is row
 level security. `/admin?role=admin` grants nothing.
 
+There are four roles: `customer`, `admin`, `delivery` and `restaurant` — the last being the
+restaurant *owner*, the person onboarding their kitchen. `HOME_FOR_ROLE` and `ROLE_BADGE`
+are both typed by `AppRole` rather than inferred, so adding a fifth fails the build at every
+site that enumerates them instead of silently indexing to `undefined`.
+
 Migrations, in order: `0001` profiles and roles · `0002` tighten function grants ·
-`0003` admin bootstrap allowlist · `0004` seed the demo admin and delivery accounts.
+`0003` admin bootstrap allowlist · `0004` seed the demo admin and delivery accounts ·
+`0005` add the `restaurant` role · `0006` seed the demo restaurant-owner account.
+
+**`0005` and `0006` are two files for a reason.** Postgres will not let a new enum value be
+used in the same transaction that adds it, and `0006` inserts a row carrying `'restaurant'`.
+Combined they fail with "unsafe use of new value of enum type". Run them in order, separately.
+
+No migration contains a password. The demo accounts are allowlisted addresses; the password
+is chosen at sign-up and lives only in Supabase Auth, hashed.
 
 Local config goes in `.env.local` (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`). Anon key
 only — a service-role key must never reach the bundle. With neither set the app still runs;
@@ -176,6 +190,21 @@ so the rider rows call the company a `provider` and keep `partner` for the perso
 
 **Delivery.** Home, assigned orders, completed deliveries, earnings, profile.
 
+**Restaurant owner** (`/restaurant`). The onboarding dashboard: an overview with a five-step
+stepper, a completeness meter and a history log; the details form with a live checklist; the
+delivery-method choice; the document checklist; and a review-and-submit page. It is its own
+dashboard rather than a tab because the actor is different — this is the person applying.
+
+Its one rule: **the owner should never have to guess.** Every document states its position in
+words, with the date it changed and, when it was returned, the admin's reason in full. The
+stage, the percentage and the list of blockers are all derived in `onboardingService` from
+the fields and documents on each read — nothing is stored as a conclusion, so the page cannot
+disagree with the form underneath it. `submitApplication()` re-checks readiness in the
+service, because a disabled button is a hint and not a rule.
+
+A document the owner uploads always lands on `Uploaded`, never `Verified`: only an admin
+verifies, and a function that let an owner do it would make the checklist decorative.
+
 **Customer — ordering.** Restaurant page with one tab per cuisine and a separate menu
 behind each, cart grouped by cuisine, checkout with address validation, and an order
 confirmation carrying the same grouping through to the receipt. A cart holds one
@@ -210,6 +239,23 @@ carry no employment history. Real data would carry a status log.
 Delivery *performance* reads the same `dailySeries` the analytics page does, rather than a
 series of its own. Every order on this platform is a delivery, so a second set of numbers
 would let two admin pages report different totals for the same events.
+
+## Onboarding
+
+`data/onboarding.ts` is the owner's side of `data/admin/applications.ts` — the admin file is
+a queue of other people's applications, this is the one belonging to the signed-in owner,
+with the parts an admin never sees. The seed is deliberately part-finished: one document
+verified, one returned with a reason, one never uploaded, so the "needs replacement" path is
+shown to work rather than asserted.
+
+Readiness has one deliberate asymmetry. A document that is merely `Uploaded` does **not**
+block submission — waiting for an admin to verify it is an admin's job, and holding the
+application for it would deadlock, since an admin only looks once it is submitted.
+
+The admin's `ApplicationReview` now carries a Documents section, so one application is one
+page as the brief asks. It is read-only there: verifying a document is its own decision with
+its own audit trail, and folding it into approve/reject would let one click accept five
+documents nobody opened.
 
 ## Analytics
 

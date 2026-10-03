@@ -7,6 +7,7 @@ import { CustomerApp } from './pages/CustomerApp';
 import { LoginPage } from './pages/LoginPage';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { DeliveryDashboard } from './pages/delivery/DeliveryDashboard';
+import { RestaurantDashboard } from './pages/restaurant/RestaurantDashboard';
 
 /**
  * Routing.
@@ -41,6 +42,15 @@ export default function App() {
               element={
                 <RequireRole allow={['admin']}>
                   <AdminDashboard />
+                </RequireRole>
+              }
+            />
+
+            <Route
+              path="/restaurant/*"
+              element={
+                <RequireRole allow={['restaurant']}>
+                  <RestaurantDashboard />
                 </RequireRole>
               }
             />

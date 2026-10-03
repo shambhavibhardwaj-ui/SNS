@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { Bike, Lock, Mail, ShieldCheck, UserRound } from 'lucide-react';
+import { Bike, Lock, Mail, ShieldCheck, Store, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { homeForRole } from '../services/authService';
 import { RouteSpinner } from '../auth/RequireRole';
@@ -20,6 +20,13 @@ const ROLES = [
     title: 'Admin',
     blurb: 'Manage restaurants, orders and fees.',
     note: 'Granted by an existing admin.',
+  },
+  {
+    key: 'restaurant',
+    Icon: Store,
+    title: 'Restaurant',
+    blurb: 'Register your kitchen and track the application.',
+    note: 'Provisioned by an admin.',
   },
   {
     key: 'delivery',

@@ -7364,3 +7364,621 @@ th[data-align='end'] .dt-sort { flex-direction: row-reverse; }
   font-family: var(--font-mono);
   font-weight: 600;
 }
+
+/* ==========================================================================
+   RESTAURANT ONBOARDING
+   The owner's dashboard. It runs inside DashboardShell, so this is only the
+   shapes the onboarding flow adds — the stepper, the document rows, the form
+   and the two delivery options. Cards, tables, pills and stat cards are the
+   staff dashboards' existing furniture.
+   ========================================================================== */
+
+/* ------------------------------------------------------------ stepper -- */
+
+.ob-steps {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 10px;
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.ob-steps li {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 13px 14px;
+  border: 1px solid var(--app-line);
+  border-radius: 14px;
+  background: var(--app-surface);
+  /* The state is also carried in the mark and in visually-hidden text, so a
+     border colour is never the only thing saying it. */
+  transition: border-color 180ms ease;
+}
+
+.ob-steps li[data-state='done'] { border-color: color-mix(in srgb, var(--app-veg) 45%, var(--app-line)); }
+.ob-steps li[data-state='current'] { border-color: var(--teal-600); box-shadow: var(--shadow-card); }
+
+.ob-step-mark {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--app-line-soft);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--app-ink-soft);
+}
+
+li[data-state='done'] > .ob-step-mark { background: var(--app-veg); color: #fff; }
+li[data-state='current'] > .ob-step-mark { background: var(--teal-700); color: #fff; }
+
+.ob-step-body { display: grid; gap: 3px; min-width: 0; }
+.ob-step-body strong { font-size: 13.5px; }
+.ob-step-body em {
+  font-style: normal;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--app-ink-faint);
+}
+
+/* ----------------------------------------------------------- progress -- */
+
+.ob-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.ob-progress-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--app-line-soft);
+  overflow: hidden;
+}
+
+.ob-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--teal-600);
+  transition: width 320ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.ob-progress-label {
+  margin: 0;
+  flex: none;
+  font-size: 12.5px;
+  color: var(--app-ink-soft);
+}
+
+.ob-clear {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--app-veg) 11%, transparent);
+  font-size: 13.5px;
+  color: #14663f;
+}
+
+/* -------------------------------------------------------------- cards -- */
+
+.ob-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+
+.ob-card {
+  display: grid;
+  gap: 5px;
+  padding: 16px 17px;
+  border: 1px solid var(--app-line);
+  border-radius: 15px;
+  background: var(--app-surface);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 170ms cubic-bezier(0.2, 0.7, 0.3, 1), box-shadow 170ms ease;
+}
+
+.ob-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-card-hover); }
+.ob-card strong { font-size: 14.5px; }
+.ob-card span:last-child { font-size: 12.5px; color: var(--app-ink-soft); }
+
+.ob-card-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 4px;
+  border-radius: 10px;
+  background: var(--app-line-soft);
+  color: var(--teal-700);
+}
+
+/* ----------------------------------------------------------- timeline -- */
+
+.ob-timeline {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ob-timeline li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 12px;
+  padding: 0 0 18px;
+  position: relative;
+}
+
+/* The rail, drawn between the dots rather than behind them. */
+.ob-timeline li:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 18px;
+  bottom: 0;
+  width: 1px;
+  background: var(--app-line);
+}
+
+.ob-tl-dot {
+  width: 9px;
+  height: 9px;
+  margin: 5px auto 0;
+  border-radius: 999px;
+  background: var(--app-ink-faint);
+}
+
+li[data-actor='admin'] > .ob-tl-dot { background: var(--teal-600); }
+li[data-actor='owner'] > .ob-tl-dot { background: var(--butter-shade); }
+
+.ob-tl-body { display: grid; gap: 3px; min-width: 0; }
+
+.ob-tl-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0;
+  font-size: 13.5px;
+}
+
+.ob-tl-head .dt-mono { font-size: 11.5px; color: var(--app-ink-faint); }
+.ob-tl-detail { margin: 0; font-size: 12.5px; color: var(--app-ink-soft); }
+
+.ob-tl-actor {
+  justify-self: start;
+  margin-top: 2px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--app-line-soft);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--app-ink-faint);
+}
+
+.ob-tl-actor[data-actor='admin'] {
+  background: color-mix(in srgb, var(--teal-600) 13%, transparent);
+  color: var(--teal-800);
+}
+
+/* --------------------------------------------------------------- form -- */
+
+.ob-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(240px, 0.8fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.ob-form { display: grid; gap: 14px; }
+.ob-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.ob-form label { display: grid; gap: 6px; min-width: 0; }
+
+.ob-form label > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--app-ink-soft);
+}
+
+.ob-form input,
+.ob-form select,
+.ob-form textarea {
+  padding: 10px 13px;
+  border: 1px solid var(--app-line);
+  border-radius: 11px;
+  background: var(--app-surface);
+  font: inherit;
+  font-size: 14px;
+  color: var(--app-ink);
+  min-width: 0;
+}
+
+.ob-form textarea { resize: vertical; line-height: 1.5; }
+
+.ob-form input:focus-visible,
+.ob-form select:focus-visible,
+.ob-form textarea:focus-visible,
+.ob-chip:focus-visible,
+.ob-option:focus-visible,
+.ob-upload:focus-visible,
+.ob-submit:focus-visible {
+  outline: 2px solid var(--teal-600);
+  outline-offset: 2px;
+}
+
+.ob-optional {
+  font-style: normal;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--app-ink-faint);
+}
+
+.ob-fieldset { margin: 0; padding: 0; border: 0; }
+
+.ob-fieldset legend {
+  padding: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--app-ink-soft);
+}
+
+.ob-hint {
+  margin: 6px 0 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--app-ink-faint);
+}
+
+.ob-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+
+.ob-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 13px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  background: var(--app-surface);
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--app-ink-soft);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.ob-chip[data-on] {
+  border-color: var(--teal-600);
+  background: color-mix(in srgb, var(--teal-600) 12%, transparent);
+  color: var(--teal-800);
+  font-weight: 600;
+}
+
+.ob-actions { display: flex; align-items: center; gap: 14px; margin-top: 4px; }
+
+.ob-save,
+.ob-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--teal-800);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+
+.ob-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.ob-saved,
+.ob-saved-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: #14663f;
+}
+
+.ob-saved-row { margin: 16px 0 0; }
+
+/* ---------------------------------------------------------- checklist -- */
+
+.ob-checklist ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+
+.ob-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--app-ink-soft);
+}
+
+.ob-check-mark {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--app-line-soft);
+  color: var(--app-ink-faint);
+}
+
+.ob-checklist li[data-filled] { color: var(--app-ink); }
+.ob-checklist li[data-filled] > .ob-check-mark { background: var(--app-veg); color: #fff; }
+
+/* ------------------------------------------------- delivery options -- */
+
+.ob-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: 14px;
+}
+
+.ob-option {
+  display: grid;
+  gap: 9px;
+  padding: 20px;
+  border: 1px solid var(--app-line);
+  border-radius: 16px;
+  background: var(--app-surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 170ms ease, box-shadow 170ms ease;
+}
+
+.ob-option[data-on] { border-color: var(--teal-600); box-shadow: var(--shadow-card); }
+
+.ob-option-head { display: flex; align-items: center; gap: 11px; }
+.ob-option-head strong { font-size: 15px; color: var(--app-ink); }
+
+.ob-option-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--app-line-soft);
+  color: var(--teal-700);
+}
+
+.ob-option[data-on] .ob-option-icon { background: var(--teal-700); color: #fff; }
+
+.ob-option-on {
+  display: grid;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: var(--teal-700);
+  color: #fff;
+}
+
+.ob-option-blurb { font-size: 13px; color: var(--app-ink-soft); }
+
+.ob-option-points {
+  display: grid;
+  gap: 6px;
+  margin: 2px 0 0;
+  padding-left: 17px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--app-ink-faint);
+}
+
+/* ---------------------------------------------------------- documents -- */
+
+.ob-docs { display: grid; gap: 11px; margin: 0; padding: 0; list-style: none; }
+
+.ob-doc {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 17px 18px;
+  border: 1px solid var(--app-line);
+  border-left: 3px solid var(--app-line);
+  border-radius: 14px;
+  background: var(--app-surface);
+}
+
+/* The left edge carries the state, so a column of rows can be scanned. */
+.ob-doc[data-state='verified'] { border-left-color: var(--app-veg); }
+.ob-doc[data-state='uploaded'] { border-left-color: var(--teal-500); }
+.ob-doc[data-state='needs-replacement'] { border-left-color: var(--magenta); }
+
+.ob-doc-main { flex: 1; min-width: 0; display: grid; gap: 5px; }
+
+.ob-doc-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0;
+  font-size: 14.5px;
+}
+
+.ob-doc-state {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--app-line-soft);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--app-ink-soft);
+}
+
+.ob-doc-state[data-state='verified'] { background: color-mix(in srgb, var(--app-veg) 15%, transparent); color: #14663f; }
+.ob-doc-state[data-state='uploaded'] { background: color-mix(in srgb, var(--teal-600) 14%, transparent); color: var(--teal-800); }
+.ob-doc-state[data-state='needs-replacement'] { background: color-mix(in srgb, var(--magenta) 12%, transparent); color: #a3155c; }
+
+.ob-doc-hint { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--app-ink-faint); }
+
+.ob-doc-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: var(--app-ink-soft);
+}
+
+.ob-doc-file .dt-mono { font-size: 12px; }
+.ob-doc-when { font-size: 11.5px; color: var(--app-ink-faint); }
+
+.ob-doc-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 8px 0 0;
+  padding: 11px 13px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--magenta) 8%, transparent);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #8d1450;
+}
+
+.ob-doc-note svg { flex: none; margin-top: 1px; }
+
+.ob-doc-actions { display: grid; gap: 7px; flex: none; }
+
+.ob-upload,
+.ob-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 15px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  background: var(--app-surface);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--app-ink);
+  cursor: pointer;
+}
+
+.ob-upload[data-primary] { border-color: transparent; background: var(--teal-800); color: #fff; }
+.ob-remove { color: var(--app-ink-faint); }
+
+.ob-doc-summary { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+
+.ob-doc-summary li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 7px 0;
+  font-size: 13px;
+}
+
+.ob-doc-summary li + li { border-top: 1px solid var(--app-line-soft); }
+
+/* ------------------------------------------------------------- submit -- */
+
+.ob-blockers {
+  margin-bottom: 16px;
+  padding: 15px 17px;
+  border: 1px solid color-mix(in srgb, var(--butter-shade) 40%, transparent);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--butter-shade) 10%, transparent);
+}
+
+.ob-blockers-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 9px;
+  font-size: 13.5px;
+  color: #7a6112;
+}
+
+.ob-blockers ul { margin: 0; padding-left: 26px; display: grid; gap: 5px; font-size: 13px; }
+.ob-blockers a { color: #7a6112; }
+
+.ob-submit-row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 18px; }
+.ob-submit-row .an-note { margin: 0; flex: 1 1 240px; }
+
+.ob-sent { display: grid; justify-items: center; gap: 11px; padding: 28px 20px; text-align: center; }
+
+.ob-sent-mark {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  background: var(--app-veg);
+  color: #fff;
+}
+
+.ob-sent p { margin: 0; max-width: 52ch; font-size: 14px; line-height: 1.6; color: var(--app-ink-soft); }
+.ob-sent-note { font-size: 13px !important; color: var(--app-ink-faint) !important; }
+.ob-sent .dh-action { margin-top: 8px; }
+
+@media (max-width: 960px) {
+  .ob-steps { grid-auto-flow: row; grid-auto-columns: auto; }
+  .ob-split { grid-template-columns: 1fr; }
+  .ob-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .ob-doc { flex-direction: column; gap: 12px; }
+  .ob-doc-actions { grid-auto-flow: column; justify-content: start; }
+  .ob-progress { flex-wrap: wrap; }
+}
+
+/* Documents inside the admin's application review. Same state pill as the
+   owner's own screen, so the two sides of one application never describe the
+   same document differently. */
+.ar-docs {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ar-docs li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 13px;
+}
+
+.ar-docs li + li { border-top: 1px solid var(--app-line-soft); }
+
+.ar-doc-name { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.ar-doc-file { font-size: 12px; color: var(--app-ink-soft); overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 560px) {
+  .ar-docs li { grid-template-columns: 1fr auto; }
+  .ar-doc-file { grid-column: 1 / -1; }
+}

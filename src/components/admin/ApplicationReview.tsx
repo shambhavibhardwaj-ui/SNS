@@ -6,6 +6,7 @@ import {
   type RestaurantApplication,
 } from '../../data/admin/types';
 import { ApplicationStatusBadge } from './ApplicationStatusBadge';
+import { getDocuments } from '../../services/onboardingService';
 
 type Decision = 'Approved' | 'Rejected' | 'Needs Changes' | 'Under Review';
 
@@ -119,6 +120,47 @@ export function ApplicationReview({
                 </dd>
               </div>
             </dl>
+          </section>
+
+          {/*
+            Documents, on the same page as everything else.
+
+            The brief is explicit that an admin should not hunt through five
+            pages to understand one application, and documents were the part
+            that was missing. Read-only here: verifying a document is its own
+            decision with its own audit trail, and folding it into the
+            approve/reject control would let one click accept five documents
+            nobody opened.
+          */}
+          <section>
+            <h3>Documents</h3>
+            <ul className="ar-docs">
+              {getDocuments().map((d) => (
+                <li key={d.kindId}>
+                  <span className="ar-doc-name">
+                    {d.kind.label}
+                    {d.kind.required ? null : <em className="ob-optional">optional</em>}
+                  </span>
+                  {d.fileName ? (
+                    <span className="dt-mono ar-doc-file">{d.fileName}</span>
+                  ) : (
+                    <span className="dt-notset">No file</span>
+                  )}
+                  <span
+                    className="ob-doc-state"
+                    data-state={d.state.toLowerCase().replace(/\s+/g, '-')}
+                  >
+                    {d.state === 'Uploaded' ? 'Awaiting review'
+                      : d.state === 'Missing' ? (d.kind.required ? 'Not uploaded' : 'Not provided')
+                        : d.state}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="ar-hint">
+              Shown for the demo application. Verifying a document is a separate action from
+              deciding the application, so it is not wired to the buttons below.
+            </p>
           </section>
 
           {application.reviewNote ? (

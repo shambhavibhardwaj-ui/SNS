@@ -13,7 +13,12 @@
 import type { Session, User } from '@supabase/supabase-js';
 import { isSupabaseConfigured, requireSupabase, supabase } from './supabaseClient';
 
-export type AppRole = 'customer' | 'admin' | 'delivery';
+/**
+ * `restaurant` is the restaurant owner — the person onboarding their kitchen,
+ * not a customer of it. Mirrors the `app_role` enum in the database, which is
+ * the only place a role is actually decided.
+ */
+export type AppRole = 'customer' | 'admin' | 'delivery' | 'restaurant';
 
 /** Mirrors the `profiles` table. */
 export interface Profile {
@@ -50,6 +55,7 @@ export const HOME_FOR_ROLE: Record<AppRole, string> = {
   customer: '/customer',
   admin: '/admin',
   delivery: '/delivery',
+  restaurant: '/restaurant',
 };
 
 export function homeForRole(role: AppRole | null | undefined): string {
