@@ -8771,3 +8771,28 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 .ob-shell .ob-art-badge rect { fill: var(--lime); }
 .ob-shell .ob-art-tick { stroke: var(--on-bright); }
 .ob-shell .ob-art-badge text { fill: var(--on-bright); }
+
+/* The hand-off at the foot of a step. Sits outside the panels, because it acts
+   on the whole step rather than on the card above it. */
+.ob-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 4px 2px 0;
+}
+
+.ob-footer .ob-note { margin: 0; flex: 1 1 260px; }
+
+.ob-footer-why {
+  margin: 0;
+  flex: 1 1 240px;
+  font-size: 12.5px;
+  color: var(--app-ink-soft);
+}
+
+.ob-save:disabled { opacity: 0.45; cursor: not-allowed; }
+
+@media (max-width: 560px) {
+  .ob-footer .ob-save { width: 100%; justify-content: center; }
+}

@@ -45,3 +45,48 @@ export function Panel({
     </section>
   );
 }
+
+/**
+ * The hand-off at the foot of every step.
+ *
+ * One button, in one place, doing one thing: save what is on this screen and
+ * move to the next step. Before this each step ended differently — the details
+ * form saved and stayed put, documents and delivery had no ending at all — so
+ * finishing a step meant going back to the rail and working out which link was
+ * next, which is exactly the job the rail is supposed to do *for* you.
+ *
+ * `disabled` is a courtesy, not a rule: every step's own guard still runs, and
+ * the submit step re-checks readiness in the service. A button that cannot be
+ * pressed should still say why, which is what `reason` is for.
+ */
+export function StepFooter({
+  label = 'Save and continue',
+  onContinue,
+  disabled = false,
+  reason,
+  note,
+}: {
+  label?: string;
+  onContinue: () => void;
+  disabled?: boolean;
+  /** Shown beside the button when it is disabled. */
+  reason?: string;
+  /** Shown either way — a standing caveat about this step. */
+  note?: string;
+}) {
+  return (
+    <div className="ob-footer">
+      <button
+        type="button"
+        className="ob-save"
+        onClick={onContinue}
+        disabled={disabled}
+        title={disabled ? reason : undefined}
+      >
+        {label}
+      </button>
+      {disabled && reason ? <p className="ob-footer-why">{reason}</p> : null}
+      {note ? <p className="ob-note">{note}</p> : null}
+    </div>
+  );
+}

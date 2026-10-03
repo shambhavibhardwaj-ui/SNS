@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { AlertTriangle, Check, Send } from 'lucide-react';
 import { DELIVERY_MODEL_LABEL } from '../../data/admin/types';
@@ -16,6 +17,7 @@ import { PageHead, Panel } from './PageHead';
  * service side, since a disabled button is a hint and not a rule.
  */
 export function SubmitApplication() {
+  const navigate = useNavigate();
   const app = getApplication();
   const readiness = getReadiness();
   const docs = getDocuments();
@@ -30,6 +32,9 @@ export function SubmitApplication() {
     }
     setError(null);
     setSent(true);
+    /* Step five is watching for the decision, and that is the status page. The
+       confirmation stays here for anyone who comes back to this route. */
+    navigate('/restaurant');
   };
 
   if (sent) {

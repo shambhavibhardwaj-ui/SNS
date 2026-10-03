@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bike, Check, Truck } from 'lucide-react';
 import { DELIVERY_MODEL_LABEL, type DeliveryModel } from '../../data/admin/types';
 import { getApplication, setDeliveryModel } from '../../services/onboardingService';
-import { PageHead, Panel } from './PageHead';
+import { PageHead, Panel, StepFooter } from './PageHead';
 
 const OPTIONS: {
   id: DeliveryModel;
@@ -45,6 +46,7 @@ const OPTIONS: {
  * number would be acted on.
  */
 export function DeliveryMethod() {
+  const navigate = useNavigate();
   const app = getApplication();
   const [chosen, setChosen] = useState<DeliveryModel | null>(app.deliveryModel);
   const [saved, setSaved] = useState(false);
@@ -111,6 +113,13 @@ export function DeliveryMethod() {
           us those percentages, and this page will not be the one to invent them.
         </p>
       </Panel>
+
+      <StepFooter
+        onContinue={() => navigate('/restaurant/submit')}
+        disabled={!chosen}
+        reason="Choose one of the two above first."
+        note="Takes you to Review and submit, where you see everything before it goes."
+      />
     </>
   );
 }

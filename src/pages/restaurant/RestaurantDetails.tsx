@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Check, X } from 'lucide-react';
 import { RESTAURANT_TYPES, LOCALITIES, type RestaurantType } from '../../data/onboarding';
 import {
@@ -16,6 +17,7 @@ import { PageHead, Panel } from './PageHead';
  * it in whatever order the paperwork reaches them.
  */
 export function RestaurantDetails() {
+  const navigate = useNavigate();
   const app = getApplication();
   const [form, setForm] = useState({
     restaurantName: app.restaurantName,
@@ -52,10 +54,13 @@ export function RestaurantDetails() {
     setSaved(false);
   };
 
+  /* The form's own `required` attributes stop an incomplete submit, so by the
+     time this runs the step is done and the next one is where to be. */
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     saveDetails(form);
     setSaved(true);
+    navigate('/restaurant/documents');
   };
 
   return (
@@ -183,9 +188,10 @@ export function RestaurantDetails() {
             </label>
           </Panel>
 
-          <div className="ob-actions">
+          <div className="ob-footer">
             <button type="submit" className="ob-save">Save and continue</button>
             {saved ? <span className="ob-saved"><Check size={14} strokeWidth={3} /> Saved</span> : null}
+            <p className="ob-note">Takes you to Documents. Nothing is sent to the platform team yet.</p>
           </div>
         </form>
 

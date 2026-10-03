@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AlertTriangle, Check, FileText, Upload, X } from 'lucide-react';
-import { PageHead, Panel } from './PageHead';
+import { PageHead, Panel, StepFooter } from './PageHead';
 import {
-  getDocuments, getDocumentSummary, removeDocument, uploadDocument,
+  getDocuments, getDocumentSummary, getReadiness, removeDocument, uploadDocument,
   type DocumentRow,
 } from '../../services/onboardingService';
 
@@ -20,9 +21,14 @@ import {
  * what the Supabase version will do after the upload resolves.
  */
 export function Documents() {
+  const navigate = useNavigate();
   const [, bump] = useState(0);
   const rows = getDocuments();
   const summary = getDocumentSummary();
+  /* The same rule the rest of the flow uses: everything required is in and
+     nothing has been sent back. A document merely awaiting review does not
+     hold the step — that is the platform team's turn, not the owner's. */
+  const { documentsComplete } = getReadiness();
   const inputs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const onPick = (kindId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,6 +144,17 @@ export function Documents() {
           verified; uploading always lands on “Awaiting review”.
         </p>
       </Panel>
+
+      <StepFooter
+        onContinue={() => navigate('/restaurant/delivery')}
+        disabled={!documentsComplete}
+        reason={
+          summary.needsReplacement
+            ? `Replace the ${summary.needsReplacement === 1 ? 'document that came' : 'documents that came'} back first.`
+            : `Upload the ${summary.missingRequired} remaining required ${summary.missingRequired === 1 ? 'document' : 'documents'} first.`
+        }
+        note="Takes you to Delivery method. Documents awaiting review do not hold you up."
+      />
     </>
   );
 }
