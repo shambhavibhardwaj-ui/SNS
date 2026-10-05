@@ -399,11 +399,18 @@ accents, and sit outside that budget.
 `index.css` defines two token sets: the brand `--teal-*` / `--butter*` / `--cream*` family,
 and an `--app-*` family for the light ordering and dashboard surfaces.
 
-**The city's chrome is navy with burgundy on hover** — `#10203F` sidebar, `#0A1730` top bar,
-`#7B1E3A` hover. The map stays teal; the furniture around it does not. Both panels went from
-translucent teal glass to solid: navy washed over a teal city reads as dirty teal, not navy.
-Hover fills the whole row rather than colouring the label, because burgundy *as text* on navy
-is 1.61:1 — as a background with white on it, it is 10.05:1.
+**The city's chrome is light blue with burgundy on hover** — `#CFE4F6` sidebar, `#DCEBF9` top
+bar, `#7B1E3A` hover. The map stays teal; the furniture around it does not.
+
+Going light was not a colour swap. Both panels were built for a dark ground — cream wordmark,
+teal-200 nav labels, teal-300 hints, white-at-10% rules, a teal-900 emoji tile — and every one
+of those is invisible on pale blue, so one scoped block flips them all. The panels are also
+solid rather than the old translucent glass: pale blue over a teal city comes out green.
+
+Hover fills the whole row rather than colouring the label. On light blue burgundy *would* read
+as text, but it stays a fill because it was one on the dark version and a filled row is the
+clearer target; white on burgundy is 10.05:1 either way. **Focus rings here are burgundy, not
+the butter used elsewhere** — butter on pale blue measures 1.2:1.
 
 **The onboarding flow runs Pink Lemonade and Slime Margarita** — `#FF5097` and `#E4F482`,
 one block keyed off `.ob-shell`, the same scoped-token technique as the other two sections.
