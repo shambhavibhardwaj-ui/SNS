@@ -121,7 +121,9 @@ body {
 
 .fc-topbar {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  /* brand · nav · search · account. The search takes the free column and
+     centres itself in it, so it stays put as the nav either side changes. */
+  grid-template-columns: auto auto 1fr auto;
   align-items: center;
   gap: 24px;
   padding: 14px 26px;
@@ -9451,4 +9453,92 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   font-weight: 600;
   text-decoration: underline;
   cursor: pointer;
+}
+
+
+/* ======================================================================
+   Top-bar navigation — Home and Cart
+   ======================================================================
+
+   They were two rows in the city's sidebar. They are true on every screen and
+   the sidebar is about the map it sits beside, so they belong up here; the
+   panel keeps its collapse toggle and the district rail.
+
+   After the navy block, so these resolve against the dark bar.
+   ---------------------------------------------------------------------- */
+
+.fc-topnav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fc-topnav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgb(255 255 255 / 0.72);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+/* The same burgundy fill the sidebar rail uses — one hover colour in the
+   chrome, and burgundy can only ever be a background here (as text on navy it
+   measures 1.61:1; white on it is 10.05:1). */
+.fc-topnav-item:hover {
+  background: var(--burgundy);
+  color: var(--on-burgundy);
+}
+
+/* Current, not hovered: a quiet well rather than the accent, or the city would
+   look permanently hovered. */
+.fc-topnav-item[aria-current='page'] {
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+}
+
+.fc-topnav-item:focus-visible {
+  outline: 2px solid var(--butter);
+  outline-offset: 2px;
+}
+
+.fc-topnav-icon {
+  position: relative;
+  display: flex;
+}
+
+.fc-topnav-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--butter);
+  color: #1b1205;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 16px;
+  text-align: center;
+}
+
+/* Narrow: the labels go and the icons stay, before the search starts losing
+   width it needs more than these two do. */
+@media (max-width: 1080px) {
+  .fc-topnav-item > span:not(.fc-topnav-icon):not(.fc-sr-only) {
+    display: none;
+  }
+  .fc-topnav-item {
+    padding: 9px 11px;
+  }
 }

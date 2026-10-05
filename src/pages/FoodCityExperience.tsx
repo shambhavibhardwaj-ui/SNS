@@ -38,6 +38,7 @@ export function FoodCityExperience() {
     <div className="fc-shell" id="top" data-view={view.name}>
       <TopBar
         compact={view.name !== 'city'}
+        onHome={backToCity}
         onOpenRestaurant={openRestaurant}
         onEnterDistrict={enterDistrict}
       />

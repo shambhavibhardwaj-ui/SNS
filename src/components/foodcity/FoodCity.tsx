@@ -6,8 +6,6 @@ import {
   getRestaurantsByDistrict,
 } from '../../services/restaurantService';
 import type { Restaurant } from '../../data/types';
-import { useNavigate } from 'react-router-dom';
-import { useCart } from '../../cart/useCart';
 import { SideNav } from '../layout/SideNav';
 import { FoodieAIBar } from '../ui/FoodieAIBar';
 import { CityMap } from './CityMap';
@@ -34,12 +32,6 @@ interface FoodCityProps {
  * entry point only; it does not follow the customer into the ordering flow.
  */
 export function FoodCity({ onEnterDistrict, onOpenRestaurant }: FoodCityProps) {
-  const navigate = useNavigate();
-  const { totals } = useCart();
-  const cartCount = totals.itemCount;
-  /* Relative: works under "/" for a visitor and "/customer" when signed in. */
-  const openCart = () => navigate('cart');
-
   const summaries = useMemo(() => getDistrictSummaries(), []);
   const stats = useMemo(() => getCityStats(), []);
   const restaurantsByDistrict = useMemo(
@@ -110,13 +102,7 @@ export function FoodCity({ onEnterDistrict, onOpenRestaurant }: FoodCityProps) {
     <main className="fc-stage" data-zoomed={activeId ? 'true' : undefined}>
       <aside className="fc-aside" data-collapsed={collapsed || undefined}>
         <div className="fc-aside-scroll">
-          <SideNav
-            onCart={openCart}
-            cartCount={cartCount}
-            collapsed={collapsed}
-            onToggle={() => setCollapsed((c) => !c)}
-            onHome={resetCamera}
-          />
+          <SideNav collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
 
           <div className="fc-aside-body">
           {activeSummary ? (

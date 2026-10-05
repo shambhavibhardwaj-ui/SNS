@@ -165,7 +165,11 @@ diorama slab, depth-sorted by `gx + gy`. Ten cuisine districts, each with its ow
 architecture rather than a recoloured box — cone, dome-and-tandoor, pizza oven, tiered
 eaves, stucco arches, greenhouse, lighthouse, leaf gable, stone parapet, tiled eaves. One
 building per restaurant row, so the skyline is the data. Pan, zoom, pinch and four-way
-rotation; a merged collapsible sidebar. Clicking a district opens its restaurant listing,
+rotation; a collapsible sidebar. **Home and Cart sit in the top bar**, not in that
+sidebar — they are true on every screen and the cart follows you out of the city, while the
+panel is about the map beside it and keeps the collapse toggle and the district rail. Home
+there means the city, not the camera: the map carries its own reset control, and from the
+top bar the useful move is leaving a listing. Clicking a district opens its restaurant listing,
 where the visual language deliberately drops to a clean light ordering interface. **Clicking
 a building opens that restaurant's menu** — one building is one row, so the thing shaped like
 a kitchen is the way into that kitchen; the click stops there rather than also entering the
