@@ -34,7 +34,7 @@ export function SubmitApplication() {
     setSent(true);
     /* Step five is watching for the decision, and that is the status page. The
        confirmation stays here for anyone who comes back to this route. */
-    navigate('/restaurant');
+    navigate('/partner');
   };
 
   if (sent) {

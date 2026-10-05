@@ -24,6 +24,8 @@ interface IsoDistrictProps {
   rotation: Rotation;
   onHover: (districtId: string | null) => void;
   onSelect: (districtId: string) => void;
+  /** Opening one kitchen, rather than walking into its neighbourhood. */
+  onSelectRestaurant: (restaurantId: string) => void;
 }
 
 /**
@@ -43,6 +45,7 @@ export function IsoDistrict({
   rotation,
   onHover,
   onSelect,
+  onSelectRestaurant,
 }: IsoDistrictProps) {
   const { district, restaurantCount, topRating } = summary;
   const theme = district.theme;
@@ -120,9 +123,37 @@ export function IsoDistrict({
 
       <BlockDressing plot={plot} theme={theme} />
 
-      {/* Buildings, back to front. */}
+      {/*
+        Buildings, back to front.
+
+        Each one is its own control. The block underneath is still the way into
+        the neighbourhood, but a building *is* a restaurant — one row, one
+        shape — so clicking the thing that represents a kitchen should open
+        that kitchen rather than the street it stands on. The click stops here
+        so it does not also trigger the district behind it.
+      */}
       {slots.map((slot) => (
-        <g key={slot.restaurant.id} className="fc-shop">
+        <g
+          key={slot.restaurant.id}
+          className="fc-shop"
+          role="button"
+          tabIndex={0}
+          aria-label={`${slot.restaurant.name}. ${slot.restaurant.rating.toFixed(1)} stars. ${
+            slot.restaurant.isOpen ? 'Open' : 'Closed'
+          }. Opens the menu.`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onSelectRestaurant(slot.restaurant.id);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              event.stopPropagation();
+              onSelectRestaurant(slot.restaurant.id);
+            }
+          }}
+        >
+          <title>{slot.restaurant.name}</title>
           <RestaurantBuilding
             restaurant={slot.restaurant}
             kind={district.buildingKind}

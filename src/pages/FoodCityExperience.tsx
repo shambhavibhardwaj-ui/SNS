@@ -39,7 +39,7 @@ export function FoodCityExperience() {
       <TopBar compact={view.name !== 'city'} />
 
       {view.name === 'city' ? (
-        <FoodCity key="city" onEnterDistrict={enterDistrict} />
+        <FoodCity key="city" onEnterDistrict={enterDistrict} onOpenRestaurant={openRestaurant} />
       ) : (
         <div className="rl-scroll" key={view.districtId}>
           <RestaurantListing

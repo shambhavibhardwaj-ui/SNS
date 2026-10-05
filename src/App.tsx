@@ -46,8 +46,16 @@ export default function App() {
               }
             />
 
+            {/*
+              The restaurant owner's area is `/partner`, not `/restaurant`.
+
+              `/restaurant/:id` is the customer's menu page, reached from the
+              city and from every listing. A guarded `/restaurant/*` declared
+              above the public fallback swallowed all of them and bounced a
+              visitor who clicked a kitchen to the login screen.
+            */}
             <Route
-              path="/restaurant/*"
+              path="/partner/*"
               element={
                 <RequireRole allow={['restaurant']}>
                   <RestaurantDashboard />

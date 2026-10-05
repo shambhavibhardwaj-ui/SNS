@@ -21,6 +21,8 @@ const ENTER_MS = 820;
 interface FoodCityProps {
   /** Called once the camera has finished flying into a district. */
   onEnterDistrict: (districtId: string) => void;
+  /** Straight to one kitchen's menu, skipping its neighbourhood. */
+  onOpenRestaurant: (restaurantId: string) => void;
 }
 
 /**
@@ -31,7 +33,7 @@ interface FoodCityProps {
  * block, then the city hands off to the restaurant listing. The 3D world is the
  * entry point only; it does not follow the customer into the ordering flow.
  */
-export function FoodCity({ onEnterDistrict }: FoodCityProps) {
+export function FoodCity({ onEnterDistrict, onOpenRestaurant }: FoodCityProps) {
   const navigate = useNavigate();
   const { totals } = useCart();
   const cartCount = totals.itemCount;
@@ -164,6 +166,7 @@ export function FoodCity({ onEnterDistrict }: FoodCityProps) {
           ref={setSvg}
           summaries={summaries}
           restaurantsByDistrict={restaurantsByDistrict}
+          onSelectRestaurant={onOpenRestaurant}
           hoveredId={hoveredId}
           activeId={activeId}
           cameraTransform={cameraTransform}
@@ -215,7 +218,7 @@ export function FoodCity({ onEnterDistrict }: FoodCityProps) {
         </div>
 
         {!activeId ? (
-          <p className="fc-map-hint">Drag to explore · scroll to zoom · turn the city · click a district to walk in</p>
+          <p className="fc-map-hint">Drag to explore · scroll to zoom · turn the city · click a building for its menu, a street to walk in</p>
         ) : null}
 
         <p className="fc-sr-only" role="status">

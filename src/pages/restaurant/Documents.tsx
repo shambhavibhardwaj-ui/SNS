@@ -146,7 +146,7 @@ export function Documents() {
       </Panel>
 
       <StepFooter
-        onContinue={() => navigate('/restaurant/delivery')}
+        onContinue={() => navigate('/partner/delivery')}
         disabled={!documentsComplete}
         reason={
           summary.needsReplacement

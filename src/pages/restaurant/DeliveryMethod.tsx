@@ -115,7 +115,7 @@ export function DeliveryMethod() {
       </Panel>
 
       <StepFooter
-        onContinue={() => navigate('/restaurant/submit')}
+        onContinue={() => navigate('/partner/submit')}
         disabled={!chosen}
         reason="Choose one of the two above first."
         note="Takes you to Review and submit, where you see everything before it goes."

@@ -925,10 +925,42 @@ body {
   transform-box: fill-box;
   transform-origin: center bottom;
   transition: transform 340ms cubic-bezier(0.34, 1.4, 0.64, 1);
+  cursor: pointer;
 }
 
 .fc-district.is-hovered .fc-shop {
   transform: translateY(-10px);
+}
+
+/*
+ * One building is one restaurant, and it opens that restaurant — so it needs
+ * to look pressable on its own, not only as part of the block lifting.
+ *
+ * It rises further than its neighbours rather than taking an outline: an
+ * outline on an isometric silhouette traces the flat shape and reads as a
+ * sticker. Height is the language this world already uses.
+ */
+.fc-shop:hover,
+.fc-shop:focus-visible {
+  transform: translateY(-18px);
+}
+
+/* Keyboard focus is the same lift plus the browser's own ring, which on an
+   SVG group follows the silhouette rather than boxing it. Pseudo-elements do
+   not apply to SVG elements, so a drawn halo is not an option here. */
+.fc-shop:focus-visible {
+  outline: 2px solid var(--butter);
+  outline-offset: 2px;
+}
+
+.fc-district.is-hovered .fc-shop:hover,
+.fc-district.is-hovered .fc-shop:focus-visible {
+  transform: translateY(-24px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-shop,
+  .fc-tree { transition: none; }
 }
 
 .fc-district.is-hovered .fc-tree {

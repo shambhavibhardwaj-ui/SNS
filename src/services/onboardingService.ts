@@ -171,16 +171,16 @@ export function getReadiness(app = ownerApplication): Readiness {
      through the dashboard. */
   const blockers: Readiness['blockers'] = [];
   for (const d of missingDetails) {
-    blockers.push({ id: `detail-${String(d.id)}`, label: `${d.label} is empty`, href: '/restaurant/details' });
+    blockers.push({ id: `detail-${String(d.id)}`, label: `${d.label} is empty`, href: '/partner/details' });
   }
   for (const d of missingDocs) {
-    blockers.push({ id: `doc-${d.kindId}`, label: `${d.kind.label} has not been uploaded`, href: '/restaurant/documents' });
+    blockers.push({ id: `doc-${d.kindId}`, label: `${d.kind.label} has not been uploaded`, href: '/partner/documents' });
   }
   for (const d of returnedDocs) {
-    blockers.push({ id: `redo-${d.kindId}`, label: `${d.kind.label} needs replacing`, href: '/restaurant/documents' });
+    blockers.push({ id: `redo-${d.kindId}`, label: `${d.kind.label} needs replacing`, href: '/partner/documents' });
   }
   if (!app.deliveryModel) {
-    blockers.push({ id: 'delivery', label: 'No delivery method chosen', href: '/restaurant/delivery' });
+    blockers.push({ id: 'delivery', label: 'No delivery method chosen', href: '/partner/delivery' });
   }
 
   const detailsComplete = missingDetails.length === 0;

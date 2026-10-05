@@ -28,6 +28,7 @@ interface CityMapProps {
   rotation: Rotation;
   onHover: (districtId: string | null) => void;
   onSelect: (districtId: string) => void;
+  onSelectRestaurant: (restaurantId: string) => void;
 }
 
 /**
@@ -51,6 +52,7 @@ export const CityMap = forwardRef<SVGSVGElement, CityMapProps>(function CityMap(
     rotation,
     onHover,
     onSelect,
+    onSelectRestaurant,
   },
   svgRef,
 ) {
@@ -139,6 +141,7 @@ export const CityMap = forwardRef<SVGSVGElement, CityMapProps>(function CityMap(
               rotation={rotation}
               onHover={onHover}
               onSelect={onSelect}
+              onSelectRestaurant={onSelectRestaurant}
             />
           ))}
 

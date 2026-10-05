@@ -9,7 +9,7 @@ import type { AppRole } from '../../services/authService';
 const ROLE_BADGE: Record<AppRole, { label: string; Icon: LucideIcon; to: string }> = {
   admin: { label: 'Admin', Icon: ShieldCheck, to: '/admin' },
   delivery: { label: 'Delivery', Icon: Bike, to: '/delivery' },
-  restaurant: { label: 'Restaurant', Icon: Store, to: '/restaurant' },
+  restaurant: { label: 'Restaurant', Icon: Store, to: '/partner' },
   customer: { label: 'Customer', Icon: UserRound, to: '/customer' },
 };
 

@@ -19,11 +19,11 @@ import { ReadyModal } from './ReadyModal';
  * Everything the owner needs to orient themselves is in that rail.
  */
 const STEP_ROUTES: Record<string, string> = {
-  details: '/restaurant/details',
-  documents: '/restaurant/documents',
-  delivery: '/restaurant/delivery',
-  submit: '/restaurant/submit',
-  review: '/restaurant',
+  details: '/partner/details',
+  documents: '/partner/documents',
+  delivery: '/partner/delivery',
+  submit: '/partner/submit',
+  review: '/partner',
 };
 
 export function OnboardingLayout() {

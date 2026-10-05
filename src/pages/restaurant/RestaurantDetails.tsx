@@ -60,7 +60,7 @@ export function RestaurantDetails() {
     e.preventDefault();
     saveDetails(form);
     setSaved(true);
-    navigate('/restaurant/documents');
+    navigate('/partner/documents');
   };
 
   return (

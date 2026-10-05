@@ -55,7 +55,7 @@ export const HOME_FOR_ROLE: Record<AppRole, string> = {
   customer: '/customer',
   admin: '/admin',
   delivery: '/delivery',
-  restaurant: '/restaurant',
+  restaurant: '/partner',
 };
 
 export function homeForRole(role: AppRole | null | undefined): string {

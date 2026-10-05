@@ -166,7 +166,15 @@ architecture rather than a recoloured box — cone, dome-and-tandoor, pizza oven
 eaves, stucco arches, greenhouse, lighthouse, leaf gable, stone parapet, tiled eaves. One
 building per restaurant row, so the skyline is the data. Pan, zoom, pinch and four-way
 rotation; a merged collapsible sidebar. Clicking a district opens its restaurant listing,
-where the visual language deliberately drops to a clean light ordering interface.
+where the visual language deliberately drops to a clean light ordering interface. **Clicking
+a building opens that restaurant's menu** — one building is one row, so the thing shaped like
+a kitchen is the way into that kitchen; the click stops there rather than also entering the
+street behind it.
+
+**The owner's area is `/partner`, not `/restaurant`.** `/restaurant/:id` is the customer's
+menu page, reached from the city and every listing, and a guarded `/restaurant/*` declared
+above the public fallback swallowed all of them — a visitor clicking a kitchen was bounced to
+the login screen.
 
 **Admin.** Home/overview, restaurant applications (tabs, search, sort, session decisions),
 the management tables, `/admin/analytics` — KPIs, order and revenue trends, onboarding
@@ -190,7 +198,7 @@ so the rider rows call the company a `provider` and keep `partner` for the perso
 
 **Delivery.** Home, assigned orders, completed deliveries, earnings, profile.
 
-**Restaurant owner** (`/restaurant`). A registration flow, in five steps:
+**Restaurant owner** (`/partner`). A registration flow, in five steps:
 **details → documents → delivery method → submit → admin review**. An overview with the
 stepper, a completeness meter, the admin's verdict when there is one, and a history log; the
 details form with a live checklist; the document checklist; the delivery-method choice; and
@@ -212,14 +220,37 @@ behind each, cart grouped by cuisine, checkout with address validation, and an o
 confirmation carrying the same grouping through to the receipt. A cart holds one
 restaurant at a time; switching is asked for, not done silently.
 
-**Not built yet:** search, Foodie AI, order history, the restaurant owner's own dashboard,
+**Not built yet:** search, order history,
 and any real backend reads — every screen still reads mock data through the services.
 Payment is not integrated and is not simulated: cash on delivery is the only method that
 means anything, and the others are disabled rather than shown as working. Placed orders
 live in memory, so a reload loses them.
 
-Stubs, deliberately inert and marked `aria-disabled`: top-bar search, the cart control, and
-the "Ask Foodie AI" launcher.
+Stubs, deliberately inert and marked `aria-disabled`: top-bar search and the cart control.
+
+## Foodie AI
+
+`services/foodieService.ts`, opened from the city's docked launcher.
+
+**It does not call a model from the browser, because it cannot.** A model API needs a key and
+anything the browser reads is in the bundle — the rule that keeps the service-role key out of
+this codebase applies to every provider. The real version is a Supabase Edge Function holding
+the key; every signature here is already async and shaped like that call.
+
+Two of the brief's rules are structural rather than aspirational:
+
+- **Every suggestion carries a real `MenuItem` id**, because nothing in the file writes a dish
+  name — it picks rows. When the model arrives it gets the same treatment: handed candidate
+  rows and asked to choose and explain, never asked what the kitchen serves.
+- **Nothing touches the cart.** Suggestions link to the dish on its menu and the person
+  decides. The AI layer never acts.
+
+**No reason, no suggestion.** If nothing about a request fired, it returns nothing and says
+which part failed. "unicorn steak" used to return six dishes ranked by restaurant rating with
+empty reason lists, which reads as an answer and is not one.
+
+The parsed request is shown back on screen, so someone whose words were misread can see that
+rather than wonder why the answers are odd.
 
 ## Delivery salary
 
