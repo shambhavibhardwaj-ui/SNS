@@ -12,6 +12,10 @@ import { useCart } from '../../cart/useCart';
  * into the listing and the menu — while the sidebar is about *this* map, and
  * keeps the collapse toggle and the district rail.
  *
+ * They sit on the account side of the search, where a cart is usually found
+ * and where they group with the other control that is about *you* rather than
+ * about the city.
+ *
  * **Home here means the city, not the camera.** The map has its own reset
  * control sitting on it, which is where a camera reset belongs; from the top
  * bar the useful move is leaving a listing and getting the map back. It is
@@ -52,6 +56,8 @@ export function TopBar({
         </span>
       </a>
 
+      <SearchBox onOpenRestaurant={onOpenRestaurant} onEnterDistrict={onEnterDistrict} />
+
       <nav className="fc-topnav" aria-label="Main">
         <button
           type="button"
@@ -77,8 +83,6 @@ export function TopBar({
           ) : null}
         </button>
       </nav>
-
-      <SearchBox onOpenRestaurant={onOpenRestaurant} onEnterDistrict={onEnterDistrict} />
 
       <AccountButton />
     </header>

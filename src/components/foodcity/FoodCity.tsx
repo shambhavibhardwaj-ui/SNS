@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Maximize2, Minus, Plus, RotateCcw, RotateCw } from 'lucide-react';
 import {
-  getCityStats,
   getDistrictSummaries,
   getRestaurantsByDistrict,
 } from '../../services/restaurantService';
@@ -33,7 +32,6 @@ interface FoodCityProps {
  */
 export function FoodCity({ onEnterDistrict, onOpenRestaurant }: FoodCityProps) {
   const summaries = useMemo(() => getDistrictSummaries(), []);
-  const stats = useMemo(() => getCityStats(), []);
   const restaurantsByDistrict = useMemo(
     () =>
       summaries.reduce<Record<string, Restaurant[]>>((acc, { district }) => {
@@ -118,14 +116,14 @@ export function FoodCity({ onEnterDistrict, onOpenRestaurant }: FoodCityProps) {
               </div>
             </div>
           ) : (
+            /*
+              The hero that stood here — "Pick a street, not a list", the SNS
+              wordmark and the kitchen count — is gone. The brand is already in
+              the top bar, and the city underneath makes the same argument
+              better than a line of copy about it can. The panel is a list of
+              districts; it opens with the districts.
+            */
             <div className="fc-guide">
-              <p className="fc-hero-eyebrow">Pick a street, not a list</p>
-              <h1 className="fc-hero-title">SNS</h1>
-              <p className="fc-hero-sub">
-                {stats.restaurants} kitchens across {stats.districts} neighbourhoods.
-                Wander in and see who&rsquo;s cooking.
-              </p>
-
               <h2 className="fc-rail-heading">Districts</h2>
               <DistrictRail
                 summaries={summaries}

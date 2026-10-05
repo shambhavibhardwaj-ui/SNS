@@ -121,9 +121,10 @@ body {
 
 .fc-topbar {
   display: grid;
-  /* brand · nav · search · account. The search takes the free column and
-     centres itself in it, so it stays put as the nav either side changes. */
-  grid-template-columns: auto auto 1fr auto;
+  /* brand · search · nav · account. The search takes the free column and
+     centres itself in it, so it holds its place as the columns around it
+     change width. */
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 24px;
   padding: 14px 26px;
@@ -9461,8 +9462,10 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
    ======================================================================
 
    They were two rows in the city's sidebar. They are true on every screen and
-   the sidebar is about the map it sits beside, so they belong up here; the
-   panel keeps its collapse toggle and the district rail.
+   the sidebar is about the map it sits beside, so they belong up here — on the
+   account side of the search, grouped with the other control that is about the
+   person rather than about the city. The panel keeps its collapse toggle and
+   the district rail.
 
    After the navy block, so these resolve against the dark bar.
    ---------------------------------------------------------------------- */
@@ -9471,6 +9474,9 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   display: flex;
   align-items: center;
   gap: 4px;
+  /* Closes the 24px bar gap on the account side, so the two of them and the
+     account button read as one cluster rather than three separate things. */
+  margin-right: -12px;
 }
 
 .fc-topnav-item {
