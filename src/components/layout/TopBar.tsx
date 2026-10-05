@@ -1,12 +1,22 @@
 import { AccountButton } from '../auth/AccountButton';
+import { SearchBox } from './SearchBox';
 
 /**
  * Landing-page chrome.
  *
- * Search is deliberately inert in this build and marked `aria-disabled`, so the
- * demo never implies a working feature. The account control is real.
+ * Search is real now. It takes the two callbacks rather than routing itself,
+ * because a district is local state in `FoodCityExperience` — the search has to
+ * enter one the same way the map does, or the camera would be rebuilt.
  */
-export function TopBar({ compact = false }: { compact?: boolean }) {
+export function TopBar({
+  compact = false,
+  onOpenRestaurant,
+  onEnterDistrict,
+}: {
+  compact?: boolean;
+  onOpenRestaurant: (restaurantId: string) => void;
+  onEnterDistrict: (districtId: string) => void;
+}) {
   return (
     <header className="fc-topbar" data-compact={compact || undefined}>
       <a className="fc-brand" href="#top">
@@ -22,18 +32,7 @@ export function TopBar({ compact = false }: { compact?: boolean }) {
         </span>
       </a>
 
-      <div className="fc-search" aria-disabled="true" title="Search arrives in a later step">
-        <svg viewBox="0 0 16 16" aria-hidden="true">
-          <circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M10.5 10.5 L14 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        </svg>
-        <input
-          type="search"
-          placeholder="Search restaurants, cuisines, dishes"
-          aria-label="Search restaurants, cuisines and dishes — not yet available"
-          disabled
-        />
-      </div>
+      <SearchBox onOpenRestaurant={onOpenRestaurant} onEnterDistrict={onEnterDistrict} />
 
       <AccountButton />
     </header>

@@ -239,10 +239,6 @@ body {
   color: var(--ink-faint);
 }
 
-.fc-search input:disabled {
-  cursor: not-allowed;
-}
-
 .fc-profile {
   display: flex;
   align-items: center;
@@ -9309,4 +9305,150 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 .fc-aside .fc-nav-toggle:focus-visible {
   outline: 2px solid var(--butter);
   outline-offset: 2px;
+}
+
+
+/* ======================================================================
+   Top-bar search results
+   ======================================================================
+
+   The field sits in the navy bar; the results do not. A dark popover over an
+   illustrated city reads as part of the city, and these rows are an interface
+   — so the panel is paper, which is also what every other surface past the
+   map is.
+
+   Last in the file on purpose: `.fc-topbar .fc-search` is a two-class
+   selector 9000 lines up, and a single-class rule here would lose to it.
+   ---------------------------------------------------------------------- */
+
+.fc-search {
+  position: relative;
+}
+
+.fc-search-pop {
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 0;
+  right: 0;
+  z-index: 60;
+  padding: 6px;
+  border-radius: 16px;
+  background: var(--paper);
+  border: 1px solid var(--paper-edge);
+  box-shadow: 0 18px 44px -18px rgb(10 23 48 / 0.45), 0 2px 8px rgb(10 23 48 / 0.12);
+  /* The city is tall and the bar is fixed; the list scrolls rather than
+     running off the viewport. */
+  max-height: min(60vh, 420px);
+  overflow-y: auto;
+  text-align: left;
+  color: var(--ink);
+}
+
+.fc-search-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fc-search-list li {
+  display: grid;
+  grid-template-columns: 62px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 11px;
+  cursor: pointer;
+}
+
+/*
+ * One highlight for both the mouse and the keyboard — `data-active` follows
+ * `onMouseEnter` as well as the arrow keys, so the cursor and the hover can
+ * never point at two different rows.
+ */
+.fc-search-list li[data-active] {
+  background: var(--burgundy);
+  color: var(--on-burgundy);
+}
+
+.fc-search-kind {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 0;
+  text-align: center;
+  border-radius: 6px;
+  background: var(--paper-warm);
+  border: 1px solid var(--paper-edge);
+  color: var(--ink-soft);
+}
+
+.fc-search-list li[data-active] .fc-search-kind {
+  background: rgb(255 255 255 / 0.17);
+  border-color: rgb(255 255 255 / 0.3);
+  color: var(--on-burgundy);
+}
+
+.fc-search-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.fc-search-text strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fc-search-text small {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fc-search-list li[data-active] .fc-search-text small {
+  color: rgb(255 255 255 / 0.78);
+}
+
+.fc-search-meta {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+
+.fc-search-list li[data-active] .fc-search-meta {
+  color: var(--on-burgundy);
+}
+
+.fc-search-none {
+  margin: 0;
+  padding: 13px 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.fc-search-none span {
+  display: block;
+  margin-top: 4px;
+}
+
+.fc-search-none button {
+  font: inherit;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--teal-700);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
 }

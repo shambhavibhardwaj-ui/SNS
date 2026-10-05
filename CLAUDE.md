@@ -220,13 +220,36 @@ behind each, cart grouped by cuisine, checkout with address validation, and an o
 confirmation carrying the same grouping through to the receipt. A cart holds one
 restaurant at a time; switching is asked for, not done silently.
 
-**Not built yet:** search, order history,
+**Not built yet:** order history,
 and any real backend reads — every screen still reads mock data through the services.
 Payment is not integrated and is not simulated: cash on delivery is the only method that
 means anything, and the others are disabled rather than shown as working. Placed orders
 live in memory, so a reload loses them.
 
-Stubs, deliberately inert and marked `aria-disabled`: top-bar search and the cart control.
+One stub remains, deliberately inert and marked `aria-disabled`: the cart control.
+
+## Search
+
+`services/searchService.ts`, behind the top bar. It searches the rows rather than an index
+of labels, so every result carries a real `Restaurant`, `MenuItem` or `District` id and the
+list cannot offer something the city has no way to open — the same rule as Foodie AI.
+
+Three kinds, because those are the three things the city can show. **A cuisine is not one
+of them.** `restaurantCuisines` is many-to-many, so "Italian" is not a place and has no
+page; a cuisine match resolves instead to the districts that sell it, through the
+`cuisineIds` FK already on the district row, and the row says *why* it is there — "Italian
+is sold here". Inventing a cuisine route to make the search tidy would add a screen nobody
+designed.
+
+Ranking is by how the match landed — whole label, then word start, then anywhere inside —
+and rating only breaks ties inside a band, so it can never lift a weak match above a strong
+one. Word start rather than string start, or "tiffin" would not find Anna's Tiffin Room.
+Under two characters it returns nothing: one letter matches most of the menu.
+
+It navigates and there is no results page, because every result already has a destination.
+A district is local state in `FoodCityExperience` rather than a route, so `SearchBox` takes
+the same two callbacks the map uses instead of rendering `Link`s — entering a district from
+the search is the same act as clicking it on the map, and the camera is not rebuilt.
 
 ## Reviews
 

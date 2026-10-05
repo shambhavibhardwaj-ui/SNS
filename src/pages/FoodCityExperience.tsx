@@ -36,7 +36,11 @@ export function FoodCityExperience() {
 
   return (
     <div className="fc-shell" id="top" data-view={view.name}>
-      <TopBar compact={view.name !== 'city'} />
+      <TopBar
+        compact={view.name !== 'city'}
+        onOpenRestaurant={openRestaurant}
+        onEnterDistrict={enterDistrict}
+      />
 
       {view.name === 'city' ? (
         <FoodCity key="city" onEnterDistrict={enterDistrict} onOpenRestaurant={openRestaurant} />
