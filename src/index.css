@@ -9092,3 +9092,221 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   .fp-results li { flex-direction: column; align-items: stretch; }
   .fp-open { justify-content: center; }
 }
+
+/* ==========================================================================
+   RESTAURANT REVIEWS
+   Under the menu on a restaurant's page. Cards, not a marquee: a review that
+   moves cannot be read, and this sits beside the Add buttons.
+   ========================================================================== */
+
+.rv {
+  margin: 38px 0 0;
+  padding-top: 28px;
+  border-top: 1px solid var(--app-line);
+}
+
+.rv-head h2 {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--app-ink);
+}
+
+.rv-head p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--app-ink-soft);
+}
+
+.rv-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 17px;
+  border: 1px solid var(--app-line);
+  border-radius: 15px;
+  background: var(--app-surface);
+}
+
+.rv-card-top {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.rv-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--teal-700);
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 16px;
+  color: #fff;
+}
+
+.rv-who { min-width: 0; }
+
+.rv-who strong {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13.5px;
+  color: var(--app-ink);
+}
+
+/* Teal, not the reference's blue tick: a verified badge is a status in this
+   product and statuses here are teal. */
+.rv-verified { flex: none; color: var(--teal-600); }
+
+.rv-who em {
+  display: block;
+  font-style: normal;
+  font-size: 11.5px;
+  color: var(--app-ink-faint);
+}
+
+.rv-stars { display: flex; gap: 1px; align-self: start; }
+.rv-stars svg { color: var(--app-line); fill: none; }
+.rv-stars svg.is-on { color: var(--butter-shade); fill: var(--butter-shade); }
+
+.rv-text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--app-ink-soft);
+}
+
+.rv-menu {
+  margin: 0;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--app-ink-faint);
+}
+
+/* ==========================================================================
+   CITY CHROME — navy sidebar and search bar, burgundy on hover
+   The map stays teal; the furniture around it does not. Written as two tokens
+   rather than a dozen literals so the pair can be tuned in one place.
+   ========================================================================== */
+
+.fc-shell {
+  --navy: #10203f;
+  --navy-deep: #0a1730;
+  --burgundy: #7b1e3a;
+  /* What sits on burgundy. Measured in the browser: white on #7b1e3a is
+     10.05:1, and burgundy *as text* on navy would be 1.61:1 — which is why
+     the hover fills the row instead of colouring the label. */
+  --on-burgundy: #ffffff;
+}
+
+/*
+ * Solid, not translucent.
+ *
+ * Both surfaces were a teal wash over the map, which worked because the thing
+ * behind them was also teal. Navy over a teal city reads as dirty teal rather
+ * than as navy, and the hills showing through would undo the colour entirely —
+ * so the glass goes and the panels become their own thing.
+ */
+.fc-aside {
+  background: var(--navy);
+  border-right-color: rgb(255 255 255 / 0.09);
+  backdrop-filter: none;
+}
+
+.fc-topbar {
+  background: var(--navy-deep);
+  border-bottom-color: rgb(255 255 255 / 0.09);
+  backdrop-filter: none;
+}
+
+/* The search bar: a lighter well inside the navy, so it reads as a field and
+   not as a gap in the bar. */
+.fc-topbar .fc-search {
+  background: rgb(255 255 255 / 0.07);
+  border-color: rgb(255 255 255 / 0.14);
+  color: rgb(255 255 255 / 0.55);
+}
+
+.fc-topbar .fc-search input { color: #fff; }
+.fc-topbar .fc-search input::placeholder { color: rgb(255 255 255 / 0.5); }
+
+.fc-topbar .fc-search:focus-within {
+  border-color: var(--burgundy);
+  background: rgb(255 255 255 / 0.1);
+}
+
+.fc-topbar .fc-brand-sub { color: rgb(255 255 255 / 0.5); }
+.fc-topbar .fc-profile {
+  background: rgb(255 255 255 / 0.07);
+  border-color: rgb(255 255 255 / 0.14);
+}
+.fc-topbar .fc-profile-avatar { background: var(--burgundy); }
+
+/* ---- hover: burgundy ---- */
+
+/*
+ * Burgundy fills the row rather than only tinting the label. On navy a colour
+ * this dark cannot carry text — #7b1e3a against the sidebar measures 1.61:1 —
+ * so it has to be the background, with white on it at 10.05:1.
+ */
+.fc-aside .fc-nav-item:hover,
+.fc-aside .fc-nav-toggle:hover {
+  background: var(--burgundy);
+  color: var(--on-burgundy);
+}
+
+.fc-aside .fc-rail-item:hover,
+.fc-aside .fc-rail-item[data-hot] {
+  background: var(--burgundy);
+  border-color: var(--burgundy);
+  color: var(--on-burgundy);
+}
+
+.fc-aside .fc-rail-item:hover .fc-rail-meta,
+.fc-aside .fc-rail-item[data-hot] .fc-rail-meta,
+.fc-aside .fc-rail-item:hover .fc-rail-chevron,
+.fc-aside .fc-rail-item[data-hot] .fc-rail-chevron {
+  color: rgb(255 255 255 / 0.8);
+}
+
+/* A disabled row is not a target, so it does not light up. */
+.fc-aside .fc-nav-item[aria-disabled]:hover {
+  background: none;
+  color: var(--teal-200);
+}
+
+/* The current page keeps its own mark: hover says "you could go here", and
+   it would be lost if the two looked the same. */
+.fc-aside .fc-rail-item[aria-current] {
+  background: rgb(255 255 255 / 0.1);
+  border-color: rgb(255 255 255 / 0.3);
+}
+
+.fc-aside .fc-nav-cursor {
+  background: rgb(255 255 255 / 0.1);
+  border-color: rgb(255 255 255 / 0.22);
+}
+
+/* Focus stays butter — it has to be visible on navy *and* on burgundy, and
+   burgundy on burgundy is nothing. */
+.fc-aside .fc-nav-item:focus-visible,
+.fc-aside .fc-rail-item:focus-visible,
+.fc-aside .fc-nav-toggle:focus-visible {
+  outline: 2px solid var(--butter);
+  outline-offset: 2px;
+}

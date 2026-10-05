@@ -10,6 +10,7 @@
  * turns them into Promises — that is the one intentional seam in this layer.
  */
 import { cuisines, districts, menuItems, menus, restaurantCuisines, restaurants } from '../data';
+import { reviews } from '../data/reviews';
 import type { Cuisine, District, ID, MenuItem, Restaurant } from '../data/types';
 
 /** A district plus the aggregates the map needs. Never hard-code these in the UI. */
@@ -245,4 +246,68 @@ export function getCuisineForMenuItem(menuItemId: ID): Cuisine | undefined {
   if (!item) return undefined;
   const menu = menus.find((m) => m.id === item.menuId);
   return menu ? cuisines.find((c) => c.id === menu.cuisineId) : undefined;
+}
+
+/* ------------------------------------------------------------- reviews -- */
+
+export interface RestaurantReview {
+  id: ID;
+  author: string;
+  rating: number;
+  text: string;
+  at: string;
+  verifiedOrder: boolean;
+  /** The menu the order came from — reviews belong to a menu, not a kitchen. */
+  cuisineName: string;
+}
+
+export interface ReviewSummary {
+  /** The restaurant's stored rating, over every order it has ever taken. */
+  rating: number;
+  ratingCount: number;
+  /** How many of these recent ones are shown. Never presented as the total. */
+  shown: number;
+}
+
+/**
+ * Recent reviews for one restaurant, newest first.
+ *
+ * `{cuisine}` in the stored text is filled here rather than in the data,
+ * because it is a display concern: the row knows which menu the order came
+ * from, and the sentence is assembled where it is read.
+ */
+export function getReviewsForRestaurant(restaurantId: ID, limit = 4): RestaurantReview[] {
+  return reviews
+    .filter((r) => r.restaurantId === restaurantId)
+    .sort((a, b) => b.at.localeCompare(a.at))
+    .slice(0, limit)
+    .map((r) => {
+      const cuisineName = cuisines.find((c) => c.id === r.cuisineId)?.name ?? 'order';
+      return {
+        id: r.id,
+        author: r.author,
+        rating: r.rating,
+        text: r.text.replace('{cuisine}', cuisineName.toLowerCase()),
+        at: r.at,
+        verifiedOrder: r.verifiedOrder,
+        cuisineName,
+      };
+    });
+}
+
+/**
+ * The headline figures beside the reviews.
+ *
+ * Deliberately the restaurant's own stored rating and count, not an average of
+ * the four rows below. Recomputing from a sample would put a number on screen
+ * that contradicts the one in the header two hundred pixels above it.
+ */
+export function getReviewSummary(restaurantId: ID): ReviewSummary | null {
+  const restaurant = restaurants.find((r) => r.id === restaurantId);
+  if (!restaurant) return null;
+  return {
+    rating: restaurant.rating,
+    ratingCount: restaurant.ratingCount,
+    shown: reviews.filter((r) => r.restaurantId === restaurantId).length,
+  };
 }

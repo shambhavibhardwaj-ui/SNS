@@ -4,7 +4,10 @@ import {
   ArrowLeft, Bike, Clock, Flame, Leaf, Minus, Plus, ShoppingBag, Star,
 } from 'lucide-react';
 import { useCart } from '../cart/useCart';
-import { getMenusForRestaurant, getRestaurantById } from '../services/restaurantService';
+import { RestaurantReviews } from '../components/listing/RestaurantReviews';
+import {
+  getMenusForRestaurant, getRestaurantById, getReviewsForRestaurant, getReviewSummary,
+} from '../services/restaurantService';
 import type { MenuItem } from '../data/types';
 
 /**
@@ -23,6 +26,8 @@ export function RestaurantMenu() {
 
   const restaurant = useMemo(() => getRestaurantById(restaurantId), [restaurantId]);
   const menus = useMemo(() => getMenusForRestaurant(restaurantId), [restaurantId]);
+  const reviews = useMemo(() => getReviewsForRestaurant(restaurantId), [restaurantId]);
+  const reviewSummary = useMemo(() => getReviewSummary(restaurantId), [restaurantId]);
 
   const [activeMenuId, setActiveMenuId] = useState(() => menus[0]?.menuId ?? '');
   const [vegOnly, setVegOnly] = useState(false);
@@ -160,6 +165,10 @@ export function RestaurantMenu() {
       ) : (
         <p className="rm-empty">This restaurant has no menu yet.</p>
       )}
+
+      {/* Under the menu, not above it: someone arriving here came to order,
+          and reviews are what they read when they are undecided. */}
+      <RestaurantReviews reviews={reviews} summary={reviewSummary} />
 
       {/* The bar only exists when there is something in the cart. */}
       {!cart.isEmpty ? (

@@ -228,6 +228,26 @@ live in memory, so a reload loses them.
 
 Stubs, deliberately inert and marked `aria-disabled`: top-bar search and the cart control.
 
+## Reviews
+
+`data/reviews.ts` — one row per rated order, the same grain as the admin's `ratedOrders`,
+because both rating rules count *orders*. Reviews carry the cuisine they came from, so
+"the biryani was cold" belongs to the biryani menu rather than to the kitchen, and the card
+on the restaurant page says which menu it is about.
+
+The headline figure beside them is the restaurant's **stored** rating over every order it has
+taken, never an average of the four rows shown. Recomputing from a sample would put a number
+on screen contradicting the one in the page header.
+
+Generated deterministically, with authors and sentences drawn **without replacement** — drawn
+independently, one restaurant showed the same name and the same opening line twice in four
+cards, which is the tell that the section is generated.
+
+Known gap: one- and two-star reviews are reachable but rare, because no restaurant in
+`data/restaurants` is rated below 3.9. The admin side has Maíz y Humo tripping RULE-01 on six
+orders below three stars, and that count lives in `data/admin/platform.ts` — the two datasets
+describe the same kitchens and do not yet share rows.
+
 ## Foodie AI
 
 `services/foodieService.ts`, opened from the city's docked launcher.
@@ -378,6 +398,12 @@ accents, and sit outside that budget.
 
 `index.css` defines two token sets: the brand `--teal-*` / `--butter*` / `--cream*` family,
 and an `--app-*` family for the light ordering and dashboard surfaces.
+
+**The city's chrome is navy with burgundy on hover** — `#10203F` sidebar, `#0A1730` top bar,
+`#7B1E3A` hover. The map stays teal; the furniture around it does not. Both panels went from
+translucent teal glass to solid: navy washed over a teal city reads as dirty teal, not navy.
+Hover fills the whole row rather than colouring the label, because burgundy *as text* on navy
+is 1.61:1 — as a background with white on it, it is 10.05:1.
 
 **The onboarding flow runs Pink Lemonade and Slime Margarita** — `#FF5097` and `#E4F482`,
 one block keyed off `.ob-shell`, the same scoped-token technique as the other two sections.
