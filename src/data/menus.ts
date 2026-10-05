@@ -349,14 +349,29 @@ for (const link of restaurantCuisines) {
   const key = `${link.restaurantId}::${link.cuisineId}`;
   const multiplier = BAND_MULTIPLIER[restaurant.priceRange] ?? 1;
 
-  /* Drop one catalogue dish per menu so two kitchens never show an identical
-     card. Never drops below five items, and never touches a signature. */
-  const dropped = catalogue.length > 6 ? hash(key) % catalogue.length : -1;
+  /*
+   * A pure-veg kitchen does not serve the meat dishes in a shared catalogue —
+   * it drops them, and this runs before anything else so the counts below are
+   * counts of what the kitchen actually sells.
+   *
+   * This used to be `isVeg: restaurant.isPureVeg ? true : item.isVeg` on the
+   * row below, which relabelled them instead: Anna's Tiffin Room listed a
+   * Kerala Fish Curry marked vegetarian, and Herb & Husk a vegetarian Butter
+   * Chicken — nine dishes across six kitchens. On a veg filter, or under a
+   * suggestion captioned "Vegetarian", that is not a cosmetic slip: it is the
+   * app telling someone with a dietary or religious restriction that fish is
+   * vegetarian.
+   */
+  const servable = restaurant.isPureVeg ? catalogue.filter((i) => i.isVeg) : catalogue;
+  const signatures = (SIGNATURES[key] ?? []).filter((i) => !restaurant.isPureVeg || i.isVeg);
 
-  const items = [
-    ...catalogue.filter((_, i) => i !== dropped),
-    ...(SIGNATURES[key] ?? []),
-  ];
+  /* Drop one dish per menu so two kitchens never show an identical card.
+     Measured after the veg filter, or a pure-veg menu that lost dishes to it
+     could be cut below the five-item floor this promises — one was, down to
+     four. Never touches a signature. */
+  const dropped = servable.length > 6 ? hash(key) % servable.length : -1;
+
+  const items = [...servable.filter((_, i) => i !== dropped), ...signatures];
 
   for (const item of items) {
     itemRows.push({
@@ -367,7 +382,7 @@ for (const link of restaurantCuisines) {
       /* Rounded to the nearest five — nobody prices a dish at ₹347. */
       price: Math.round((item.price * multiplier) / 5) * 5,
       category: item.category,
-      isVeg: restaurant.isPureVeg ? true : item.isVeg,
+      isVeg: item.isVeg,
       isSpicy: item.isSpicy,
     });
   }
