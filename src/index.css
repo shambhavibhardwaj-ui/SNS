@@ -9548,3 +9548,28 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
     padding: 9px 11px;
   }
 }
+
+/*
+ * The listing turns the bar white, and these were pale text written for navy
+ * — Home and Cart vanished into it, leaving a floating badge. Dark ink on the
+ * light bar; burgundy still carries the hover, which works on both because it
+ * is a fill with white on it either way.
+ */
+.fc-shell[data-view='listing'] .fc-topnav-item {
+  color: var(--app-ink-soft);
+}
+
+.fc-shell[data-view='listing'] .fc-topnav-item:hover {
+  background: var(--burgundy);
+  color: var(--on-burgundy);
+}
+
+.fc-shell[data-view='listing'] .fc-topnav-item[aria-current='page'] {
+  background: var(--app-bg);
+  color: var(--app-ink);
+}
+
+/* Butter on white is invisible; the focus ring takes the ink colour here. */
+.fc-shell[data-view='listing'] .fc-topnav-item:focus-visible {
+  outline-color: var(--app-ink);
+}

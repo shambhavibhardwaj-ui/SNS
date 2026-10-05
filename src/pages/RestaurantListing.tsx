@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { Home } from 'lucide-react';
 import { FilterBar } from '../components/listing/FilterBar';
 import { RestaurantCard } from '../components/listing/RestaurantCard';
 import {
@@ -43,9 +43,11 @@ export function RestaurantListing({
   return (
     <div className="rl" style={{ '--district-accent': district.theme.roof } as React.CSSProperties}>
       <header className="rl-hero">
+        {/* Home, not "back": it goes to the city, which is the same place
+            whether you arrived here from the map or from the search. */}
         <button type="button" className="rl-back" onClick={onBackToCity}>
-          <ArrowLeft size={16} strokeWidth={2.2} />
-          Back to SNS
+          <Home size={16} strokeWidth={2.2} />
+          Home
         </button>
 
         <div className="rl-hero-body">

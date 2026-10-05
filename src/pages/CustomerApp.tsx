@@ -1,5 +1,5 @@
 import { Link, Route, Routes } from 'react-router-dom';
-import { ArrowLeft, Heart, ReceiptText, UserRound } from 'lucide-react';
+import { Heart, Home, ReceiptText, UserRound } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { FoodCityExperience } from './FoodCityExperience';
@@ -60,8 +60,8 @@ function AccountPage({
     <div className="ac-page">
       <div className="ac-inner">
         <Link to="/customer" className="rl-back">
-          <ArrowLeft size={16} strokeWidth={2.2} />
-          Back to SNS
+          <Home size={16} strokeWidth={2.2} />
+          Home
         </Link>
 
         <header className="ac-head">
