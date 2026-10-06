@@ -27,10 +27,12 @@ export interface Stat {
  * three-card delivery row further down the page, where blocks of colour would
  * compete with the section they sit inside.
  *
- * The tone is the card's position, not its meaning — these eight figures are
- * not statuses and nothing here is good or bad news. A colour that *looked*
- * like a verdict on a number nobody has judged would be the worse mistake, so
- * the tints cycle and carry no information.
+ * Every bento card gets its own pastel — eight tints for eight figures. The
+ * tone is the card's position, not its meaning: these are not statuses and
+ * nothing here is good or bad news. A colour that *looked* like a verdict on a
+ * number nobody has judged would be the worse mistake, so the tints are
+ * assigned in order and carry no information. `% 8` wraps rather than running
+ * out if a ninth figure is ever added.
  */
 export function StatCards({
   stats,
@@ -45,7 +47,7 @@ export function StatCards({
         <li
           key={label}
           className="sc-card"
-          data-tone={variant === 'bento' ? i % 4 : undefined}
+          data-tone={variant === 'bento' ? i % 8 : undefined}
           data-wide={variant === 'bento' && wide ? true : undefined}
         >
           <div className="sc-top">

@@ -448,14 +448,21 @@ Lime carries "done" because green already did; pink carries the accent because m
 next to "needs replacement" reading as the same state, which on that page is the exact
 failure it exists to prevent — waiting is not a task, so it is neutral.
 
-**The admin home's eight figures are a bento**, in the four tints of the component they were
-asked to look like: periwinkle `#DADBF8`, mint `#D9EAE3`, pink `#FFCFE1`, cream `#FFFCE5`,
-with the reference's near-black for ink and its dark pill as the icon chip. Asked for, and
-the second deliberate exception to the palette after the sign-in screen. Scoped to
-`.sc-grid[data-variant='bento']`, so it colours that one row and nothing else — the
-three-card delivery row further down the same page is the same component and stays white.
+**The admin home's eight figures are a bento**, and every card is its own pastel — the four
+tints of the component it was modelled on plus four more in the same register: periwinkle
+`#DADBF8`, peach `#FFE0C9`, pink `#FFCFE1`, lime `#DFF0C8`, sky `#CFE6F8`, cream `#FFFCE5`,
+lilac `#ECD9F5`, mint `#D9EAE3`, with the reference's near-black for ink and its dark pill
+as the icon chip. Asked for, and the second deliberate exception to the palette after the
+sign-in screen. Scoped to `.sc-grid[data-variant='bento']`, so it colours that one row and
+nothing else — the three-card delivery row further down the same page is the same component
+and stays white.
 
-The tints **cycle by position and mean nothing**. These are not statuses; nothing in the row
+All eight sit at the same lightness so no card shouts over its neighbours, and the hues are
+spread right round the wheel (26, 53, 85, 155, 206, 238, 281, 338) so none is another one
+slightly off. They are ordered warm against cool rather than by hue, or the row would read
+as a sorted gradient and invite someone to look for a ranking in it.
+
+The tints **are assigned by position and mean nothing**. These are not statuses; nothing in the row
 is good or bad news, and a colour reading as a verdict on a number nobody has judged would
 be worse than no colour. The ink is near-black rather than the dashboard's soft grey because
 on tints this pale a grey label falls to about 4:1, where near-black measures 14–19:1.

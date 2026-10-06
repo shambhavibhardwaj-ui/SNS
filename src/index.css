@@ -9582,12 +9582,12 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
    asked for: tinted blocks, two of them twice as wide, lifting and tilting a
    degree under the pointer.
 
-   **The four tints are the reference's own**, kept rather than translated into
-   plum and tangerine — periwinkle, mint, pink and cream. Asked for, and the
-   second deliberate exception to the palette after the sign-in screen. They
-   are scoped to `[data-variant='bento']`, so they colour this one row and
-   reach nothing else: the delivery row further down the same page, which is
-   the same component, stays white.
+   **Every card is its own pastel** — the reference's four plus four more in
+   the same register, no two cards alike. Asked for, and the second deliberate
+   exception to the palette after the sign-in screen. They are scoped to
+   `[data-variant='bento']`, so they colour this one row and reach nothing
+   else: the delivery row further down the same page, which is the same
+   component, stays white.
 
    The ink on them is the reference's near-black rather than the dashboard's
    soft grey. On tints this pale a grey label drops to about 4:1 while the
@@ -9615,13 +9615,31 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
-/* Cycled by position, because these eight figures are not statuses — nothing
-   here is good or bad news, and a tint that read as a verdict on a number
-   nobody has judged would be worse than no colour at all. */
-.sc-grid[data-variant='bento'] .sc-card[data-tone='0'] { --sc-tone: #dadbf8; }
-.sc-grid[data-variant='bento'] .sc-card[data-tone='1'] { --sc-tone: #d9eae3; }
-.sc-grid[data-variant='bento'] .sc-card[data-tone='2'] { --sc-tone: #ffcfe1; }
-.sc-grid[data-variant='bento'] .sc-card[data-tone='3'] { --sc-tone: #fffce5; }
+/*
+ * One tint each, eight for eight, and assigned by position rather than by
+ * meaning: these figures are not statuses — nothing in the row is good or bad
+ * news — and a colour that read as a verdict on a number nobody has judged
+ * would be worse than no colour at all.
+ *
+ * The reference's four, plus four more built to sit in the same register:
+ * every one is a pastel of the same lightness, so no card shouts over its
+ * neighbours, and the eight hues are spread right round the wheel (26, 53, 85,
+ * 155, 206, 238, 281, 338) so none of them is another one slightly off.
+ *
+ * Ordered warm against cool rather than by hue, or the row would read as a
+ * gradient someone had sorted and invite you to look for the ranking in it.
+ *
+ * Measured on each: the label is 7.0:1 at worst, the figure 14.4:1, and the
+ * supporting line — the weakest text here — 4.72:1.
+ */
+.sc-grid[data-variant='bento'] .sc-card[data-tone='0'] { --sc-tone: #dadbf8; } /* periwinkle */
+.sc-grid[data-variant='bento'] .sc-card[data-tone='1'] { --sc-tone: #ffe0c9; } /* peach */
+.sc-grid[data-variant='bento'] .sc-card[data-tone='2'] { --sc-tone: #ffcfe1; } /* pink */
+.sc-grid[data-variant='bento'] .sc-card[data-tone='3'] { --sc-tone: #dff0c8; } /* lime */
+.sc-grid[data-variant='bento'] .sc-card[data-tone='4'] { --sc-tone: #cfe6f8; } /* sky */
+.sc-grid[data-variant='bento'] .sc-card[data-tone='5'] { --sc-tone: #fffce5; } /* cream */
+.sc-grid[data-variant='bento'] .sc-card[data-tone='6'] { --sc-tone: #ecd9f5; } /* lilac */
+.sc-grid[data-variant='bento'] .sc-card[data-tone='7'] { --sc-tone: #d9eae3; } /* mint */
 
 @media (min-width: 1180px) {
   .sc-grid[data-variant='bento'] .sc-card[data-wide] {
@@ -9629,15 +9647,17 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   }
 }
 
-/* The tilt alternates with the tone so neighbours never lean the same way —
-   a row all leaning right reads as a rendering fault rather than a hover. */
+/* The tilt alternates so neighbours never lean the same way — a row all
+   leaning right reads as a rendering fault rather than a hover. */
 .sc-grid[data-variant='bento'] .sc-card:hover {
   transform: translateY(-3px) rotate(0.6deg);
   box-shadow: -6px 6px 32px 8px rgb(10 10 10 / 0.08);
 }
 
 .sc-grid[data-variant='bento'] .sc-card[data-tone='1']:hover,
-.sc-grid[data-variant='bento'] .sc-card[data-tone='3']:hover {
+.sc-grid[data-variant='bento'] .sc-card[data-tone='3']:hover,
+.sc-grid[data-variant='bento'] .sc-card[data-tone='5']:hover,
+.sc-grid[data-variant='bento'] .sc-card[data-tone='7']:hover {
   transform: translateY(-3px) rotate(-0.6deg);
 }
 
