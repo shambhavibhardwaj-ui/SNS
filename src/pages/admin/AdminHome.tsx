@@ -45,19 +45,30 @@ export function AdminHome() {
   return (
     <div className="dh">
       {/* 1 — PLATFORM OVERVIEW */}
+      {/*
+        A bento: eight figures, three rows, 2+4+2.
+
+        The wide cards are not decoration. Two wide, four narrow, two wide fills
+        a four-column grid exactly at eight cards, which one wide card cannot —
+        it would leave a hole and the row would stop looking deliberate. The
+        pairing follows the reading: the two restaurant totals, then the four
+        counts of people and queues, then the two order volumes.
+
+        Eight, not nine: four across is the row a person reads at a glance.
+        Offboarded moves into the total's supporting line rather than being
+        dropped.
+      */}
       <StatCards
+        variant="bento"
         stats={[
-          /* Eight, not nine: four across is the row a person reads at a glance,
-             and nine left a stranded card on a second row. Offboarded moves
-             into the total's supporting line rather than being dropped. */
-          { label: 'Total restaurants', value: String(overview.totalRestaurants), hint: `all states · ${overview.offboarded} offboarded`, Icon: Store },
-          { label: 'Active restaurants', value: String(overview.activeRestaurants), hint: 'taking orders', Icon: UtensilsCrossed },
+          { label: 'Total restaurants', value: String(overview.totalRestaurants), hint: `all states · ${overview.offboarded} offboarded`, Icon: Store, wide: true },
+          { label: 'Active restaurants', value: String(overview.activeRestaurants), hint: 'taking orders', Icon: UtensilsCrossed, wide: true },
           { label: 'Pending applications', value: String(overview.pendingApplications), hint: 'awaiting first look', Icon: FileSearch },
           { label: 'Under review', value: String(overview.underReview), hint: 'being assessed', Icon: Clock },
           { label: 'Total customers', value: overview.totalCustomers.toLocaleString('en-IN'), hint: `${customers.newThisWeek} new this week`, Icon: Users },
           { label: 'Delivery partners', value: String(delivery.totalPartners), hint: `${delivery.activePartners} active · ${delivery.onDelivery} on delivery`, Icon: Bike },
-          { label: 'Orders today', value: overview.ordersToday.toLocaleString('en-IN'), Icon: ClipboardList },
-          { label: 'Orders this week', value: overview.ordersThisWeek.toLocaleString('en-IN'), Icon: TrendingUp },
+          { label: 'Orders today', value: overview.ordersToday.toLocaleString('en-IN'), Icon: ClipboardList, wide: true },
+          { label: 'Orders this week', value: overview.ordersThisWeek.toLocaleString('en-IN'), Icon: TrendingUp, wide: true },
         ]}
       />
 

@@ -9573,3 +9573,102 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 .fc-shell[data-view='listing'] .fc-topnav-item:focus-visible {
   outline-color: var(--app-ink);
 }
+
+/* ======================================================================
+   Stat cards — the bento variant
+   ======================================================================
+
+   The admin's platform overview, in the shape of the colourful bento that was
+   asked for: tinted blocks, two of them twice as wide, lifting and tilting a
+   degree under the pointer.
+
+   **The four tints are the reference's own**, kept rather than translated into
+   plum and tangerine — periwinkle, mint, pink and cream. Asked for, and the
+   second deliberate exception to the palette after the sign-in screen. They
+   are scoped to `[data-variant='bento']`, so they colour this one row and
+   reach nothing else: the delivery row further down the same page, which is
+   the same component, stays white.
+
+   The ink on them is the reference's near-black rather than the dashboard's
+   soft grey. On tints this pale a grey label drops to about 4:1 while the
+   near-black measures over 15:1, and these cards carry the figures the page
+   opens with.
+
+   Layout: 2 wide + 4 narrow + 2 wide is the only arrangement that fills a
+   four-column grid exactly at eight cards. One wide card would leave a hole.
+   ---------------------------------------------------------------------- */
+
+.sc-grid[data-variant='bento'] {
+  gap: 16px;
+}
+
+.sc-grid[data-variant='bento'] .sc-card {
+  /* The tint is set per tone below; this is the shared shape. */
+  --sc-tone: var(--app-surface);
+  position: relative;
+  padding: 22px 24px 20px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--sc-tone);
+  box-shadow: none;
+  color: #0a0a0a;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+/* Cycled by position, because these eight figures are not statuses — nothing
+   here is good or bad news, and a tint that read as a verdict on a number
+   nobody has judged would be worse than no colour at all. */
+.sc-grid[data-variant='bento'] .sc-card[data-tone='0'] { --sc-tone: #dadbf8; }
+.sc-grid[data-variant='bento'] .sc-card[data-tone='1'] { --sc-tone: #d9eae3; }
+.sc-grid[data-variant='bento'] .sc-card[data-tone='2'] { --sc-tone: #ffcfe1; }
+.sc-grid[data-variant='bento'] .sc-card[data-tone='3'] { --sc-tone: #fffce5; }
+
+@media (min-width: 1180px) {
+  .sc-grid[data-variant='bento'] .sc-card[data-wide] {
+    grid-column: span 2;
+  }
+}
+
+/* The tilt alternates with the tone so neighbours never lean the same way —
+   a row all leaning right reads as a rendering fault rather than a hover. */
+.sc-grid[data-variant='bento'] .sc-card:hover {
+  transform: translateY(-3px) rotate(0.6deg);
+  box-shadow: -6px 6px 32px 8px rgb(10 10 10 / 0.08);
+}
+
+.sc-grid[data-variant='bento'] .sc-card[data-tone='1']:hover,
+.sc-grid[data-variant='bento'] .sc-card[data-tone='3']:hover {
+  transform: translateY(-3px) rotate(-0.6deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-grid[data-variant='bento'] .sc-card {
+    transition: none;
+  }
+  .sc-grid[data-variant='bento'] .sc-card:hover {
+    transform: none;
+  }
+}
+
+.sc-grid[data-variant='bento'] .sc-label {
+  color: rgb(10 10 10 / 0.72);
+  font-weight: 500;
+}
+
+.sc-grid[data-variant='bento'] .sc-value {
+  color: #0a0a0a;
+}
+
+.sc-grid[data-variant='bento'] .sc-hint {
+  color: rgb(10 10 10 / 0.6);
+}
+
+/* The reference's dark pill, as the icon chip: the one dark mark on each tint,
+   which is what stops four pastels reading as a wash. */
+.sc-grid[data-variant='bento'] .sc-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgb(10 10 10 / 0.9);
+  color: #fff;
+}

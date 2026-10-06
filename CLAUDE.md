@@ -448,6 +448,21 @@ Lime carries "done" because green already did; pink carries the accent because m
 next to "needs replacement" reading as the same state, which on that page is the exact
 failure it exists to prevent — waiting is not a task, so it is neutral.
 
+**The admin home's eight figures are a bento**, in the four tints of the component they were
+asked to look like: periwinkle `#DADBF8`, mint `#D9EAE3`, pink `#FFCFE1`, cream `#FFFCE5`,
+with the reference's near-black for ink and its dark pill as the icon chip. Asked for, and
+the second deliberate exception to the palette after the sign-in screen. Scoped to
+`.sc-grid[data-variant='bento']`, so it colours that one row and nothing else — the
+three-card delivery row further down the same page is the same component and stays white.
+
+The tints **cycle by position and mean nothing**. These are not statuses; nothing in the row
+is good or bad news, and a colour reading as a verdict on a number nobody has judged would
+be worse than no colour. The ink is near-black rather than the dashboard's soft grey because
+on tints this pale a grey label falls to about 4:1, where near-black measures 14–19:1.
+
+Layout is 2 wide + 4 narrow + 2 wide. That is the only arrangement filling a four-column
+grid exactly at eight cards; one wide card leaves a hole.
+
 **The admin section runs its own palette** — Tangerine `#F89847` and Plum `#7F1633`. It is
 one CSS block keyed off `.db[data-theme='plum']`, which redefines the brand tokens inside
 that subtree: anything already written as `var(--teal-700)` resolves to a plum there, and
