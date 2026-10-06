@@ -181,7 +181,21 @@ menu page, reached from the city and every listing, and a guarded `/restaurant/*
 above the public fallback swallowed all of them — a visitor clicking a kitchen was bounced to
 the login screen.
 
-**Admin.** Home/overview, restaurant applications (tabs, search, sort, session decisions),
+**Admin.** The home is the eight figures and one chart — nothing else. It used to carry nine
+blocks (the application queue, restaurant performance, both rule panels, recent orders,
+recent customers, a delivery summary, quick actions), and every one of them had its own page
+in the rail, so the home was a worse copy of the whole dashboard: shorter tables, no filters,
+no sort, and a second place for the same number to be wrong in. The onboarding-status chart
+stays because it is the one thing with nowhere else to live — the applications page lists
+rows and does not sum them.
+
+Two blocks moved rather than died, because their pages did not already show what they
+showed: **restaurant performance** is on Active Restaurants (same kitchens read by how they
+are doing, which that page's table cannot answer — no order count, no recent rating), and
+the **RULE-02 qualifying counts** are on Service Fees (that table says whether the rule was
+met, this says by how much). The rest were duplicates and were deleted.
+
+Then: restaurant applications (tabs, search, sort, session decisions),
 the management tables, `/admin/analytics` — KPIs, order and revenue trends, onboarding
 funnel and process diagram, order lifecycle, cuisine and restaurant tables, delivery-model
 comparison, customer growth and conversion, ratings, business-rule monitoring, platform

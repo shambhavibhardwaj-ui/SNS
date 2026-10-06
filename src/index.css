@@ -9692,3 +9692,16 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   background: rgb(10 10 10 / 0.9);
   color: #fff;
 }
+
+/* A section heading inside a management page, under the page's own table. */
+.dh-sub-head {
+  margin: 34px 0 4px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--teal-800);
+}
+
+.dh-sub-head + .dh-block-sub {
+  margin: 0 0 16px;
+}

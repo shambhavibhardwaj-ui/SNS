@@ -1,3 +1,4 @@
+import { IndianRupee } from 'lucide-react';
 import {
   DataTable,
   Money,
@@ -6,6 +7,9 @@ import {
   StatusPill,
   type Column,
 } from '../../components/dashboard/DataTable';
+import {
+  getConcessionCandidates, getRestaurantPerformance, HIGH_RATING_MIN_ORDERS,
+} from '../../services/adminService';
 import {
   adminCustomers,
   adminOrders,
@@ -75,6 +79,14 @@ const RESTAURANT_COLUMNS: Column<AdminRestaurantRow>[] = [
   { key: 'actions', header: 'Actions', cell: () => <RowActions labels={['View', 'Edit', 'Disable']} /> },
 ];
 
+const PERFORMANCE_COLUMNS: Column<ReturnType<typeof getRestaurantPerformance>[number]>[] = [
+  { key: 'r', header: 'Restaurant', cell: (r) => <strong>{r.restaurant}</strong> },
+  { key: 'rating', header: 'Rating', cell: (r) => <RatingCell value={r.rating} /> },
+  { key: 'orders', header: 'Total orders', align: 'end', cell: (r) => r.totalOrders.toLocaleString('en-IN') },
+  { key: 'recent', header: 'Recent rating', align: 'end', secondary: true, cell: (r) => (r.recentRating === null ? '—' : <RatingCell value={r.recentRating} />) },
+  { key: 'state', header: 'Status', cell: (r) => <StatusPill value={r.state} /> },
+];
+
 export function AdminRestaurants({ offboarded = false }: { offboarded?: boolean } = {}) {
   const rows = offboarded
     ? adminRestaurants.filter((r) => r.status === 'Paused')
@@ -95,6 +107,31 @@ export function AdminRestaurants({ offboarded = false }: { offboarded?: boolean 
         rowKey={(r) => r.name}
         empty="None in this state."
       />
+
+      {/*
+        Moved here off the admin home, which was carrying a six-row copy of it.
+        It belongs on this page and not on that one: it is the same restaurants
+        read by how they are *doing* rather than by what they are, and the
+        table above cannot answer that — it has no order count and no recent
+        rating. Full list here, where there is room for it.
+
+        Offboarded restaurants are left out: performance is a question about a
+        kitchen still taking orders.
+      */}
+      {offboarded ? null : (
+        <>
+          <h3 className="dh-sub-head">Performance</h3>
+          <p className="dh-block-sub">
+            Rating against order volume, and the recent rating beside the stored one.
+          </p>
+          <DataTable
+            caption="Restaurant performance"
+            columns={PERFORMANCE_COLUMNS}
+            rows={getRestaurantPerformance()}
+            rowKey={(r) => r.restaurant}
+          />
+        </>
+      )}
     </Page>
   );
 }
@@ -218,6 +255,35 @@ export function AdminServiceFees() {
         rows={serviceFees}
         rowKey={(r) => r.restaurant}
       />
+
+      {/*
+        Moved here off the admin home. Not a duplicate of the table above: that
+        column says whether RULE-02 was met, this says by how much — the
+        qualifying orders and the average behind the verdict — which is the
+        part an admin needs when someone asks why a restaurant did or did not
+        earn it. Derived in adminService from the rating rows, so it cannot
+        disagree with the rule.
+      */}
+      <h3 className="dh-sub-head">Who qualifies this week</h3>
+      <ul className="at-list">
+        {getConcessionCandidates().map((c) => (
+          <li key={c.restaurantId} className="at-row" data-muted={!c.eligible || undefined}>
+            <span className="at-icon is-good" aria-hidden="true"><IndianRupee size={17} strokeWidth={2} /></span>
+            <span className="at-body">
+              <strong>{c.restaurant}</strong>
+              <span>
+                {c.qualifyingOrders} qualifying {c.qualifyingOrders === 1 ? 'order' : 'orders'} this
+                week · average rating {c.averageRating.toFixed(1)}
+              </span>
+            </span>
+            <StatusPill value={c.eligible ? 'Eligible' : 'Not yet'} />
+          </li>
+        ))}
+      </ul>
+      <p className="dh-inline-note">
+        Above 4★ across {HIGH_RATING_MIN_ORDERS} orders in one week earns the concession. The
+        amount is not set — the client has not specified it, so it stays configurable.
+      </p>
     </Page>
   );
 }

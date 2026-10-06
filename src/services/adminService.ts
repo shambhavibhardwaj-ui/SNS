@@ -393,12 +393,26 @@ export function getRestaurantPerformance(): PerformanceRow[] {
     .map((r) => {
       const rows = ratedOrders.filter((x) => x.restaurantId === r.id);
       const avg = rows.length ? rows.reduce((s, x) => s + x.rating, 0) / rows.length : 0;
-      const recent = [...rows].sort((a, b) => b.ratedAt.localeCompare(a.ratedAt))[0];
+      /*
+       * The latest *day*, averaged — not the latest row.
+       *
+       * `ratedAt` is a date with no time, so a restaurant's last day holds
+       * several orders and `sort` leaves ties in seed order. Taking [0] handed
+       * back whichever 5★ row the seed happened to list first, which is why
+       * every restaurant on the page reported the same recent rating of 5.0.
+       * One order could not honestly be called "the recent rating" in any
+       * case; the day can.
+       */
+      const latestDay = rows.reduce((max, x) => (x.ratedAt > max ? x.ratedAt : max), '');
+      const onLatest = rows.filter((x) => x.ratedAt === latestDay);
+      const recent = onLatest.length
+        ? onLatest.reduce((s, x) => s + x.rating, 0) / onLatest.length
+        : null;
       return {
         restaurant: r.name,
         rating: Number(avg.toFixed(1)),
         totalOrders: r.totalOrders,
-        recentRating: recent?.rating ?? null,
+        recentRating: recent === null ? null : Number(recent.toFixed(1)),
         state: r.state,
       };
     })
