@@ -160,12 +160,35 @@ only — a service-role key must never reach the bundle. With neither set the ap
 
 ## Current state
 
-**Customer — the SNS city (public, no sign-in needed).** True 2:1 dimetric isometric city on a
-diorama slab, depth-sorted by `gx + gy`. Ten cuisine districts, each with its own
-architecture rather than a recoloured box — cone, dome-and-tandoor, pizza oven, tiered
-eaves, stucco arches, greenhouse, lighthouse, leaf gable, stone parapet, tiled eaves. One
-building per restaurant row, so the skyline is the data. Pan, zoom, pinch and four-way
-rotation; a collapsible sidebar. **Home and Cart sit in the top bar**, on the account side
+**Customer — the SNS city (public, no sign-in needed).** A real 3D city on a diorama slab,
+built with three.js through React Three Fiber in `components/city3d/`. Ten cuisine districts,
+each with its own architecture rather than a recoloured box — cone, dome-and-tandoor, pizza
+oven, tiered eaves, stucco arches, greenhouse, lighthouse, leaf gable, stone parapet, tiled
+eaves. One building per restaurant row, so the skyline is still the data. Free orbit, pan,
+zoom, five camera presets, fullscreen and a reset; a collapsible sidebar.
+
+**It replaced an isometric SVG drawing, and the layout survived the change of medium.**
+`cityLayout.ts` imports the same `districtPlots`, `BLOCK`/`ROAD`/`STEP` grid and
+`BUILDING_SLOTS` the flat city used, and the buildings keep their district palettes from
+`buildings/buildingStyles.ts` — so the streets fall where they always did and the colour
+identity is unchanged, even though every polygon is new. The isometric modules
+(`CityMap`, `IsoDistrict`, `useCityCamera`, the `art/` and `buildings/architecture` SVG) are
+no longer rendered; `iso.ts` and `buildingStyles.ts` still are, for the layout and palettes.
+
+Three things in the 3D city are deliberate. **Every opening is placed on all four walls** —
+an isometric drawing only ever showed three faces, so there was no back to draw; now there
+is one and a blank one would be obvious the moment the camera swings round. **Drag is not a
+click**: the pointer's travel is measured between down and up, and anything past five pixels
+is a camera move and nothing else, or every rotation ending over a building would open it.
+And **orbit is clamped** just under straight-down and just above the horizon — past the pole
+the view gimbal-flips, and under the slab the city is a silhouette floating on nothing.
+
+The renderer is `lazy()`-loaded: three.js is ~800KB and only this screen instantiates it, so
+the login page, the dashboards and the ordering flow do not pay for it.
+
+`vite.config.ts` dedupes `react`, `react-dom` and `three`. R3F is a React *renderer* and
+calls React's hooks internally; Vite pre-bundled a second copy of React with it and the
+Canvas threw "Invalid hook call" before drawing a frame. **Home and Cart sit in the top bar**, on the account side
 of the search — they are true on every screen, the cart follows you out of the city, and
 they group with the other control that is about the person rather than about the map. The
 sidebar is about the map beside it: a collapse toggle and the district rail, opening
