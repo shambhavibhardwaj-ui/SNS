@@ -1240,9 +1240,23 @@ body {
     text-align: center;
   }
 
+  /*
+   * The city comes first on a narrow screen.
+   *
+   * Stacked, the sidebar runs to about 850px of district list, which left the
+   * map a long scroll below the fold — tolerable when it was a picture of a
+   * city, wrong now that it is the city. `order` moves the canvas above the
+   * panel without changing the DOM, so the heading order a screen reader
+   * follows is untouched.
+   */
   .fc-map-wrap {
-    height: 62vh;
-    min-height: 380px;
+    order: -1;
+    height: min(62vh, 520px);
+    min-height: 340px;
+  }
+
+  .fc-aside {
+    order: 0;
   }
 
   .fc-topbar {
