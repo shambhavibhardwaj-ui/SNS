@@ -1,4 +1,5 @@
-import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Maximize2, Minus, Plus, RotateCcw, RotateCw } from 'lucide-react';
 import {
   getDistrictSummaries,
   getRestaurantsByDistrict,
@@ -6,19 +7,10 @@ import {
 import type { Restaurant } from '../../data/types';
 import { SideNav } from '../layout/SideNav';
 import { FoodieAIBar } from '../ui/FoodieAIBar';
+import { CityMap } from './CityMap';
 import { DistrictRail } from './DistrictRail';
-
-/*
- * The 3D city is loaded on demand.
- *
- * three.js and its helpers are about 800KB of the bundle, and nothing outside
- * this one screen needs them — the login page, the admin dashboard and the
- * whole ordering flow were paying for a renderer they never instantiate. A
- * lazy boundary here keeps the first paint of every other route where it was.
- */
-const City3D = lazy(() =>
-  import('../city3d/City3D').then((m) => ({ default: m.City3D })),
-);
+import { cameraForPlot, districtPlots } from './iso';
+import { useCityCamera } from './useCityCamera';
 
 /** How long the camera flies in before the listing page takes over. */
 const ENTER_MS = 820;
@@ -53,6 +45,22 @@ export function FoodCity({ onEnterDistrict, onOpenRestaurant }: FoodCityProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
 
+  const {
+    transform: cameraTransform,
+    animated: cameraAnimated,
+    isPanning,
+    canZoomIn,
+    canZoomOut,
+    flyTo,
+    reset: resetCamera,
+    zoomStep,
+    rotation,
+    rotate,
+    bind: cameraBind,
+    onWheel,
+    setSvg,
+  } = useCityCamera();
+  const stageRef = useRef<HTMLDivElement>(null);
   const enterTimer = useRef<number | null>(null);
 
   const activeSummary = summaries.find((s) => s.district.id === activeId) ?? null;
@@ -63,13 +71,10 @@ export function FoodCity({ onEnterDistrict, onOpenRestaurant }: FoodCityProps) {
       if (activeId) return;
       setActiveId(districtId);
       setHoveredId(null);
-      /* The pause stays: the sidebar says which district you are entering
-         before the listing replaces the city, so the handover is not a jump
-         cut. What it no longer does is fly a fake camera — the real one keeps
-         whatever view you left it in. */
+      flyTo(cameraForPlot(districtPlots[districtId]));
       enterTimer.current = window.setTimeout(() => onEnterDistrict(districtId), ENTER_MS);
     },
-    [activeId, onEnterDistrict],
+    [activeId, flyTo, onEnterDistrict],
   );
 
   useEffect(
@@ -78,6 +83,18 @@ export function FoodCity({ onEnterDistrict, onOpenRestaurant }: FoodCityProps) {
     },
     [],
   );
+
+  /*
+   * Wheel zoom is bound by hand: React attaches onWheel passively, so it cannot
+   * call preventDefault, and the page would scroll instead of the city zooming.
+   */
+  useEffect(() => {
+    const node = stageRef.current;
+    if (!node) return;
+    const handler = onWheel;
+    node.addEventListener('wheel', handler, { passive: false });
+    return () => node.removeEventListener('wheel', handler);
+  }, [onWheel]);
 
   return (
     <main className="fc-stage" data-zoomed={activeId ? 'true' : undefined}>
@@ -123,29 +140,70 @@ export function FoodCity({ onEnterDistrict, onOpenRestaurant }: FoodCityProps) {
         <FoodieAIBar />
       </aside>
 
-      {/*
-        The 3D city.
+      <div
+        ref={stageRef}
+        className="fc-map-wrap"
+        data-panning={isPanning || undefined}
+        {...cameraBind}
+      >
+        <CityMap
+          ref={setSvg}
+          summaries={summaries}
+          restaurantsByDistrict={restaurantsByDistrict}
+          onSelectRestaurant={onOpenRestaurant}
+          hoveredId={hoveredId}
+          activeId={activeId}
+          cameraTransform={cameraTransform}
+          cameraAnimated={cameraAnimated}
+          rotation={rotation}
+          onHover={setHoveredId}
+          onSelect={openDistrict}
+        />
+        <div className="fc-vignette" aria-hidden="true" />
 
-        It replaced an isometric SVG drawing that could only be seen from four
-        fixed corners. The sidebar, the district rail, the Foodie launcher and
-        the whole customer journey are untouched — `onEnterDistrict` and
-        `onOpenRestaurant` are the same two callbacks the flat city raised, so
-        nothing downstream of the map knows the medium changed.
+        <div className="fc-controls">
+          <button
+            type="button"
+            onClick={() => zoomStep(1.3)}
+            disabled={!canZoomIn}
+            aria-label="Zoom in"
+            title="Zoom in"
+          >
+            <Plus size={17} strokeWidth={2.4} />
+          </button>
+          <button
+            type="button"
+            onClick={() => zoomStep(1 / 1.3)}
+            disabled={!canZoomOut}
+            aria-label="Zoom out"
+            title="Zoom out"
+          >
+            <Minus size={17} strokeWidth={2.4} />
+          </button>
+          <button
+            type="button"
+            onClick={() => rotate(-1)}
+            aria-label="Turn the city left"
+            title="Turn left"
+          >
+            <RotateCcw size={16} strokeWidth={2.2} />
+          </button>
+          <button
+            type="button"
+            onClick={() => rotate(1)}
+            aria-label="Turn the city right"
+            title="Turn right"
+          >
+            <RotateCw size={16} strokeWidth={2.2} />
+          </button>
+          <button type="button" onClick={resetCamera} aria-label="Reset view" title="Reset view">
+            <Maximize2 size={15} strokeWidth={2.2} />
+          </button>
+        </div>
 
-        The pan/zoom/rotation state that used to live in `useCityCamera` is
-        gone from here: a real camera owns its own position, and keeping a
-        second copy in React state would mean two things deciding where the
-        view is.
-      */}
-      <div className="fc-map-wrap">
-        <Suspense fallback={<CityLoading />}>
-          <City3D
-            summaries={summaries}
-            restaurantsByDistrict={restaurantsByDistrict}
-            onEnterDistrict={openDistrict}
-            onOpenRestaurant={onOpenRestaurant}
-          />
-        </Suspense>
+        {!activeId ? (
+          <p className="fc-map-hint">Drag to explore · scroll to zoom · turn the city · click a building for its menu, a street to walk in</p>
+        ) : null}
 
         <p className="fc-sr-only" role="status">
           {activeSummary
@@ -156,15 +214,5 @@ export function FoodCity({ onEnterDistrict, onOpenRestaurant }: FoodCityProps) {
         </p>
       </div>
     </main>
-  );
-}
-
-/** Shown while the renderer downloads. Deliberately quiet — it is a moment. */
-function CityLoading() {
-  return (
-    <div className="c3-loading" role="status">
-      <span className="c3-loading-dot" aria-hidden="true" />
-      <p>Building the city…</p>
-    </div>
   );
 }
