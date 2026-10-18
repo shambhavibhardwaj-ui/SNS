@@ -1,7 +1,31 @@
 # Third-party assets
 
-**There are none.** Every drawn element in the project is original SVG, CSS or
-canvas work.
+Every *drawn* element in the project is original SVG, CSS or canvas work. The
+exception is three video clips on the landing page, below.
+
+## Landing-page video — SOURCE TO BE CONFIRMED
+
+`public/video/` carries three clips, supplied by the project owner and
+re-encoded here (720p, H.264, audio stripped, 742 KB – 1.7 MB each):
+
+| File | Shot | Original filename |
+|---|---|---|
+| `hero-kitchen.mp4` | wok over a flame | `79900-570532758_medium.mp4` |
+| `table.mp4` | overhead table spread | `149935-797511795_medium.mp4` |
+| `kitchen-pass.mp4` | pastries in a display case | `26865-361107766_medium.mp4` |
+
+**The source and licence are not recorded yet, and they must be.** The
+filenames match the pattern a well-known free-stock library uses, but a guess
+is not a licence. Whoever downloaded them should fill in, per clip: the site,
+the clip URL or ID, the licence name, and whether attribution is required.
+
+This matters because of what happened last time, immediately below: a
+photographic asset was removed from this project *specifically* because its
+licence was never settled. Repeating that with three files would be the same
+mistake with more of them. Until the table above is filled in, treat these as
+provisional — they are easy to swap, and `components/landing/FoodVideo`
+renders a drawn fallback the moment a file is absent, so removing one breaks
+nothing.
 
 ## Removed: material-hills.jpg / material-hills.mp4
 

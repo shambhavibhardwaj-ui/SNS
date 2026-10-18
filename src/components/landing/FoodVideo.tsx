@@ -38,15 +38,48 @@ export function FoodVideo({
     /* Pause while off screen. A looping video behind a section nobody is
        looking at is decode work for nothing, and on a laptop it is the
        difference between a warm fan and a quiet one. */
+    let visible = false;
+    /*
+     * No `document.hidden` guard here, deliberately.
+     *
+     * It looks like a sensible optimisation and it is a bug: some embedding
+     * contexts report `hidden` while plainly on screen — the desktop app's
+     * browser pane does, which is the same trap `ui/cloud-sky` documents — and
+     * the guard then refuses to start a video the person is looking at.
+     * Browsers already throttle media in genuinely backgrounded tabs; this does
+     * not need to second-guess them.
+     */
+    const tryPlay = () => {
+      if (visible) void node.play().catch(() => undefined);
+    };
+
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) void node.play().catch(() => undefined);
+        visible = entry.isIntersecting;
+        if (visible) tryPlay();
         else node.pause();
       },
       { threshold: 0.01 },
     );
     io.observe(node);
-    return () => io.disconnect();
+
+    /*
+     * Retry, rather than assuming the first play() took.
+     *
+     * A browser can refuse autoplay for reasons that stop applying: a
+     * background tab, a window that has not been interacted with, a video
+     * element that was not ready when the observer first fired. One rejected
+     * promise left the hero on a still frame for the rest of the session, so
+     * the attempt is repeated when the element becomes playable and when the
+     * page becomes visible again.
+     */
+    node.addEventListener('canplay', tryPlay);
+    document.addEventListener('visibilitychange', tryPlay);
+    return () => {
+      io.disconnect();
+      node.removeEventListener('canplay', tryPlay);
+      document.removeEventListener('visibilitychange', tryPlay);
+    };
   }, [src]);
 
   if (failed) {

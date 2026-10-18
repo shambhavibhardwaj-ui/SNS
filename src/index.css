@@ -9944,8 +9944,19 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   position: absolute;
   inset: 0;
   z-index: 1;
+  /*
+   * Deepened once there was real footage behind it.
+   *
+   * Against the drawn fallback a light scrim was fine; against a lit kitchen
+   * it was not. Measured on the hero clip, the band under the heading averages
+   * rgb(182,148,105) — through the old 0.3 wash that put white at 5.27:1, and
+   * an average is the optimistic case for a frame that changes 25 times a
+   * second. The radial does the work where the type actually sits, so the
+   * corners of the image stay bright instead of the whole frame going muddy.
+   */
   background:
-    linear-gradient(180deg, rgb(4 12 26 / 0.62) 0%, rgb(4 12 26 / 0.3) 42%, rgb(4 12 26 / 0.78) 100%);
+    radial-gradient(58% 48% at 50% 46%, rgb(4 12 26 / 0.62), transparent 72%),
+    linear-gradient(180deg, rgb(4 12 26 / 0.68) 0%, rgb(4 12 26 / 0.42) 42%, rgb(4 12 26 / 0.8) 100%);
 }
 
 .lp-hero-body {

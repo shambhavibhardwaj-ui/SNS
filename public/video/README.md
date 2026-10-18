@@ -1,6 +1,11 @@
 # Landing-page video
 
-**This folder is empty on purpose, and the page is finished without it.**
+Three of the four clips are in place. `city-flyover.mp4` is not, and that
+section keeps its drawn fallback — which is a supported state, not a gap to
+fix.
+
+**Record the licence of anything you add here** in `src/assets/ATTRIBUTION.md`.
+The table there is waiting on the source of the three current clips.
 
 `components/landing/FoodVideo` plays a file if one is here and renders a
 composed gradient-and-grain panel in the house palette when there is not. A
