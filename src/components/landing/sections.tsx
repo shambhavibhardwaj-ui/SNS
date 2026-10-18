@@ -1,4 +1,7 @@
-import { ChevronDown, MousePointerClick, Salad, ShoppingBag, Sparkles, Store, Utensils } from 'lucide-react';
+import {
+  Banknote, ChevronDown, Layers, Leaf, Map, MessageSquareQuote, MousePointerClick,
+  Salad, Search, ShoppingBag, Sparkles, Store, Utensils,
+} from 'lucide-react';
 import type { DistrictSummary } from '../../services/restaurantService';
 import { FoodPlate } from '../ui/FoodPlate';
 import type { BuildingKind } from '../../data/types';
@@ -48,35 +51,159 @@ export function VideoHero({
 
 /* ------------------------------------------------------- city preview -- */
 
+/*
+ * What is actually in the customer app.
+ *
+ * Eight tiles, and every one of them is a feature a person can use today. The
+ * obvious thing to put in a constellation like this is the roadmap — offers,
+ * scheduling, gift cards, loyalty — and that is the one thing it must not be:
+ * a landing page is where a demo gets caught overselling, and payment here is
+ * cash on delivery only, which is why that tile says so rather than saying
+ * "pay your way".
+ */
+const FEATURES = [
+  { Icon: Map, label: 'Ten districts', side: 'left' },
+  { Icon: Layers, label: 'A menu per cuisine', side: 'left' },
+  { Icon: Sparkles, label: 'Foodie AI', side: 'left' },
+  { Icon: Leaf, label: 'Pure-veg kitchens', side: 'left' },
+  { Icon: Search, label: 'Search any dish', side: 'right' },
+  { Icon: MessageSquareQuote, label: 'Reviews per menu', side: 'right' },
+  { Icon: ShoppingBag, label: 'Cart by cuisine', side: 'right' },
+  { Icon: Banknote, label: 'Cash on delivery', side: 'right' },
+] as const;
+
 export function CityPreview({ stats, onEnter }: {
   stats: { restaurants: number; districts: number; cuisines: number };
   onEnter: () => void;
 }) {
+  const left = FEATURES.filter((f) => f.side === 'left');
+  const right = FEATURES.filter((f) => f.side === 'right');
+
   return (
     <section className="lp-band is-city" id="explore">
       <FoodVideo src="/video/city-flyover.mp4" className="lp-band-media" tone="teal" />
       <div className="lp-band-scrim" aria-hidden="true" />
-      <Reveal className="lp-band-body">
-        <p className="lp-kicker">Discover SNS</p>
-        <h2>A city full of flavour.</h2>
-        <p className="lp-lede">
-          From familiar favourites to cuisines waiting to be discovered, your next meal is
-          just around the corner.
+
+      <div className="lp-band-body is-wide lp-showcase">
+        <Reveal className="lp-showcase-head">
+          <p className="lp-kicker">Discover SNS</p>
+          <h2>A city full of flavour.</h2>
+          <p className="lp-lede">
+            From familiar favourites to cuisines waiting to be discovered, your next meal is
+            just around the corner.
+          </p>
+        </Reveal>
+
+        {/* Tiles, phone, tiles. The columns are ordered so that on a narrow
+            screen the phone comes first and the tiles fall underneath it as a
+            plain grid — scattering them around a device that is no longer in
+            the middle would just be eight things at odd angles. */}
+        <div className="lp-constellation">
+          <ul className="lp-tiles is-left">
+            {left.map(({ Icon, label }, i) => (
+              <Reveal as="li" key={label} delay={i * 80}>
+                <span aria-hidden="true"><Icon size={22} strokeWidth={1.8} /></span>
+                <strong>{label}</strong>
+              </Reveal>
+            ))}
+          </ul>
+
+          <Reveal className="lp-phone" delay={120}>
+            <div className="lp-phone-frame">
+              <span className="lp-phone-notch" aria-hidden="true" />
+              <div className="lp-phone-screen">
+                <CityVignette />
+                <div className="lp-phone-caption">
+                  <strong>{stats.districts} neighbourhoods</strong>
+                  <span>{stats.restaurants} kitchens · {stats.cuisines} cuisines</span>
+                </div>
+              </div>
+            </div>
+            <button type="button" className="lp-btn is-primary" onClick={onEnter}>
+              Enter SNS
+            </button>
+          </Reveal>
+
+          <ul className="lp-tiles is-right">
+            {right.map(({ Icon, label }, i) => (
+              <Reveal as="li" key={label} delay={i * 80}>
+                <span aria-hidden="true"><Icon size={22} strokeWidth={1.8} /></span>
+                <strong>{label}</strong>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+
+        <p className="lp-note lp-showcase-note">
+          Pan, zoom and turn an isometric city. One building is one kitchen, so the skyline is
+          the data — and no sign-in is needed to wander it.
         </p>
-        <dl className="lp-stats">
-          <div><dt>Kitchens</dt><dd>{stats.restaurants}</dd></div>
-          <div><dt>Neighbourhoods</dt><dd>{stats.districts}</dd></div>
-          <div><dt>Cuisines</dt><dd>{stats.cuisines}</dd></div>
-        </dl>
-        <button type="button" className="lp-btn is-primary" onClick={onEnter}>
-          Enter SNS
-        </button>
-        <p className="lp-note">
-          An isometric city you can pan, zoom and turn. One building is one kitchen, so the
-          skyline is the data — no sign-in needed to wander it.
-        </p>
-      </Reveal>
+      </div>
     </section>
+  );
+}
+
+/**
+ * The city, in a phone.
+ *
+ * Drawn here rather than screenshotted: a captured image goes stale the moment
+ * the city changes, and this project's rule is that every drawn element is
+ * original. It is an impression — four blocks on a teal slab at the same 2:1
+ * dimetric angle the real map uses, in the real district colours — not a claim
+ * to be the city itself, which is one button away.
+ */
+function CityVignette() {
+  /* Grid steps, matching the real projection: +x is half right and half down. */
+  const t = 26;
+  const blocks: { gx: number; gy: number; wall: string; roof: string; h: number }[] = [
+    { gx: 0, gy: 0, wall: '#F7EDDC', roof: '#0A6A66', h: 30 },
+    { gx: 1, gy: 0, wall: '#FBE7CC', roof: '#C4543F', h: 40 },
+    { gx: 0, gy: 1, wall: '#F6EEDD', roof: '#7A4B2A', h: 34 },
+    { gx: 1, gy: 1, wall: '#FCE3EF', roof: '#C4788B', h: 26 },
+  ];
+  const ox = 112;
+  const oy = 58;
+  const pt = (gx: number, gy: number, gz = 0) => [
+    ox + (gx - gy) * t,
+    oy + (gx + gy) * (t / 2) - gz,
+  ];
+
+  return (
+    <svg className="lp-vignette" viewBox="0 0 224 190" aria-hidden="true">
+      <defs>
+        <linearGradient id="lp-vig-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#0E7C77" />
+          <stop offset="1" stopColor="#064B49" />
+        </linearGradient>
+      </defs>
+      <rect width="224" height="190" fill="url(#lp-vig-sky)" />
+
+      {/* The slab */}
+      <polygon
+        points={[pt(-0.4, -0.4), pt(2.4, -0.4), pt(2.4, 2.4), pt(-0.4, 2.4)]
+          .map((p) => p.join(',')).join(' ')}
+        fill="#CFE0D6"
+      />
+
+      {/* Back to front by gx + gy, the same painter's order the real map uses. */}
+      {[...blocks].sort((a, b) => a.gx + a.gy - (b.gx + b.gy)).map((b, i) => {
+        const [x, y] = pt(b.gx, b.gy);
+        return (
+          <g key={i} transform={`translate(${x - ox} ${y - oy})`}>
+            <g transform={`translate(${ox} ${oy})`}>
+              {/* right face, left face, then the roof on top */}
+              <polygon points={`0,0 ${t},${t / 2} ${t},${t / 2 - b.h} 0,${-b.h}`} fill={b.wall} />
+              <polygon points={`0,0 ${-t},${t / 2} ${-t},${t / 2 - b.h} 0,${-b.h}`} fill="#0003" />
+              <polygon points={`0,0 ${-t},${t / 2} ${-t},${t / 2 - b.h} 0,${-b.h}`} fill={b.wall} opacity="0.82" />
+              <polygon
+                points={`0,${-b.h} ${t},${t / 2 - b.h} 0,${t - b.h} ${-t},${t / 2 - b.h}`}
+                fill={b.roof}
+              />
+            </g>
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 

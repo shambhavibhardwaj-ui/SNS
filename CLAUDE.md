@@ -185,6 +185,17 @@ what got the previous video removed.
 
 The hero carries the wok, the five steps run over the overhead table spread, and the
 sign-in band has the pastry case. The editorial band has no clip and keeps its drawn panel.
+"Discover SNS" is a feature constellation: eight tiles staggered either side of a phone
+holding a drawn isometric vignette, with the real kitchen and district counts under it. The
+tiles are **only features that work today** — ten districts, a menu per cuisine, Foodie AI,
+pure-veg kitchens, dish search, reviews per menu, cart by cuisine, and cash on delivery,
+which says so rather than claiming "pay your way". The obvious thing to put in a layout like
+that is the roadmap, and that is the one thing it must not be.
+
+The vignette is drawn rather than screenshotted: a capture goes stale the moment the city
+changes, and it is an impression at the real 2:1 angle in the real district colours, not a
+claim to be the city — which is one button away.
+
 The cuisine section shows **six of the ten districts** and then points at the city for the
 rest: ten cards is a directory, and the city is the better way to see them all. The six are
 the first six in district order rather than the best rated — sorting by rating would claim

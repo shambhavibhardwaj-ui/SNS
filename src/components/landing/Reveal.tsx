@@ -27,17 +27,38 @@ export function Reveal({
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
+
+    /*
+     * A safety net, because invisible content is the worse failure.
+     *
+     * The reveal starts at `opacity: 0`, so anything that stops the observer
+     * from ever reporting leaves a whole section permanently blank rather than
+     * merely un-animated. That is not hypothetical: an embedding context that
+     * reports itself hidden gets no intersection callbacks at all, which is how
+     * the desktop app's browser pane behaves, and the "Discover SNS" section
+     * rendered as an empty teal band because of it.
+     *
+     * So the timer reveals regardless after a beat. The observer still wins
+     * when it works, which is almost always — this only decides what happens
+     * when it does not.
+     */
+    const fallback = window.setTimeout(() => setShown(true), 1200);
+
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setShown(true);
           io.disconnect();
+          window.clearTimeout(fallback);
         }
       },
       { rootMargin: '0px 0px -12% 0px', threshold: 0.08 },
     );
     io.observe(node);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      window.clearTimeout(fallback);
+    };
   }, []);
 
   return (

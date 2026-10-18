@@ -10617,3 +10617,160 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 
 .lp-band.is-steps .lp-steps h3 { color: #fff; }
 .lp-band.is-steps .lp-steps p { color: rgb(255 255 255 / 0.78); }
+
+/* ======================================================================
+   Discover SNS — the feature constellation
+   ======================================================================
+
+   Tiles either side of a phone, which is the shape the reference uses. Two
+   things make it work rather than look like eight floating squares.
+
+   The tiles are *staggered* vertically, not aligned in a neat column — an
+   even column beside a device reads as a list that has been pushed to one
+   side, and the scatter is what makes the phone look like the centre of
+   something.
+
+   And the whole thing collapses to phone-then-grid on a narrow screen.
+   Scattering tiles around a device that is no longer in the middle leaves
+   eight items at meaningless angles.
+   ---------------------------------------------------------------------- */
+
+.lp-showcase { display: block; }
+
+.lp-showcase-head { max-width: 56ch; margin-bottom: 44px; }
+
+.lp-constellation {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 28px;
+}
+
+.lp-tiles {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lp-tiles li {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 146px;
+  padding: 16px 14px;
+  border-radius: 18px;
+  background: rgb(255 255 255 / 0.94);
+  box-shadow: 0 14px 30px -14px rgb(4 12 26 / 0.6);
+  color: var(--teal-900);
+}
+
+.lp-tiles li span {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--teal-700) 12%, transparent);
+  color: var(--teal-700);
+}
+
+.lp-tiles li strong {
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+/* The stagger. Alternating offsets, so neighbours never line up. */
+.lp-tiles.is-left { align-items: flex-end; }
+.lp-tiles.is-left li:nth-child(odd) { transform: translateX(-26px); }
+.lp-tiles.is-right li:nth-child(even) { transform: translateX(26px); }
+
+/* ---- the phone ---- */
+
+.lp-phone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.lp-phone-frame {
+  position: relative;
+  width: 248px;
+  padding: 11px;
+  border-radius: 34px;
+  background: linear-gradient(170deg, #223049, #0d1726);
+  box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.7), inset 0 0 0 1px rgb(255 255 255 / 0.1);
+}
+
+.lp-phone-notch {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.6);
+  z-index: 2;
+}
+
+.lp-phone-screen {
+  position: relative;
+  overflow: hidden;
+  border-radius: 25px;
+  background: var(--teal-900);
+}
+
+.lp-vignette { display: block; width: 100%; height: auto; }
+
+.lp-phone-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 13px 15px 16px;
+  background: #10203f;
+}
+
+.lp-phone-caption strong {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 15px;
+  color: #fff;
+}
+
+.lp-phone-caption span {
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10.5px;
+  color: rgb(255 255 255 / 0.6);
+}
+
+.lp-showcase-note { margin-top: 36px; }
+
+@media (max-width: 1040px) {
+  .lp-constellation {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 32px;
+  }
+
+  /* Phone first, then the tiles as one plain grid underneath. */
+  .lp-phone { order: -1; }
+
+  .lp-tiles {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .lp-tiles.is-left { align-items: stretch; }
+  .lp-tiles.is-left li,
+  .lp-tiles.is-right li { transform: none; width: 142px; }
+}
+
+@media (max-width: 420px) {
+  .lp-tiles li { width: calc(50% - 6px); }
+}
