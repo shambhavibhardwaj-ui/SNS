@@ -185,6 +185,19 @@ what got the previous video removed.
 
 The hero carries the wok, the five steps run over the overhead table spread, and the
 sign-in band has the pastry case. The editorial band has no clip and keeps its drawn panel.
+Between the hero and Discover sits **floating dishes** (`landing/FloatingFoodHero`): one line
+of copy with six plates drifting around it, staggered so they do not bob in unison and still
+for `prefers-reduced-motion`. Adapted from a shadcn component that floated six photographs
+off a third-party CDN — the photographs are the part that could not come with it, since their
+licence is unstated and hotlinking someone else's asset host makes a section depend on a
+server nobody here controls. The project's own `FoodPlate` drawings do the same job: they
+*are* overhead dishes, and they are keyed per cuisine, so these are the real districts' food.
+They are `aria-hidden` — six "a dosa from Tiffin Lane" labels read aloud ahead of the heading
+would be noise, not description.
+
+Dark video, warm cream, blush pink is one warming sequence rather than three unrelated
+stripes, which is why this section is the lightest surface on the page.
+
 "Discover SNS" is a feature constellation on **blush pink** — eight white tiles staggered
 either side of a phone holding a drawn isometric vignette, a coral heading, and a curved
 white boundary along the bottom. Asked for, against a reference, and it is the **third

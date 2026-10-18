@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FloatingFoodHero } from '../components/landing/FloatingFoodHero';
 import { LandingNav } from '../components/landing/LandingNav';
 import { LandingFooter } from '../components/landing/LandingFooter';
 import { SignInSection } from '../components/landing/SignInSection';
@@ -50,6 +51,15 @@ export function LandingPage() {
 
       <main>
         <VideoHero onExplore={() => scrollTo('explore')} onCuisines={() => scrollTo('cuisines')} />
+
+        {/* A breath between the video and the blush section: dishes drifting
+            around one line of copy, and the first light surface after the
+            hero's dark. */}
+        <FloatingFoodHero
+          title="Better food, from more kitchens."
+          description="Thirty kitchens across ten neighbourhoods, each cooking what it is known for — and every one of them a short walk through the city."
+        />
+
         <CityPreview stats={stats} onEnter={enterCity} />
         <CuisineGallery summaries={summaries} onOpen={openDistrict} onAll={enterCity} />
         <HowItWorks />
