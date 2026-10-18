@@ -160,7 +160,37 @@ only — a service-role key must never reach the bundle. With neither set the ap
 
 ## Current state
 
-**Customer — the SNS city (public, no sign-in needed).** True 2:1 dimetric isometric city on a
+**Customer — the landing page (`/`).** A video-led front door: hero, a city preview, the ten
+cuisines as cards, how it works in five steps, an editorial band, and **sign-in last**. The
+city used to be `/`; a visitor arriving cold was dropped into an isometric world with nothing
+saying what it was, so the page now sits in front of it and the city is at **`/city`**.
+
+Sign-in being last is not a gate. **Discovery stays public** — "Enter SNS" is a real route,
+not a teaser, and a visitor can read the page, wander ten districts and open any menu with no
+account. The guard still only starts at what belongs to one.
+
+`components/landing/SignInSection` uses the same `useAuth` provider `/login` does, so a
+successful sign-in is a real Supabase session and `RoleHome` sends the person to their role's
+home. With Supabase unconfigured it says so rather than failing mysteriously.
+
+**No stock footage, and the page is finished without it.** `FoodVideo` plays a file from
+`public/video/` when one is present and renders a composed gradient-and-grain panel in the
+house palette when it is not — a missing file is a supported state, not a broken `<video>`.
+`ATTRIBUTION.md` records that a photographic video was removed over an unsettled licence and
+that nothing third-party remains; shipping stock food video would reverse that. `public/video/README.md`
+lists the four files and their budgets for whoever owns a licence. The cuisine cards use the
+project's own `FoodPlate` drawings, mapped from each district's architecture, for the same
+reason.
+
+Scroll reveals are an IntersectionObserver and a class (`landing/Reveal`), not a library: a
+scroll-animation dependency would bring a second opinion about easing and reduced motion to a
+project that already has one.
+
+Because the city moved off the index, two relative links became wrong and are now `..` —
+`FoodCityExperience`'s restaurant navigation and the top bar's cart. A bare `restaurant/:id`
+resolved to `city/restaurant/:id`, so every kitchen clicked from the map 404ed.
+
+**Customer — the SNS city (`/city`, public, no sign-in needed).** True 2:1 dimetric isometric city on a
 diorama slab, depth-sorted by `gx + gy`. Ten cuisine districts, each with its own
 architecture rather than a recoloured box — cone, dome-and-tandoor, pizza oven, tiered
 eaves, stucco arches, greenhouse, lighthouse, leaf gable, stone parapet, tiled eaves. One

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FoodCity } from '../components/foodcity/FoodCity';
 import { TopBar } from '../components/layout/TopBar';
 import { RestaurantListing } from './RestaurantListing';
@@ -16,7 +16,20 @@ import { RestaurantListing } from './RestaurantListing';
 type View = { name: 'city' } | { name: 'listing'; districtId: string };
 
 export function FoodCityExperience() {
-  const [view, setView] = useState<View>({ name: 'city' });
+  /*
+   * `?district=` opens straight into a listing.
+   *
+   * The landing page's cuisine cards need to land on the district they name,
+   * and the district view is local state rather than a route — so the query
+   * string is read once, as the initial view, and not kept in sync. Treating
+   * it as the source of truth would mean every click on the map rewrote the
+   * URL, which is the arrangement this file deliberately avoided.
+   */
+  const [params] = useSearchParams();
+  const [view, setView] = useState<View>(() => {
+    const id = params.get('district');
+    return id ? { name: 'listing', districtId: id } : { name: 'city' };
+  });
   const navigate = useNavigate();
 
   const enterDistrict = useCallback((districtId: string) => {
@@ -27,10 +40,17 @@ export function FoodCityExperience() {
     setView({ name: 'city' });
   }, []);
 
-  /* Relative, so this works under both "/" for a visitor and "/customer" for a
-     signed-in customer without knowing which base it is mounted on. */
+  /*
+   * Up one, then across.
+   *
+   * The city sits at "city" now rather than at the index, so a bare
+   * `restaurant/:id` would resolve to `city/restaurant/:id`, which is not a
+   * route — every kitchen clicked from the map would 404. `..` steps back to
+   * whichever base this is mounted on, so one path works under "/" for a
+   * visitor and under "/customer" for a signed-in one.
+   */
   const openRestaurant = useCallback(
-    (restaurantId: string) => navigate(`restaurant/${restaurantId}`),
+    (restaurantId: string) => navigate(`../restaurant/${restaurantId}`),
     [navigate],
   );
 

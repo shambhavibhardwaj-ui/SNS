@@ -3,6 +3,7 @@ import { Heart, Home, ReceiptText, UserRound } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
 import { FoodCityExperience } from './FoodCityExperience';
+import { LandingPage } from './LandingPage';
 import { RestaurantMenu } from './RestaurantMenu';
 import { CartPage } from './CartPage';
 import { CheckoutPage } from './CheckoutPage';
@@ -22,7 +23,16 @@ import { OrderConfirmation } from './OrderConfirmation';
 export function CustomerApp() {
   return (
     <Routes>
-      <Route path="/" element={<FoodCityExperience />} />
+      {/*
+        The landing page is the front door; the city is a room behind it.
+
+        It used to be the other way round — "/" was the city, and a visitor
+        arriving cold was dropped into an isometric world with nothing saying
+        what it was. The city did not move far: it is one button away, still
+        public, and still the centre of the product.
+      */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="city" element={<FoodCityExperience />} />
       <Route path="restaurant/:restaurantId" element={<RestaurantMenu />} />
       <Route path="cart" element={<CartPage />} />
       <Route path="checkout" element={<CheckoutPage />} />
@@ -39,7 +49,7 @@ export function CustomerApp() {
         path="favorites"
         element={<AccountPage title="Favorites" Icon={Heart} blurb="Restaurants and dishes you have saved." />}
       />
-      <Route path="*" element={<FoodCityExperience />} />
+      <Route path="*" element={<LandingPage />} />
     </Routes>
   );
 }

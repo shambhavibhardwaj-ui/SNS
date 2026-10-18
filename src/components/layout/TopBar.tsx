@@ -69,8 +69,10 @@ export function TopBar({
           <span>Home</span>
         </button>
 
-        {/* Relative: works under "/" for a visitor and "/customer" signed in. */}
-        <button type="button" className="fc-topnav-item" onClick={() => navigate('cart')}>
+        {/* `..` because this bar renders inside the city at "city" and inside
+            the listing under it, so a bare "cart" would resolve to
+            "city/cart". One step up lands on the right base either way. */}
+        <button type="button" className="fc-topnav-item" onClick={() => navigate('../cart')}>
           <span className="fc-topnav-icon">
             <ShoppingBag size={17} strokeWidth={2} aria-hidden="true" />
             {cartCount ? <span className="fc-topnav-badge">{cartCount}</span> : null}
