@@ -1,7 +1,33 @@
 # Third-party assets
 
 Every *drawn* element in the project is original SVG, CSS or canvas work. The
-exception is three video clips on the landing page, below.
+exceptions are the landing page's three video clips and six food photographs,
+both below.
+
+## Landing-page food images — SOURCE TO BE CONFIRMED
+
+`public/food/` carries five PNG cut-outs (one is used twice), downloaded from
+`https://cdn.21st.dev/assets/mirror/` where they ship as the demo assets of a
+`hero-section-7` component:
+
+| File | Subject | CDN path (prefix `assets/mirror/`) |
+|---|---|---|
+| `burger.png` | cheeseburger | `cc/cc7d7fbb538d93322e189b55ae4c6eed95aab7da267a9a095b39216070ef65b0.png` |
+| `dumplings.png` | bamboo steamer | `95/95bc0d9d69e76d3729ca42f9525bafd449fd27fa41c9393d1deccb85d79b0639.png` |
+| `pizza.png` | pizza slice | `6e/6e4600ac05444d9dc0396906da4174dcfe42a64c14082d939f0f57cb2ed8113d.png` |
+| `basil.png` | basil leaf | `8e/8ec4fbab8445c1769d3200d674cd3731a0550b21c87bb8bc6938cb3a05932e5b.png` |
+| `tomato.png` | tomato slice | `e7/e758e9c35a8360f201c40d0bf3e3433c2b6ff3f759763eb697cbc3803af80e18.png` |
+
+**Asked for explicitly, and the licence is not established.** The CDN serves
+them without a stated grant, and a component's demo assets are not
+automatically licensed for reuse in another product. They are downloaded rather
+than hotlinked so the page does not depend on that host at runtime, but that
+does not settle the question — it only moves the copy.
+
+Before this is shown anywhere that matters, find the component's own licence
+terms and record them here, or swap these for images with a grant you can point
+at. `components/landing/FloatingFoodHero` reads a plain list of six `src`
+strings, so replacing them is one edit to one array.
 
 ## Landing-page video — SOURCE TO BE CONFIRMED
 

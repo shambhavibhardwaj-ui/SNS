@@ -10942,16 +10942,20 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   pointer-events: none;
 }
 
-.lp-float-dish {
+/*
+ * The items are transparent cut-outs, so they get a drop-shadow rather than a
+ * card. A box-shadow would draw a rectangle around a burger with no rectangle
+ * in it — `filter: drop-shadow` follows the alpha channel and shades the shape
+ * itself.
+ */
+.lp-float-img {
   position: absolute;
   display: block;
-  border-radius: 22px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px -18px rgb(90 40 30 / 0.35);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 24px rgb(90 40 30 / 0.28));
   animation: lp-float 6s ease-in-out infinite;
 }
-
-.lp-float-dish svg { display: block; width: 100%; height: auto; }
 
 @keyframes lp-float {
   0%, 100% { transform: translateY(0); }
@@ -10961,17 +10965,17 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 /* Stillness, not a slower bob: six things easing up and down is exactly the
    motion someone asking for less of it is asking about. */
 @media (prefers-reduced-motion: reduce) {
-  .lp-float-dish { animation: none; }
+  .lp-float-img { animation: none; }
 }
 
-/* Corners large, mid-edges small — the small ones fill the gap between the
-   corner dishes and the copy without crowding either. */
-.lp-float-dish.is-tl { width: 220px; top: 8%; left: 4%; }
-.lp-float-dish.is-tr { width: 170px; top: 10%; right: 5%; }
-.lp-float-dish.is-br { width: 200px; bottom: 9%; right: 7%; }
-.lp-float-dish.is-bl { width: 150px; bottom: 11%; left: 8%; }
-.lp-float-dish.is-mid-l { width: 104px; top: 46%; left: 19%; }
-.lp-float-dish.is-mid-r { width: 96px; top: 52%; right: 20%; }
+/* Positions and sizes follow the reference's own classes: three large items
+   at the corners, three garnishes threaded between them and the copy. */
+.lp-float-img.is-burger { width: 288px; top: 80px; left: 80px; }
+.lp-float-img.is-dumplings { width: 192px; top: 64px; right: 64px; }
+.lp-float-img.is-pizza { width: 224px; bottom: 64px; right: 80px; }
+.lp-float-img.is-basil { width: 48px; top: 25%; left: 33%; }
+.lp-float-img.is-tomato-a { width: 40px; top: 50%; right: 25%; }
+.lp-float-img.is-tomato-b { width: 40px; top: 75%; left: 25%; }
 
 .lp-float-body {
   position: relative;
@@ -10997,13 +11001,15 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 
 /* Narrow: the mid dishes go, the corners shrink, and the copy gets the middle
    to itself. Six floating objects around a phone-width column is a collage. */
+/* Narrow: the garnishes go and the big three shrink to the reference's own
+   small sizes. Six floating objects around a phone-width column is a collage. */
 @media (max-width: 860px) {
   .lp-float { padding: 76px 18px; min-height: 0; }
-  .lp-float-dish.is-mid-l,
-  .lp-float-dish.is-mid-r { display: none; }
-  .lp-float-dish.is-tl { width: 124px; top: 3%; left: -4%; }
-  .lp-float-dish.is-tr { width: 100px; top: 5%; right: -3%; }
-  .lp-float-dish.is-br { width: 112px; bottom: 4%; right: -4%; }
-  .lp-float-dish.is-bl { width: 92px; bottom: 6%; left: -3%; }
-  .lp-float-body { max-width: 28ch; }
+  .lp-float-img.is-basil,
+  .lp-float-img.is-tomato-a,
+  .lp-float-img.is-tomato-b { display: none; }
+  .lp-float-img.is-burger { width: 160px; top: 16px; left: -18px; }
+  .lp-float-img.is-dumplings { width: 112px; top: 24px; right: -12px; }
+  .lp-float-img.is-pizza { width: 128px; bottom: 20px; right: -16px; }
+  .lp-float-body { max-width: 26ch; }
 }

@@ -1,39 +1,38 @@
 import { cn } from '../../lib/utils';
-import { FoodPlate } from '../ui/FoodPlate';
 import { Reveal } from './Reveal';
 
 /**
- * A heading with dishes drifting around it.
+ * A heading with food drifting around it.
  *
- * Adapted from a shadcn-shaped component that floated six photographs pulled
- * from a third-party CDN. The photographs are the part that could not come
- * with it: their licence is unstated, `ATTRIBUTION.md` records that this
- * project carries no third-party art, and hotlinking someone else's asset host
- * makes a section of the page depend on a server nobody here controls. The
- * project's own `FoodPlate` drawings do the same job — they are overhead
- * dishes, which is exactly what was floating — and they are already keyed per
- * cuisine, so these are the real districts' food rather than generic stock.
+ * The six images are the reference component's own, **downloaded into
+ * `public/food/` rather than hotlinked**. Same pictures either way, but a
+ * `<img>` pointing at someone else's CDN makes a section of this page stop
+ * working the day that host changes a path, and these are 12 KB to 444 KB of
+ * PNG that belongs with the project it is part of.
  *
- * The component keeps the original's shape: decorative swirls behind, absolute
- * items around the edges, centred copy on top, and a per-item animation delay
- * so they do not bob in unison.
+ * Their licence is recorded as outstanding in `src/assets/ATTRIBUTION.md`,
+ * alongside the three video clips. That file used to say the project contained
+ * no third-party art; it now says what it actually contains.
+ *
+ * Sizes and positions follow the original's Tailwind classes — three large
+ * items at the corners, three small garnishes threaded between them and the
+ * copy — expressed here as CSS because that is where this project keeps
+ * layout.
  */
 
-interface FloatingDish {
-  /** A `FoodPlate` preset key. */
-  dish: string;
-  label: string;
-  /** Position and size. Kept as a class so the layout stays in the stylesheet. */
+interface FloatingItem {
+  src: string;
+  alt: string;
   where: string;
 }
 
-const DISHES: FloatingDish[] = [
-  { dish: 'biryani', label: 'Biryani from Tandoor Quarter', where: 'is-tl' },
-  { dish: 'dosa', label: 'A dosa from Tiffin Lane', where: 'is-tr' },
-  { dish: 'pizza', label: 'Pizza from Italian Street', where: 'is-br' },
-  { dish: 'gelato', label: 'Gelato from Dessert Lane', where: 'is-bl' },
-  { dish: 'salad', label: 'A bowl from Green Table', where: 'is-mid-l' },
-  { dish: 'seafood', label: 'Seafood from Harbour Point', where: 'is-mid-r' },
+const ITEMS: FloatingItem[] = [
+  { src: '/food/burger.png', alt: 'A cheeseburger', where: 'is-burger' },
+  { src: '/food/dumplings.png', alt: 'A bamboo steamer of dumplings', where: 'is-dumplings' },
+  { src: '/food/pizza.png', alt: 'A slice of pizza', where: 'is-pizza' },
+  { src: '/food/basil.png', alt: 'A basil leaf', where: 'is-basil' },
+  { src: '/food/tomato.png', alt: 'A slice of tomato', where: 'is-tomato-a' },
+  { src: '/food/tomato.png', alt: 'A slice of tomato', where: 'is-tomato-b' },
 ];
 
 export function FloatingFoodHero({
@@ -49,16 +48,23 @@ export function FloatingFoodHero({
     <section className={cn('lp-float', className)}>
       <Swirls />
 
+      {/* Decorative: the copy already says what the section is about, and six
+          "a slice of tomato" announcements ahead of the heading would be noise
+          rather than description. */}
       <div className="lp-float-items" aria-hidden="true">
-        {DISHES.map((d, i) => (
-          <span
-            key={d.dish}
-            className={cn('lp-float-dish', d.where)}
-            /* Staggered so six dishes do not rise and fall as one block. */
+        {ITEMS.map((item, i) => (
+          <img
+            key={item.where}
+            className={cn('lp-float-img', item.where)}
+            src={item.src}
+            alt=""
+            /* Below the fold, so the browser can defer them; dimensions are
+               fixed in CSS, so there is no reflow when they arrive. */
+            loading="lazy"
+            decoding="async"
+            /* Staggered, or six things rise and fall as one block. */
             style={{ animationDelay: `${i * 300}ms` }}
-          >
-            <FoodPlate image={d.dish} />
-          </span>
+          />
         ))}
       </div>
 
@@ -73,9 +79,9 @@ export function FloatingFoodHero({
 /**
  * The two background curves.
  *
- * Drawn here rather than copied: they are two strokes, and writing them means
- * they can take the project's own tints instead of arriving with Tailwind's
- * pink scale and a dark-mode variant this project does not use.
+ * Written out rather than pasted, which is what lets them take this project's
+ * tint instead of arriving with Tailwind's pink scale and a dark-mode variant
+ * the project does not use.
  */
 function Swirls() {
   return (
