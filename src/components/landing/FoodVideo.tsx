@@ -35,29 +35,50 @@ export function FoodVideo({
     const node = ref.current;
     if (!node || !src) return;
 
-    /* Pause while off screen. A looping video behind a section nobody is
-       looking at is decode work for nothing, and on a laptop it is the
-       difference between a warm fan and a quiet one. */
-    let visible = false;
     /*
-     * No `document.hidden` guard here, deliberately.
+     * Play while on screen, pause while not.
      *
-     * It looks like a sensible optimisation and it is a bug: some embedding
-     * contexts report `hidden` while plainly on screen — the desktop app's
-     * browser pane does, which is the same trap `ui/cloud-sky` documents — and
-     * the guard then refuses to start a video the person is looking at.
-     * Browsers already throttle media in genuinely backgrounded tabs; this does
-     * not need to second-guess them.
+     * A looping video behind a section nobody is looking at is decode work for
+     * nothing — on a laptop it is the difference between a warm fan and a
+     * quiet one.
+     *
+     * **On-screen is measured, not remembered.** An earlier version latched an
+     * `isIntersecting` flag from the observer and had `visibilitychange` check
+     * it before retrying. That deadlocks: a document that is hidden reports
+     * every element as not intersecting, so the flag goes false and the video
+     * pauses — and when the tab is brought forward, the retry reads the stale
+     * false and refuses to play. Nothing clears it until something scrolls.
+     * The symptom is a hero that sits on a still frame after you switch to a
+     * tab you opened in the background, which is an ordinary way to open a
+     * link.
+     *
+     * So `onScreen()` asks the geometry each time. The observer still drives
+     * the common case; it just no longer owns the only copy of the answer.
+     */
+    const onScreen = () => {
+      const r = node.getBoundingClientRect();
+      const h = window.innerHeight || document.documentElement.clientHeight;
+      const w = window.innerWidth || document.documentElement.clientWidth;
+      return r.bottom > 0 && r.top < h && r.right > 0 && r.left < w;
+    };
+
+    /*
+     * No `document.hidden` guard, deliberately. Some embedding contexts report
+     * `hidden` while plainly on screen — the desktop app's browser pane does,
+     * which is the same trap `ui/cloud-sky` documents — and the guard then
+     * refuses to start a video the person is looking at. Browsers already
+     * throttle media in genuinely backgrounded tabs.
      */
     const tryPlay = () => {
-      if (visible) void node.play().catch(() => undefined);
+      if (onScreen()) void node.play().catch(() => undefined);
     };
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        visible = entry.isIntersecting;
-        if (visible) tryPlay();
-        else node.pause();
+        if (entry.isIntersecting) tryPlay();
+        /* Only pause on a real scroll-away, not because the document went
+           hidden and the observer reported everything as off screen. */
+        else if (!document.hidden && !onScreen()) node.pause();
       },
       { threshold: 0.01 },
     );
@@ -67,11 +88,9 @@ export function FoodVideo({
      * Retry, rather than assuming the first play() took.
      *
      * A browser can refuse autoplay for reasons that stop applying: a
-     * background tab, a window that has not been interacted with, a video
-     * element that was not ready when the observer first fired. One rejected
-     * promise left the hero on a still frame for the rest of the session, so
-     * the attempt is repeated when the element becomes playable and when the
-     * page becomes visible again.
+     * background tab, a window not yet interacted with, an element that was
+     * not ready when the observer first fired. One rejected promise otherwise
+     * leaves the hero on a still frame for the rest of the session.
      */
     node.addEventListener('canplay', tryPlay);
     document.addEventListener('visibilitychange', tryPlay);

@@ -173,6 +173,15 @@ account. The guard still only starts at what belongs to one.
 successful sign-in is a real Supabase session and `RoleHome` sends the person to their role's
 home. With Supabase unconfigured it says so rather than failing mysteriously.
 
+`FoodVideo` decides on-screen-ness by **measuring the element's rect each time**, not by
+remembering an `isIntersecting` flag. The flag version deadlocked: a hidden document reports
+every element as not intersecting, so the flag went false and the video paused — and when the
+tab came forward, the `visibilitychange` retry read that stale false and refused to play,
+with nothing clearing it until something scrolled. The symptom was a hero stuck on a still
+frame after switching to a tab opened in the background, which is an ordinary way to open a
+link. It also never pauses merely because `document.hidden` is true: browsers throttle
+backgrounded media themselves, and some contexts report `hidden` while plainly on screen.
+
 **No stock footage, and the page is finished without it.** `FoodVideo` plays a file from
 `public/video/` when one is present and renders a composed gradient-and-grain panel in the
 house palette when it is not — a missing file is a supported state, not a broken `<video>`.
