@@ -178,7 +178,17 @@ home. With Supabase unconfigured it says so rather than failing mysteriously.
 house palette when it is not — a missing file is a supported state, not a broken `<video>`.
 `ATTRIBUTION.md` records that a photographic video was removed over an unsettled licence and
 that nothing third-party remains; shipping stock food video would reverse that. `public/video/README.md`
-lists the four files and their budgets for whoever owns a licence. The cuisine cards use the
+lists the four files and their budgets, and `src/assets/ATTRIBUTION.md` carries the three
+clips now in place — with their **source and licence recorded as outstanding**, because the
+filenames resembling a known stock library is not a licence and an unrecorded one is exactly
+what got the previous video removed.
+
+The hero carries the wok, the five steps run over the overhead table spread, and the
+sign-in band has the pastry case. The editorial band has no clip and keeps its drawn panel.
+The cuisine section shows **six of the ten districts** and then points at the city for the
+rest: ten cards is a directory, and the city is the better way to see them all. The six are
+the first six in district order rather than the best rated — sorting by rating would claim
+one neighbourhood is better than another on differences that are noise. The cuisine cards use the
 project's own `FoodPlate` drawings, mapped from each district's architecture, for the same
 reason.
 

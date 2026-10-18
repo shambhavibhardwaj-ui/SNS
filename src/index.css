@@ -10531,3 +10531,89 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 
   .lp-signin-inner { grid-template-columns: 1fr; gap: 32px; }
 }
+
+/* ---- the gallery shows a few, then points at the city ---- */
+
+/* Six cards want three columns, not four: at four they land 4 + 2 and the
+   short second row reads as something failing to load. */
+@media (min-width: 1000px) {
+  .lp-cuisines { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.lp-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  width: min(1120px, 100%);
+  margin: 26px auto 0;
+  padding: 22px 26px;
+  border-radius: 18px;
+  background: var(--paper-warm);
+  border: 1px dashed var(--paper-edge);
+}
+
+.lp-more p {
+  margin: 0;
+  max-width: 54ch;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* The primary button is butter-on-dark by default; on this pale strip it needs
+   the dark fill instead, or it is pale type on pale paper. */
+.lp-more .lp-btn.is-primary {
+  background: var(--teal-800);
+  color: var(--cream);
+}
+
+.lp-more .lp-btn.is-primary:hover { background: var(--teal-900); }
+
+/* ---- the steps band, now over video ---- */
+
+.lp-band.is-steps { min-height: 0; }
+
+/*
+ * A lighter, even wash on this one.
+ *
+ * The shared band scrim is a 110° ramp from 0.84 — built for a block of copy
+ * sitting against the left edge. The steps run the full width and the shot
+ * behind them is a bright overhead table, so that ramp turned the food grey
+ * and left the right-hand side doing nothing. Even coverage instead, and the
+ * step cards carry their own blurred glass for local legibility.
+ */
+.lp-band.is-steps .lp-band-scrim {
+  background: linear-gradient(180deg, rgb(4 12 26 / 0.72) 0%, rgb(4 12 26 / 0.5) 46%, rgb(4 12 26 / 0.66) 100%);
+}
+
+.lp-head.is-on-dark {
+  position: relative;
+  z-index: 2;
+}
+
+.lp-head.is-on-dark h2 { color: #fff; }
+
+.lp-band.is-steps .lp-steps {
+  position: relative;
+  z-index: 2;
+}
+
+/* Glass over the footage rather than paper: a white card on a photograph
+   reads as a sticker over it. */
+.lp-band.is-steps .lp-steps li {
+  background: rgb(255 255 255 / 0.09);
+  border-color: rgb(255 255 255 / 0.16);
+  backdrop-filter: blur(8px);
+}
+
+.lp-band.is-steps .lp-step-n { color: rgb(255 255 255 / 0.56); }
+
+.lp-band.is-steps .lp-step-icon {
+  background: rgb(255 248 181 / 0.16);
+  color: var(--butter);
+}
+
+.lp-band.is-steps .lp-steps h3 { color: #fff; }
+.lp-band.is-steps .lp-steps p { color: rgb(255 255 255 / 0.78); }

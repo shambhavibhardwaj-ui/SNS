@@ -51,7 +51,7 @@ export function LandingPage() {
       <main>
         <VideoHero onExplore={() => scrollTo('explore')} onCuisines={() => scrollTo('cuisines')} />
         <CityPreview stats={stats} onEnter={enterCity} />
-        <CuisineGallery summaries={summaries} onOpen={openDistrict} />
+        <CuisineGallery summaries={summaries} onOpen={openDistrict} onAll={enterCity} />
         <HowItWorks />
         <Highlights />
         <SignInSection onExplore={enterCity} />

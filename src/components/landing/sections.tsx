@@ -103,17 +103,35 @@ const PLATE_FOR: Record<BuildingKind, string> = {
   dessert: 'gelato',
 };
 
+/* Six of ten. Enough to show the range; the city is where you see them all. */
+const SHOWN = 6;
+
 export function CuisineGallery({
-  summaries, onOpen,
-}: { summaries: DistrictSummary[]; onOpen: (districtId: string) => void }) {
+  summaries, onOpen, onAll,
+}: {
+  summaries: DistrictSummary[];
+  onOpen: (districtId: string) => void;
+  onAll: () => void;
+}) {
+  /*
+   * The first six as the service returns them, not a ranking.
+   *
+   * Sorting by rating would put a number on which neighbourhoods are *better*,
+   * which is not a claim this page is in a position to make — the ratings are
+   * close and the difference is noise. District order is the order the city
+   * itself uses.
+   */
+  const shown = summaries.slice(0, SHOWN);
+  const rest = summaries.length - shown.length;
+
   return (
     <section className="lp-section" id="cuisines">
       <Reveal className="lp-head">
         <p className="lp-kicker">Explore cuisines</p>
         <h2>Ten neighbourhoods, ten kitchens&rsquo; worth of cooking.</h2>
         <p className="lp-lede">
-          Every card below opens a real district of the city, with the restaurants that
-          actually trade there.
+          A few of them below. Each card opens a real district of the city, with the
+          restaurants that actually trade there.
         </p>
       </Reveal>
 
@@ -121,7 +139,7 @@ export function CuisineGallery({
           Cards carry the district's own plate illustration rather than a stock
           photograph, which is the rule the whole project is drawn under. */}
       <ul className="lp-cuisines">
-        {summaries.map((s, i) => (
+        {shown.map((s, i) => (
           <Reveal as="li" key={s.district.id} delay={(i % 4) * 60}>
             <article className="lp-cuisine">
               <div className="lp-cuisine-art" style={{ ['--tint' as string]: s.district.theme.awning }}>
@@ -145,6 +163,18 @@ export function CuisineGallery({
           </Reveal>
         ))}
       </ul>
+
+      {rest > 0 ? (
+        <Reveal className="lp-more">
+          <p>
+            {rest} more {rest === 1 ? 'neighbourhood' : 'neighbourhoods'} — seafood, dessert,
+            pure veg and the rest — are waiting in the city itself.
+          </p>
+          <button type="button" className="lp-btn is-primary" onClick={onAll}>
+            Explore more
+          </button>
+        </Reveal>
+      ) : null}
     </section>
   );
 }
@@ -161,8 +191,13 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section className="lp-section is-tight" id="how">
-      <Reveal className="lp-head">
+    <section className="lp-band is-steps" id="how">
+      {/* The overhead table spread sits here rather than behind the editorial
+          band: a laid table read from above is a picture of the end of this
+          sequence, so the five steps run across the thing they lead to. */}
+      <FoodVideo src="/video/table.mp4" className="lp-band-media" tone="warm" />
+      <div className="lp-band-scrim" aria-hidden="true" />
+      <Reveal className="lp-head is-on-dark">
         <p className="lp-kicker">How it works</p>
         <h2>Five steps, start to receipt.</h2>
       </Reveal>
@@ -201,7 +236,10 @@ const HIGHLIGHTS = [
 export function Highlights() {
   return (
     <section className="lp-band is-highlights" id="about">
-      <FoodVideo src="/video/table.mp4" className="lp-band-media" tone="warm" />
+      {/* No clip for this band. `FoodVideo` with no `src` renders its drawn
+          panel, which is a finished surface rather than a gap — see
+          public/video/README.md. */}
+      <FoodVideo className="lp-band-media" tone="plum" />
       <div className="lp-band-scrim" aria-hidden="true" />
       <div className="lp-band-body is-wide">
         <Reveal>
