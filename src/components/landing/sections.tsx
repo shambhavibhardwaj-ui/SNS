@@ -80,9 +80,16 @@ export function CityPreview({ stats, onEnter }: {
   const right = FEATURES.filter((f) => f.side === 'right');
 
   return (
+    /*
+      The one blush section.
+      
+      No video behind this band: the reference composition is white cards
+      floating on a pale ground, and a scrim dark enough to carry footage is
+      the opposite of that. `city-flyover.mp4` has no home now, which is why
+      public/video/README.md lists it as optional.
+    */
     <section className="lp-band is-city" id="explore">
-      <FoodVideo src="/video/city-flyover.mp4" className="lp-band-media" tone="teal" />
-      <div className="lp-band-scrim" aria-hidden="true" />
+      <div className="lp-showcase-curve" aria-hidden="true" />
 
       <div className="lp-band-body is-wide lp-showcase">
         <Reveal className="lp-showcase-head">

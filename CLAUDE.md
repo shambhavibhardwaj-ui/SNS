@@ -185,8 +185,24 @@ what got the previous video removed.
 
 The hero carries the wok, the five steps run over the overhead table spread, and the
 sign-in band has the pastry case. The editorial band has no clip and keeps its drawn panel.
-"Discover SNS" is a feature constellation: eight tiles staggered either side of a phone
-holding a drawn isometric vignette, with the real kitchen and district counts under it. The
+"Discover SNS" is a feature constellation on **blush pink** — eight white tiles staggered
+either side of a phone holding a drawn isometric vignette, a coral heading, and a curved
+white boundary along the bottom. Asked for, against a reference, and it is the **third
+deliberate exception to the palette** after the sign-in blue and the admin bento's pastels.
+
+**Scoped to `.lp-band.is-city` and nothing else.** No token is redefined and no shared
+component is touched, so the hero, the cuisine grid, the steps, the editorial band, the
+sign-in panel and everything past the landing page keep the house palette — verified by
+reading computed styles section by section, not by eye.
+
+The heading takes `#E95163` exactly as specified; it measures **3.26:1** on `#FFF0F2`, which
+clears AA for large text and fails it for small, so the 11px kicker takes `#B23144` — the
+same hue carried deep enough for 5.56:1. The headline colour on an 11px label is the one
+place this palette would actually have hurt someone.
+
+The band carries no video: the composition is white cards on a pale ground, and a scrim dark
+enough for footage is the opposite of that. `city-flyover.mp4` therefore has no home, which
+is why `public/video/README.md` lists it as optional. The
 tiles are **only features that work today** — ten districts, a menu per cuisine, Foodie AI,
 pure-veg kitchens, dish search, reviews per menu, cart by cuisine, and cash on delivery,
 which says so rather than claiming "pay your way". The obvious thing to put in a layout like

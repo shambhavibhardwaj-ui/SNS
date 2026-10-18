@@ -10774,3 +10774,120 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 @media (max-width: 420px) {
   .lp-tiles li { width: calc(50% - 6px); }
 }
+
+/* ======================================================================
+   Discover SNS — the blush treatment
+   ======================================================================
+
+   **Scoped to `.lp-band.is-city` and nothing else.** Every rule below is
+   keyed off that class, so the hero, the cuisine grid, the steps, the
+   editorial band, the sign-in panel and the whole app past the landing page
+   keep the house palette. No token is redefined and no shared component is
+   touched — the tiles and the phone are styled by their own classes inside
+   this scope only.
+
+   This is the third deliberate exception to the palette, after the sign-in
+   screen's blue and the admin bento's pastels. Asked for, with a reference.
+
+   One contrast decision. `#E95163` on `#FFF0F2` measures **3.26:1**, which
+   clears AA for large text and fails it for small. The heading is 29–46px, so
+   it takes the coral exactly as specified; the 11px kicker takes `#B23144`
+   instead, which is the same hue carried deep enough to reach 5.56:1. Using
+   the headline colour on an 11px label would have been the one place this
+   palette actually hurt someone.
+   ---------------------------------------------------------------------- */
+
+.lp-band.is-city {
+  /* Blush, replacing the dark band. `min-height` goes with it: the section is
+     as tall as the constellation needs, not a fixed sheet. */
+  min-height: 0;
+  padding: 104px 28px 150px;
+  background: #fff0f2;
+  color: #43121a;
+}
+
+/* The curved white boundary along the bottom. An ellipse rather than a border
+   radius on the section itself: a radius curves the corners, this lifts the
+   middle, which is what the reference does. */
+.lp-showcase-curve {
+  position: absolute;
+  left: -5%;
+  right: -5%;
+  bottom: -72px;
+  height: 140px;
+  background: var(--paper);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  z-index: 1;
+}
+
+.lp-band.is-city .lp-band-body { position: relative; z-index: 2; }
+
+/* ---- centred head, coral heading ---- */
+
+.lp-band.is-city .lp-showcase-head {
+  max-width: 58ch;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.lp-band.is-city .lp-kicker { color: #b23144; }
+
+.lp-band.is-city h2 {
+  color: #e95163;
+  font-size: clamp(2rem, 4.4vw, 3.2rem);
+  letter-spacing: -0.015em;
+}
+
+.lp-band.is-city .lp-lede {
+  color: #6b3a42;
+  margin-inline: auto;
+}
+
+/* ---- the floating cards ---- */
+
+.lp-band.is-city .lp-tiles li {
+  background: #fff;
+  border: 1px solid rgb(233 81 99 / 0.14);
+  box-shadow: 0 10px 26px -12px rgb(160 40 60 / 0.26);
+  color: #43121a;
+}
+
+.lp-band.is-city .lp-tiles li span {
+  background: rgb(233 81 99 / 0.1);
+  color: #b23144;
+}
+
+/* ---- the phone, on blush ---- */
+
+.lp-band.is-city .lp-phone-frame {
+  background: linear-gradient(170deg, #ffffff, #ffe3e7);
+  box-shadow: 0 26px 54px -22px rgb(160 40 60 / 0.42), inset 0 0 0 1px rgb(233 81 99 / 0.2);
+}
+
+.lp-band.is-city .lp-phone-notch { background: rgb(233 81 99 / 0.28); }
+
+.lp-band.is-city .lp-phone-caption { background: #fff; }
+.lp-band.is-city .lp-phone-caption strong { color: #43121a; }
+.lp-band.is-city .lp-phone-caption span { color: #8a5560; }
+
+/* The button is butter-on-dark elsewhere; here it needs the coral fill, and
+   white on #e95163 is 3.61:1 — enough for 15px semibold, which this is. */
+.lp-band.is-city .lp-btn.is-primary {
+  background: #e95163;
+  color: #fff;
+}
+
+.lp-band.is-city .lp-btn.is-primary:hover { background: #d84052; }
+.lp-band.is-city .lp-btn:focus-visible { outline-color: #b23144; }
+
+.lp-band.is-city .lp-showcase-note {
+  color: #7a4650;
+  margin-inline: auto;
+  text-align: center;
+  max-width: 54ch;
+}
+
+@media (max-width: 1040px) {
+  .lp-band.is-city { padding: 72px 18px 120px; }
+  .lp-showcase-curve { bottom: -56px; height: 110px; }
+}
