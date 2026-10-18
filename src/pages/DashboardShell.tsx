@@ -322,9 +322,15 @@ export function DashboardShell({
           </div>
         </header>
 
-        {nav === 'folders' ? <FolderTabs groups={groups} current={current} /> : null}
-
-        <div className="db-body">{children ?? <Outlet />}</div>
+        {/* In folder mode the page renders inside the open folder, which is
+            what makes it a folder rather than a tab bar above a panel. */}
+        {nav === 'folders' ? (
+          <FolderTabs groups={groups} current={current}>
+            <div className="db-body">{children ?? <Outlet />}</div>
+          </FolderTabs>
+        ) : (
+          <div className="db-body">{children ?? <Outlet />}</div>
+        )}
       </div>
     </div>
   );

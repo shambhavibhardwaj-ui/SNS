@@ -11102,23 +11102,21 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
    Folder tabs — the admin navigation
    ======================================================================
 
-   A row of folder spines with one pulled forward and joined to the panel
-   underneath it, so the tab you pressed and the content you get read as one
-   object rather than as a button and a region that happen to agree.
+   A drawer of folders: tabs along the top, the open one pulled forward, the
+   page itself sitting *inside* that folder, and the closed ones showing as
+   coloured edges behind it.
 
-   Three things do most of the work.
+   The page being inside the folder is the whole idea. A tab bar above a panel
+   is two things that agree; a tab joined to a card that holds the content is
+   one object. That is why `.ft-sheet` is nested in `.ft-folder` rather than
+   following it.
 
-   **Negative margin plus z-index** makes them overlap like folders in a
-   drawer. Each tab sits above the one to its left; the open one sits above
-   everything, which is what brings it to the front.
-
-   **The open tab's bottom edge is erased** — it extends 2px over the panel and
-   has no bottom radius there, so the join has no seam. A tab that merely sits
-   next to its panel reads as a button.
-
-   **The tones are a ramp between the admin's own two colours**, tangerine to
-   plum, rather than six arbitrary hues. The labels are near-white on all of
-   them, so each tone was picked to clear 4.5:1 against white.
+   **Negative margin plus z-index** makes the tabs overlap like folders in a
+   drawer — each above the one to its left, the open one above everything.
+   **The open tab's bottom edge is erased**, so the join to the card has no
+   seam. And **the tones are a ramp between the admin's own two colours**,
+   tangerine to plum, rather than six arbitrary hues; the labels are white on
+   all six, and each tone clears 4.5:1 against it.
    ---------------------------------------------------------------------- */
 
 .ft {
@@ -11128,16 +11126,19 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   --ft-3: #ad3a3c;
   --ft-4: #932641;
   --ft-5: #7f1633;
-  padding: 0 clamp(16px, 3vw, 32px);
+  position: relative;
+  padding: 10px clamp(12px, 2vw, 24px) 0;
 }
 
 .ft-tabs {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: flex-end;
   /* One row. Wrapping loses the thing that makes these read as folders. */
   overflow-x: auto;
   scrollbar-width: none;
-  padding-top: 10px;
+  padding-left: 6px;
 }
 
 .ft-tabs::-webkit-scrollbar { display: none; }
@@ -11148,8 +11149,8 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   align-items: center;
   gap: 8px;
   flex: none;
-  padding: 10px 20px 11px;
-  margin-right: -14px;
+  padding: 9px 20px 10px;
+  margin-right: -16px;
   border-radius: 14px 14px 0 0;
   background: var(--tone);
   color: #fff;
@@ -11157,16 +11158,25 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
-  /* Shadow on the top edge only: a folder behind another is lit from above. */
-  box-shadow: 0 -2px 6px rgb(0 0 0 / 0.12);
-  transition: transform 180ms ease, filter 180ms ease;
+  /* Lit from above, like a folder behind another. */
+  box-shadow: 0 -2px 6px rgb(0 0 0 / 0.14);
+  transition: transform 180ms ease, filter 180ms ease, padding 180ms ease;
 }
 
-/* Unopened folders sit back a little and are slightly dimmed, which is what
-   makes the open one look pulled out rather than merely bigger. */
+.ft-tab em {
+  font-style: normal;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.22);
+}
+
+/* Closed folders sit back and dim slightly, which is what makes the open one
+   look pulled out rather than merely larger. */
 .ft-tab:not(.is-open) {
-  transform: translateY(6px);
-  filter: saturate(0.82) brightness(0.9);
+  transform: translateY(7px);
+  filter: saturate(0.8) brightness(0.88);
 }
 
 .ft-tab:not(.is-open):hover {
@@ -11174,11 +11184,10 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   filter: none;
 }
 
+/* Over the card, with no bottom radius, so the join has no seam. */
 .ft-tab.is-open {
-  padding: 13px 24px 13px;
-  /* Over the panel, with no bottom radius, so the join has no seam. */
-  margin-bottom: -2px;
-  padding-bottom: 15px;
+  padding: 13px 24px 15px;
+  margin-bottom: -4px;
 }
 
 .ft-tab:focus-visible {
@@ -11186,25 +11195,42 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   outline-offset: -3px;
 }
 
-.ft-tab span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* The folder itself: a lip under the tabs in the open tab's colour. It holds
-   the section's pages when there is more than one. */
-.ft-folder {
+/* The folders still in the drawer: coloured edges peeking out behind the open
+   card, staggered so each one is visible. */
+.ft-behind {
   position: relative;
   z-index: 0;
-  border-radius: 0 14px 0 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-right: 26px;
+  margin-bottom: -10px;
+}
+
+.ft-behind span {
+  display: block;
+  width: 56px;
+  height: 18px;
+  border-radius: 10px 10px 0 0;
   background: var(--tone);
+  filter: saturate(0.8) brightness(0.9);
+}
+
+/* The folder card. The page sits inside it. */
+.ft-folder {
+  position: relative;
+  z-index: 1;
+  border-radius: 16px;
+  background: var(--tone);
+  padding: 10px;
+  box-shadow: 0 18px 34px -22px rgb(60 10 25 / 0.5);
 }
 
 .ft-pages {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 11px 14px;
+  padding: 4px 6px 12px;
 }
 
 .ft-page {
@@ -11221,16 +11247,13 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   color: #fff;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 150ms ease, color 150ms ease;
+  transition: background 150ms ease;
 }
 
-.ft-page:hover {
-  background: rgb(255 255 255 / 0.26);
-}
+.ft-page:hover { background: rgb(255 255 255 / 0.26); }
 
-/* The page you are on is the one solid chip, with the folder's own colour as
-   its text — the inverse of its neighbours, which is legible at this size
-   where a border change is not. */
+/* The page you are on is the one solid chip — the inverse of its neighbours,
+   which is legible at this size where a border change is not. */
 .ft-page.is-on {
   background: #fff;
   border-color: #fff;
@@ -11242,6 +11265,16 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   outline: 2px solid var(--butter);
   outline-offset: 2px;
 }
+
+/* The sheet of paper in the folder. */
+.ft-sheet {
+  border-radius: 10px;
+  background: var(--app-bg);
+  padding: clamp(14px, 2vw, 22px);
+  min-height: 60vh;
+}
+
+.ft-sheet > .db-body { padding: 0; }
 
 /*
  * In folder mode the rail is only the narrow-screen drawer, so it leaves the
@@ -11262,7 +11295,10 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
     display: flex;
   }
 
-  .ft { padding: 0 14px; }
-  .ft-tab { padding: 9px 15px 10px; font-size: 12.5px; }
-  .ft-tab.is-open { padding: 11px 18px 13px; }
+  .ft { padding: 8px 10px 0; }
+  .ft-tab { padding: 8px 13px 9px; font-size: 12px; }
+  .ft-tab.is-open { padding: 11px 16px 13px; }
+  .ft-tab em { display: none; }
+  .ft-behind { display: none; }
+  .ft-sheet { padding: 12px; }
 }

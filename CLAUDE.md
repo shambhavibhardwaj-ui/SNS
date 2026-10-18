@@ -601,9 +601,15 @@ with Performance already forward. A section with more than one page lists those 
 the folder, because a folder tab is one level and this navigation is two — fourteen tabs
 across the top would be unreadable, which is the rail's old problem rotated.
 
+**The page renders inside the open folder** — `.ft-sheet` nested in `.ft-folder`, not
+following it. That is the whole idea: a tab bar above a panel is two things that agree, a tab
+joined to a card holding the content is one object. The closed folders show as coloured edges
+behind the open card, the way files look in a drawer when one is lifted; they are decorative,
+since every one is reachable by its tab.
+
 Two details carry it: tabs overlap by negative margin with `z-index` rising left to right so
-they stack like folders in a drawer, and the open tab extends 2px over the panel with no
-bottom radius, so the join has no seam. The six tones are a ramp between the admin's own
+they stack like folders in a drawer, and the open tab extends over the card with no bottom
+radius, so the join has no seam. The six tones are a ramp between the admin's own
 tangerine and plum rather than six arbitrary hues. `.db` drops to one grid column in folder
 mode — hiding the rail alone left `.db-main` in the 272px track with every page overflowing
 out of it.
