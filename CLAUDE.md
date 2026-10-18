@@ -195,6 +195,10 @@ server nobody here controls. The project's own `FoodPlate` drawings do the same 
 They are `aria-hidden` — six "a dosa from Tiffin Lane" labels read aloud ahead of the heading
 would be noise, not description.
 
+Its heading is red (`#D12B3A`, 4.83:1 on the cream) at Fraunces 800 with tightened tracking
+— the blush section's coral reaches only 3.42:1 on this ground and would have been a
+headline that passes on a technicality.
+
 Dark video, warm cream, blush pink is one warming sequence rather than three unrelated
 stripes, which is why this section is the lightest surface on the page.
 

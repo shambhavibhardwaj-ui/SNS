@@ -116,16 +116,38 @@ export function CityPreview({ stats, onEnter }: {
           </ul>
 
           <Reveal className="lp-phone" delay={120}>
-            <div className="lp-phone-frame">
-              <span className="lp-phone-notch" aria-hidden="true" />
-              <div className="lp-phone-screen">
-                <CityVignette />
-                <div className="lp-phone-caption">
-                  <strong>{stats.districts} neighbourhoods</strong>
-                  <span>{stats.restaurants} kitchens · {stats.cuisines} cuisines</span>
+            {/*
+              A laptop, with the city actually in it.
+
+              The screen is a capture of this project's own `/city` route with
+              the chrome hidden — not a drawing of a city and not stock art, so
+              what someone sees here is what they get when they press the
+              button underneath. It goes stale if the city is redesigned, which
+              is a real cost and the reason the drawn vignette existed; it is
+              worth paying because a picture of the actual product is the one
+              thing a preview is for.
+            */}
+            <div className="lp-laptop">
+              <div className="lp-laptop-lid">
+                <div className="lp-laptop-screen">
+                  <img
+                    src="/city/city-preview.jpg"
+                    alt="The SNS city: ten isometric districts on a teal slab, each labelled."
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
               </div>
+              <div className="lp-laptop-base" aria-hidden="true">
+                <span />
+              </div>
             </div>
+
+            <p className="lp-laptop-caption">
+              <strong>{stats.districts} neighbourhoods</strong>
+              <span>{stats.restaurants} kitchens · {stats.cuisines} cuisines</span>
+            </p>
+
             <button type="button" className="lp-btn is-primary" onClick={onEnter}>
               Enter SNS
             </button>
@@ -147,70 +169,6 @@ export function CityPreview({ stats, onEnter }: {
         </p>
       </div>
     </section>
-  );
-}
-
-/**
- * The city, in a phone.
- *
- * Drawn here rather than screenshotted: a captured image goes stale the moment
- * the city changes, and this project's rule is that every drawn element is
- * original. It is an impression — four blocks on a teal slab at the same 2:1
- * dimetric angle the real map uses, in the real district colours — not a claim
- * to be the city itself, which is one button away.
- */
-function CityVignette() {
-  /* Grid steps, matching the real projection: +x is half right and half down. */
-  const t = 26;
-  const blocks: { gx: number; gy: number; wall: string; roof: string; h: number }[] = [
-    { gx: 0, gy: 0, wall: '#F7EDDC', roof: '#0A6A66', h: 30 },
-    { gx: 1, gy: 0, wall: '#FBE7CC', roof: '#C4543F', h: 40 },
-    { gx: 0, gy: 1, wall: '#F6EEDD', roof: '#7A4B2A', h: 34 },
-    { gx: 1, gy: 1, wall: '#FCE3EF', roof: '#C4788B', h: 26 },
-  ];
-  const ox = 112;
-  const oy = 58;
-  const pt = (gx: number, gy: number, gz = 0) => [
-    ox + (gx - gy) * t,
-    oy + (gx + gy) * (t / 2) - gz,
-  ];
-
-  return (
-    <svg className="lp-vignette" viewBox="0 0 224 190" aria-hidden="true">
-      <defs>
-        <linearGradient id="lp-vig-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#0E7C77" />
-          <stop offset="1" stopColor="#064B49" />
-        </linearGradient>
-      </defs>
-      <rect width="224" height="190" fill="url(#lp-vig-sky)" />
-
-      {/* The slab */}
-      <polygon
-        points={[pt(-0.4, -0.4), pt(2.4, -0.4), pt(2.4, 2.4), pt(-0.4, 2.4)]
-          .map((p) => p.join(',')).join(' ')}
-        fill="#CFE0D6"
-      />
-
-      {/* Back to front by gx + gy, the same painter's order the real map uses. */}
-      {[...blocks].sort((a, b) => a.gx + a.gy - (b.gx + b.gy)).map((b, i) => {
-        const [x, y] = pt(b.gx, b.gy);
-        return (
-          <g key={i} transform={`translate(${x - ox} ${y - oy})`}>
-            <g transform={`translate(${ox} ${oy})`}>
-              {/* right face, left face, then the roof on top */}
-              <polygon points={`0,0 ${t},${t / 2} ${t},${t / 2 - b.h} 0,${-b.h}`} fill={b.wall} />
-              <polygon points={`0,0 ${-t},${t / 2} ${-t},${t / 2 - b.h} 0,${-b.h}`} fill="#0003" />
-              <polygon points={`0,0 ${-t},${t / 2} ${-t},${t / 2 - b.h} 0,${-b.h}`} fill={b.wall} opacity="0.82" />
-              <polygon
-                points={`0,${-b.h} ${t},${t / 2 - b.h} 0,${t - b.h} ${-t},${t / 2 - b.h}`}
-                fill={b.roof}
-              />
-            </g>
-          </g>
-        );
-      })}
-    </svg>
   );
 }
 
