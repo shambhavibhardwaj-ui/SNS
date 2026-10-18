@@ -589,6 +589,25 @@ that subtree: anything already written as `var(--teal-700)` resolves to a plum t
 the accent that was magenta becomes tangerine. `DashboardShell` takes a `theme` prop, so
 the delivery dashboard and the customer city keep the house teal without a second shell.
 
+**The admin navigates by folder tabs.** `components/dashboard/FolderTabs` — one tab per nav
+section, the open one brought to the front and joined to the panel below it so the tab
+pressed and the content shown read as one object. `DashboardShell` takes `nav="rail" |
+"folders"`; the delivery dashboard keeps the rail, which is why this is a prop rather than a
+second shell.
+
+The tabs are `NavLink`s to each section's first page, not `useState`. The URL still says
+where you are, the back button still works, and a link straight into `/admin/fees` opens
+with Performance already forward. A section with more than one page lists those pages inside
+the folder, because a folder tab is one level and this navigation is two — fourteen tabs
+across the top would be unreadable, which is the rail's old problem rotated.
+
+Two details carry it: tabs overlap by negative margin with `z-index` rising left to right so
+they stack like folders in a drawer, and the open tab extends 2px over the panel with no
+bottom radius, so the join has no seam. The six tones are a ramp between the admin's own
+tangerine and plum rather than six arbitrary hues. `.db` drops to one grid column in folder
+mode — hiding the rail alone left `.db-main` in the 272px track with every page overflowing
+out of it.
+
 The staff rail collapses by section: a `NavGroup` with a title and more than one link
 becomes a `components/ui/animated-dropdown` that opens in flow, and one with a single link
 (or no title, as the delivery rail has) stays flat. The section holding the current page

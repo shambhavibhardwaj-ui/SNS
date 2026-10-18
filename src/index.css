@@ -11097,3 +11097,172 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 .lp-band.is-highlights .lp-highlights svg { color: var(--magenta); }
 .lp-band.is-highlights .lp-highlights h3 { color: var(--teal-800); }
 .lp-band.is-highlights .lp-highlights p { color: var(--ink-soft); }
+
+/* ======================================================================
+   Folder tabs — the admin navigation
+   ======================================================================
+
+   A row of folder spines with one pulled forward and joined to the panel
+   underneath it, so the tab you pressed and the content you get read as one
+   object rather than as a button and a region that happen to agree.
+
+   Three things do most of the work.
+
+   **Negative margin plus z-index** makes them overlap like folders in a
+   drawer. Each tab sits above the one to its left; the open one sits above
+   everything, which is what brings it to the front.
+
+   **The open tab's bottom edge is erased** — it extends 2px over the panel and
+   has no bottom radius there, so the join has no seam. A tab that merely sits
+   next to its panel reads as a button.
+
+   **The tones are a ramp between the admin's own two colours**, tangerine to
+   plum, rather than six arbitrary hues. The labels are near-white on all of
+   them, so each tone was picked to clear 4.5:1 against white.
+   ---------------------------------------------------------------------- */
+
+.ft {
+  --ft-0: #f89847;
+  --ft-1: #e2763f;
+  --ft-2: #c9573c;
+  --ft-3: #ad3a3c;
+  --ft-4: #932641;
+  --ft-5: #7f1633;
+  padding: 0 clamp(16px, 3vw, 32px);
+}
+
+.ft-tabs {
+  display: flex;
+  align-items: flex-end;
+  /* One row. Wrapping loses the thing that makes these read as folders. */
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-top: 10px;
+}
+
+.ft-tabs::-webkit-scrollbar { display: none; }
+
+.ft-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 10px 20px 11px;
+  margin-right: -14px;
+  border-radius: 14px 14px 0 0;
+  background: var(--tone);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  /* Shadow on the top edge only: a folder behind another is lit from above. */
+  box-shadow: 0 -2px 6px rgb(0 0 0 / 0.12);
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+/* Unopened folders sit back a little and are slightly dimmed, which is what
+   makes the open one look pulled out rather than merely bigger. */
+.ft-tab:not(.is-open) {
+  transform: translateY(6px);
+  filter: saturate(0.82) brightness(0.9);
+}
+
+.ft-tab:not(.is-open):hover {
+  transform: translateY(2px);
+  filter: none;
+}
+
+.ft-tab.is-open {
+  padding: 13px 24px 13px;
+  /* Over the panel, with no bottom radius, so the join has no seam. */
+  margin-bottom: -2px;
+  padding-bottom: 15px;
+}
+
+.ft-tab:focus-visible {
+  outline: 2px solid var(--butter);
+  outline-offset: -3px;
+}
+
+.ft-tab span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The folder itself: a lip under the tabs in the open tab's colour. It holds
+   the section's pages when there is more than one. */
+.ft-folder {
+  position: relative;
+  z-index: 0;
+  border-radius: 0 14px 0 0;
+  background: var(--tone);
+}
+
+.ft-pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 11px 14px;
+}
+
+.ft-page {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.14);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.ft-page:hover {
+  background: rgb(255 255 255 / 0.26);
+}
+
+/* The page you are on is the one solid chip, with the folder's own colour as
+   its text — the inverse of its neighbours, which is legible at this size
+   where a border change is not. */
+.ft-page.is-on {
+  background: #fff;
+  border-color: #fff;
+  color: #5c1026;
+  font-weight: 650;
+}
+
+.ft-page:focus-visible {
+  outline: 2px solid var(--butter);
+  outline-offset: 2px;
+}
+
+/*
+ * In folder mode the rail is only the narrow-screen drawer, so it leaves the
+ * layout until the burger opens it — and the grid has to lose its column with
+ * it. `.db` is `272px minmax(0, 1fr)`, so hiding the rail alone dropped
+ * `.db-main` into the 272px track and every page overflowed out of it.
+ */
+.db[data-nav='folders'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.db-rail[data-folders] {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .db-rail[data-folders][data-open] {
+    display: flex;
+  }
+
+  .ft { padding: 0 14px; }
+  .ft-tab { padding: 9px 15px 10px; font-size: 12.5px; }
+  .ft-tab.is-open { padding: 11px 18px 13px; }
+}

@@ -6,6 +6,7 @@ import { AccountButton } from '../components/auth/AccountButton';
 import { SlideCursor } from '../components/ui/slide-tabs';
 import { SLIDE_ITEM_ATTR, useSlideCursor } from '../components/ui/use-slide-cursor';
 import { AnimatedDropdown } from '../components/ui/animated-dropdown';
+import { FolderTabs } from '../components/dashboard/FolderTabs';
 
 export interface DashboardSection {
   to: string;
@@ -40,6 +41,7 @@ export function DashboardShell({
   accent,
   theme,
   showSearch = false,
+  nav = 'rail',
   children,
 }: {
   title: string;
@@ -47,6 +49,16 @@ export function DashboardShell({
   kicker: string;
   groups: NavGroup[];
   accent: string;
+  /**
+   * How the sections are presented.
+   *
+   * `rail` is the column of collapsible links. `folders` is a row of folder
+   * tabs across the top of the content — same links, same routes, different
+   * shape. A prop rather than a second shell: these dashboards differ in their
+   * navigation and their accent, which is exactly what this component already
+   * parameterises.
+   */
+  nav?: 'rail' | 'folders';
   /**
    * Names a palette for this dashboard. The whole recolour lives in one CSS
    * block keyed off it, so a section can have its own colours without a second
@@ -141,13 +153,16 @@ export function DashboardShell({
     <div
       className="db"
       data-theme={theme}
+      data-nav={nav}
       style={{ '--db-accent': accent } as React.CSSProperties}
     >
       {drawerOpen ? (
         <div className="db-scrim" onClick={() => setDrawerOpen(false)} role="presentation" />
       ) : null}
 
-      <aside className="db-rail" data-open={drawerOpen || undefined}>
+      {/* The rail is the drawer on narrow screens even in folder mode, so the
+          burger always has something to open. */}
+      <aside className="db-rail" data-open={drawerOpen || undefined} data-folders={nav === 'folders' || undefined}>
         <div className="db-brand">
           <span className="db-dot" aria-hidden="true" />
           <span>
@@ -306,6 +321,8 @@ export function DashboardShell({
             <AccountButton />
           </div>
         </header>
+
+        {nav === 'folders' ? <FolderTabs groups={groups} current={current} /> : null}
 
         <div className="db-body">{children ?? <Outlet />}</div>
       </div>

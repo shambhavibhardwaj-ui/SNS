@@ -66,6 +66,7 @@ export function AdminDashboard() {
       groups={NAV}
       accent="#F89847"
       theme="plum"
+      nav="folders"
       showSearch
     >
       <Routes>
