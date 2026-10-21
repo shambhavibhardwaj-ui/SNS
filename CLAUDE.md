@@ -278,8 +278,21 @@ of the search — they are true on every screen, the cart follows you out of the
 they group with the other control that is about the person rather than about the map. The
 sidebar is about the map beside it: a collapse toggle and the district rail, opening
 straight onto the districts. Home in the bar means the city, not the camera — the map
-carries its own reset control, and from the bar the useful move is leaving a listing. Clicking a district opens its restaurant listing,
-where the visual language deliberately drops to a clean light ordering interface. **Clicking
+carries its own reset control, and from the bar the useful move is leaving a listing. Clicking a district opens its restaurant listing after a **400ms** camera flight,
+where the visual language deliberately drops to a clean light ordering interface. That wait
+used to be 820ms, matched to the full CSS transition — the wrong thing to match. The flight
+connects the map to the listing and has done that by about 400ms; the rest was a slow settle
+nobody reads, and most of a second to open a street is felt as the app being slow rather
+than as an animation. The CSS transition stays at 860ms on purpose: it is still running when
+the listing replaces the map, so the last frames the eye catches are still moving inward.
+
+`IsoDistrict` is memoised. `hoveredId` is district-level state in `FoodCity`, so without it
+moving the pointer between neighbourhoods re-rendered all twelve blocks — about 2,700 SVG
+nodes — to change the look of two. A shallow compare suffices because the props were already
+shaped for it: `summary` and `restaurants` come from `useMemo`, `plot` is a module constant,
+the handlers are stable, and `rotation` is passed as a prop even though `iso()` reads it from
+module state — drop that prop and turning the city would leave every district drawn at the
+old angle. **Clicking
 a building opens that restaurant's menu** — one building is one row, so the thing shaped like
 a kitchen is the way into that kitchen; the click stops there rather than also entering the
 street behind it.

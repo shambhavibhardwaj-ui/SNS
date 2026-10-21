@@ -12,8 +12,22 @@ import { DistrictRail } from './DistrictRail';
 import { cameraForPlot, districtPlots } from './iso';
 import { useCityCamera } from './useCityCamera';
 
-/** How long the camera flies in before the listing page takes over. */
-const ENTER_MS = 820;
+/**
+ * How long the camera flies in before the listing page takes over.
+ *
+ * It was 820ms, matched to the full length of the CSS camera transition — and
+ * that is the wrong thing to match. The flight exists to connect the map to
+ * the listing, and it has done that long before it finishes easing: by about
+ * 400ms the block fills the frame and the remaining 400ms is a slow settle
+ * nobody is reading. Waiting for it meant every district took most of a second
+ * to open, which is felt as the app being slow rather than as an animation.
+ *
+ * The CSS transition is left at 860ms deliberately. It is still running when
+ * the listing replaces the map, so the last frames the eye catches are still
+ * moving inward — cutting the transition too would end the motion abruptly
+ * instead of handing it over.
+ */
+const ENTER_MS = 400;
 
 interface FoodCityProps {
   /** Called once the camera has finished flying into a district. */

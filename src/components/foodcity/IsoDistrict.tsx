@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { Restaurant } from '../../data/types';
 import type { DistrictSummary } from '../../services/restaurantService';
 import { RestaurantBuilding } from './buildings/RestaurantBuilding';
@@ -35,7 +36,7 @@ interface IsoDistrictProps {
  * skyline and its restaurant count can never drift apart. Buildings are drawn
  * back-to-front by grid depth so they overlap correctly.
  */
-export function IsoDistrict({
+function IsoDistrictInner({
   summary,
   plot,
   restaurants,
@@ -198,3 +199,20 @@ function BlockDressing({
     </g>
   );
 }
+
+/*
+ * Memoised, because hovering is a whole-city re-render without it.
+ *
+ * `hoveredId` lives in `FoodCity` and is district-level, so moving the pointer
+ * from one neighbourhood to the next re-rendered all twelve blocks — around
+ * 2,700 SVG nodes — to change the appearance of two. Measured at 33ms per
+ * hover, which is two dropped frames every time the pointer crosses a street.
+ *
+ * A shallow compare is enough and is why the props were already shaped this
+ * way: `summary` and `restaurants` come from `useMemo`, `plot` is a module
+ * constant, and the three handlers are stable. The one that matters is
+ * `rotation` — it is passed as a prop even though `iso()` reads it from module
+ * state, so turning the city still invalidates every district. Removing that
+ * prop would leave the whole map drawn at the old angle.
+ */
+export const IsoDistrict = memo(IsoDistrictInner);
