@@ -145,7 +145,16 @@ site that enumerates them instead of silently indexing to `undefined`.
 
 Migrations, in order: `0001` profiles and roles · `0002` tighten function grants ·
 `0003` admin bootstrap allowlist · `0004` seed the demo admin and delivery accounts ·
-`0005` add the `restaurant` role · `0006` seed the demo restaurant-owner account.
+`0005` add the `restaurant` role · `0006` seed the demo restaurant-owner account ·
+`0007` backfill profiles for existing users.
+
+**`0007` fixes a real way to be locked out.** `handle_new_user()` fires `after insert on
+auth.users`, so an account created before `0001` was applied has a user and no profile, and
+nothing backfilled it — `0003` updates the role of profiles that already exist, which is not
+the same thing. The symptom is not a cosmetic gap: `fetchProfile()` throws when there is no
+row, `AuthProvider` catches it and sets the status back to `signed-out`, so the person
+finishes Google sign-in, returns, and is told they are not signed in. There is no escape from
+the browser, because the client cannot insert into `profiles` by design.
 
 **`0005` and `0006` are two files for a reason.** Postgres will not let a new enum value be
 used in the same transaction that adds it, and `0006` inserts a row carrying `'restaurant'`.
