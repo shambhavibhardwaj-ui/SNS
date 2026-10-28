@@ -3,6 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!--
+      The hero's first frame, fetched while the HTML is still parsing.
+
+      This app renders on the client, so the <video> and its poster are not
+      discoverable until the bundle has downloaded, parsed and rendered — the
+      preload scanner never sees them. A 36KB hint here means the first screen
+      has a photograph on it at about the moment React mounts rather than a
+      second later.
+    -->
+    <link rel="preload" as="image" href="/video/hero-kitchen.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SNS — Restaurant Onboarding</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">

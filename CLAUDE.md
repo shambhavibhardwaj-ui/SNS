@@ -203,6 +203,18 @@ frame after switching to a tab opened in the background, which is an ordinary wa
 link. It also never pauses merely because `document.hidden` is true: browsers throttle
 backgrounded media themselves, and some contexts report `hidden` while plainly on screen.
 
+**The hero is eager; everything below it is lazy.** `FoodVideo` takes `priority`, which
+gives that one video the `autoplay` attribute and `preload="auto"`. Without the attribute
+nothing moved until React had mounted, the observer had fired and the element had buffered;
+with it the browser starts during parse. `preload="metadata"` fetches headers and no frames,
+which is right for the three videos below the fold and wrong for the one already on screen.
+
+Each video also carries a **poster** — its own first frame, 36–94KB — and `index.html`
+preloads the hero's. This app renders on the client, so the `<video>` and its poster are
+invisible to the preload scanner until the bundle has downloaded, parsed and rendered. With
+the hint the first screen is a photograph at **48ms**; the video request starts at 342ms and
+takes over when it is ready.
+
 **No stock footage, and the page is finished without it.** `FoodVideo` plays a file from
 `public/video/` when one is present and renders a composed gradient-and-grain panel in the
 house palette when it is not — a missing file is a supported state, not a broken `<video>`.

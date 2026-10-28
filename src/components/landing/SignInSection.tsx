@@ -66,7 +66,7 @@ export function SignInSection({ onExplore }: { onExplore: () => void }) {
 
   return (
     <section className="lp-signin" id="signin">
-      <FoodVideo src="/video/kitchen-pass.mp4" className="lp-band-media" tone="plum" />
+      <FoodVideo src="/video/kitchen-pass.mp4" poster="/video/kitchen-pass.jpg" className="lp-band-media" tone="plum" />
       <div className="lp-band-scrim" aria-hidden="true" />
 
       <Reveal className="lp-signin-inner">

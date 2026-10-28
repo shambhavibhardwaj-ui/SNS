@@ -15,7 +15,15 @@ export function VideoHero({
 }: { onExplore: () => void; onCuisines: () => void }) {
   return (
     <section className="lp-hero" id="top">
-      <FoodVideo src="/video/hero-kitchen.mp4" className="lp-hero-media" tone="teal" />
+      {/* The poster is the first frame, so the hero is a photograph from the
+          moment the HTML lands rather than a gradient waiting for 1.7MB. */}
+      <FoodVideo
+        src="/video/hero-kitchen.mp4"
+        poster="/video/hero-kitchen.jpg"
+        className="lp-hero-media"
+        tone="teal"
+        priority
+      />
       {/* The scrim is not decoration: white display type over an unknown frame
           of video is unreadable, and the frame changes 24 times a second. */}
       <div className="lp-hero-scrim" aria-hidden="true" />
@@ -287,7 +295,7 @@ export function HowItWorks() {
       {/* The overhead table spread sits here rather than behind the editorial
           band: a laid table read from above is a picture of the end of this
           sequence, so the five steps run across the thing they lead to. */}
-      <FoodVideo src="/video/table.mp4" className="lp-band-media" tone="warm" />
+      <FoodVideo src="/video/table.mp4" poster="/video/table.jpg" className="lp-band-media" tone="warm" />
       <div className="lp-band-scrim" aria-hidden="true" />
       <Reveal className="lp-head is-on-dark">
         <p className="lp-kicker">How it works</p>

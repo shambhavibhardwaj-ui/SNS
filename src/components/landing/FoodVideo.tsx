@@ -20,13 +20,22 @@ import { useEffect, useRef, useState } from 'react';
  * autoplay is a policy, not an error.
  */
 export function FoodVideo({
-  src, poster, className, tone = 'teal',
+  src, poster, className, tone = 'teal', priority = false,
 }: {
   /** A file under `public/video/`. Absent is a supported state. */
   src?: string;
   poster?: string;
   className?: string;
   tone?: 'teal' | 'warm' | 'plum';
+  /**
+   * For the one video that is on screen at load.
+   *
+   * It buffers eagerly and carries the `autoplay` attribute, so the browser
+   * starts it during parse rather than waiting for the observer below to run.
+   * Everything further down the page stays lazy — four videos all fetching at
+   * once on a phone is the opposite of fast.
+   */
+  priority?: boolean;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(!src);
@@ -114,7 +123,24 @@ export function FoodVideo({
       muted
       loop
       playsInline
-      preload="metadata"
+      /*
+       * `autoplay` as an attribute, not only as a `play()` call.
+       *
+       * The observer below still exists — it is what pauses a video scrolled
+       * out of view — but relying on it to *start* the hero meant nothing
+       * moved until React had mounted, the observer had fired and the element
+       * had buffered. The attribute lets the browser begin during parse, which
+       * is several hundred milliseconds earlier and the difference between a
+       * still frame and a moving one when the page opens.
+       */
+      autoPlay={priority || undefined}
+      /*
+       * `auto` only for the hero. `metadata` fetches headers and no frames, so
+       * there is nothing to show until playback forces a buffer — which is
+       * right for the three videos below the fold and wrong for the one that
+       * is already on screen.
+       */
+      preload={priority ? 'auto' : 'metadata'}
       aria-hidden="true"
       onError={() => setFailed(true)}
     />
