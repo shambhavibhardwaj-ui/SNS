@@ -48,6 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const apply = async (session: Session | null) => {
       if (!alive) return;
+      window.clearTimeout(watchdog);
       if (!session?.user) {
         setProfile(null);
         setStatus('signed-out');
@@ -70,13 +71,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     /*
      * onAuthStateChange fires immediately with the restored session, so it
      * covers the initial read as well as later sign-in and sign-out.
+     *
+     * **The work is deferred out of the callback, and that is load-bearing.**
+     * supabase-js holds its auth lock while it emits this event, and
+     * `apply()` queries `profiles` — a request that needs the same lock to
+     * attach the session. Called straight from the handler it waits for a lock
+     * the handler is still holding, so the promise never settles: `status`
+     * stays `loading` and the app spins forever after a Google round trip,
+     * rather than failing with something a person could read. Supabase's own
+     * guidance is not to call Supabase from inside this callback; a zero
+     * timeout is the documented way out, because it lets the emit finish and
+     * the lock release first.
      */
+    /*
+     * A watchdog, because a spinner that never resolves is the worst of the
+     * failure modes — it gives a person nothing to read and nothing to do.
+     *
+     * Only fires while the status is still `loading`, so a session that
+     * arrives late simply cancels it. Eight seconds is well past a slow
+     * profile read and well short of the patience of someone who has just
+     * come back from Google.
+     */
+    const watchdog = window.setTimeout(() => {
+      if (!alive) return;
+      setStatus((s) => {
+        if (s !== 'loading') return s;
+        setError('Signing in took too long. Please try again.');
+        return 'signed-out';
+      });
+    }, 8000);
+
+    const timers = new Set<number>();
     const unsubscribe = onAuthChange((session) => {
-      void apply(session);
+      const t = window.setTimeout(() => {
+        timers.delete(t);
+        void apply(session);
+      }, 0);
+      timers.add(t);
     });
 
     return () => {
       alive = false;
+      window.clearTimeout(watchdog);
+      for (const t of timers) window.clearTimeout(t);
       unsubscribe();
     };
   }, [configured]);

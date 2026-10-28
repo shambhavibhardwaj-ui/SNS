@@ -178,6 +178,18 @@ Sign-in being last is not a gate. **Discovery stays public** — "Enter SNS" is 
 not a teaser, and a visitor can read the page, wander ten districts and open any menu with no
 account. The guard still only starts at what belongs to one.
 
+**`AuthProvider` defers its work out of the `onAuthStateChange` callback, and that is
+load-bearing.** supabase-js holds its auth lock while emitting that event, and the handler
+queries `profiles` — a request that needs the same lock to attach the session. Called
+straight from the handler it waits on a lock the handler still holds, the promise never
+settles, `status` stays `loading`, and the app spins forever after a Google round trip
+instead of failing with something readable. Supabase's own guidance is not to call Supabase
+from inside that callback; a zero timeout lets the emit finish and the lock release.
+
+A watchdog backs it up: if the status is still `loading` after eight seconds it falls to
+`signed-out` with a readable message. A spinner that never resolves is the worst failure
+mode, because it gives a person nothing to read and nothing to do.
+
 `components/landing/SignInSection` uses the same `useAuth` provider `/login` does, so a
 successful sign-in is a real Supabase session and `RoleHome` sends the person to their role's
 home. With Supabase unconfigured it says so rather than failing mysteriously.
