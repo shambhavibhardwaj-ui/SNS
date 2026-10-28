@@ -565,6 +565,20 @@ is allowed its own weather; everything past it is the house palette.
 Two things stay put. The SNS mark keeps its plum and butter — a logo does not take the
 theme. And errors stay crimson: a failure must not read as the accent colour.
 
+**The mark is `components/ui/SnsMark`** — a dome over a plate on a rounded plum tile. The
+dome is the city's own architecture (the North Indian district is built from it) and the
+plate is what the product is for, so the logo says "food" and "place" in one shape instead
+of picking one. Butter on plum is 9.37:1.
+
+Four shapes, because it has to survive 20px in a browser tab; a rim highlight or a steam
+curl disappears at that size and only adds noise where it does survive. A rounded square
+rather than a circle, which loses its corners at favicon size.
+
+One component, used by the city top bar, the landing nav and the sign-in screen — it was
+three inline copies that could drift, and one of them had already drifted to a different
+plum. `public/favicon.svg` carries the same four shapes and is the tab icon, replacing an
+emoji data URI.
+
 Brand palette in `src/theme/brand.ts`, mirrored as CSS custom properties: deep teal
 `#0A6A66`, butter `#FFF8B5`, soft pink `#FCA5D1`, hot magenta `#FF258E`, soft salmon
 `#FC7494`, dark slate `#374151`. Roughly 60% teal and neutral, 25% warm light, 10% butter,

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SnsMark } from '../components/ui/SnsMark';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Bike, Lock, Mail, ShieldCheck, Store, UserRound } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
@@ -112,12 +113,7 @@ export function LoginPage() {
       <div className="lg-panel">
         <div className="lg-card">
           <div className="lg-brand">
-            <svg className="lg-mark" viewBox="0 0 40 40" aria-hidden="true">
-              <circle cx="20" cy="20" r="19" fill="#C2455E" />
-              <path d="M8 26 L14 16 L20 23 L26 12 L32 26 Z" fill="#FFF8B5" />
-              <rect x="8" y="26" width="24" height="4" rx="2" fill="#F0DE79" />
-              <circle cx="26" cy="11" r="3" fill="#FFF8B5" />
-            </svg>
+            <SnsMark size={34} className="lg-mark" />
             <span>SNS</span>
           </div>
 

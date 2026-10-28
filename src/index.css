@@ -11302,3 +11302,34 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   .ft-behind { display: none; }
   .ft-sheet { padding: 12px; }
 }
+
+/* The mark beside the name, for anywhere that wants the lockup rather than
+   the bare tile. The tile keeps its own corner radius, so nothing here
+   touches the artwork. */
+.sns-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sns-logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.sns-logo-text strong {
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.sns-logo-text em {
+  font-style: normal;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.66;
+}

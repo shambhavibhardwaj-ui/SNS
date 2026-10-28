@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { SnsMark } from '../ui/SnsMark';
 
 const LINKS = [
   { id: 'explore', label: 'Explore' },
@@ -40,12 +41,7 @@ export function LandingNav({ onSignIn }: { onSignIn: () => void }) {
   return (
     <header className="lp-nav" data-solid={solid || undefined} data-open={open || undefined}>
       <a className="lp-nav-brand" href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-        <svg viewBox="0 0 40 40" aria-hidden="true">
-          <circle cx="20" cy="20" r="19" fill="#C4543F" />
-          <path d="M8 26 L14 16 L20 23 L26 12 L32 26 Z" fill="#F6DCA9" />
-          <rect x="8" y="26" width="24" height="4" rx="2" fill="#E8A33D" />
-          <circle cx="26" cy="11" r="3" fill="#E8A33D" />
-        </svg>
+        <SnsMark size={30} />
         <span>SNS</span>
       </a>
 
