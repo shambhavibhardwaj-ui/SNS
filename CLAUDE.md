@@ -288,9 +288,17 @@ Scroll reveals are an IntersectionObserver and a class (`landing/Reveal`), not a
 scroll-animation dependency would bring a second opinion about easing and reduced motion to a
 project that already has one.
 
-Because the city moved off the index, two relative links became wrong and are now `..` —
-`FoodCityExperience`'s restaurant navigation and the top bar's cart. A bare `restaurant/:id`
-resolved to `city/restaurant/:id`, so every kitchen clicked from the map 404ed.
+Because the city moved off the index, **every link that meant "back to the city" had to
+move with it**. Two were relative and resolved into the city rather than out of it —
+`FoodCityExperience`'s restaurant navigation and the top bar's cart, where a bare
+`restaurant/:id` became `city/restaurant/:id` and 404ed. Five more were absolute `/`, which
+had silently become the landing page: "Explore SNS" on the empty cart and on checkout, "Back
+to SNS" on both order-confirmation states and on the missing-restaurant screen. Someone who
+had just ordered, or who wanted to find food, was handed a marketing page instead.
+
+All seven are now `../city`, relative so they work under both `/` and `/customer`. The rule
+to remember: an absolute `/` in this app no longer means the city, and has not since the
+landing page took the index.
 
 **Customer — the SNS city (`/city`, public, no sign-in needed).** True 2:1 dimetric isometric city on a
 diorama slab, depth-sorted by `gx + gy`. Ten cuisine districts, each with its own

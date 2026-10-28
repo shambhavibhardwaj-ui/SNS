@@ -25,7 +25,7 @@ export function OrderConfirmation() {
           Orders are kept in memory until the backend is connected, so a reload clears them.
           The order itself was placed.
         </p>
-        <Link to="/" className="ck-primary">Back to SNS</Link>
+        <Link to="../city" className="ck-primary">Back to SNS</Link>
       </div>
     );
   }
@@ -131,7 +131,7 @@ export function OrderConfirmation() {
             </div>
           </dl>
 
-          <Link to="/" className="ck-primary">Back to SNS</Link>
+          <Link to="../city" className="ck-primary">Back to SNS</Link>
         </aside>
       </div>
     </div>

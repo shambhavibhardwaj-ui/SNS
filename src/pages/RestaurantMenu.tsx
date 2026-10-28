@@ -38,7 +38,7 @@ export function RestaurantMenu() {
     return (
       <div className="rm-missing">
         <p>That restaurant could not be found.</p>
-        <Link to="/" className="rm-back-link">Back to SNS</Link>
+        <Link to="../city" className="rm-back-link">Back to SNS</Link>
       </div>
     );
   }

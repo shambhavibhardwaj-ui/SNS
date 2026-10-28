@@ -21,7 +21,11 @@ export function CartPage() {
         <ShoppingBag size={28} aria-hidden="true" />
         <h1>Your cart is empty</h1>
         <p>Wander the city, find a kitchen, and add something you like.</p>
-        <Link to="/" className="ck-primary">Explore SNS</Link>
+        {/* `../city`, not `/`. The city moved off the index when the landing
+            page took it, so an absolute "/" sends someone who wanted to find
+            food to a marketing page instead. Relative keeps it working under
+            both "/" and "/customer". */}
+        <Link to="../city" className="ck-primary">Explore SNS</Link>
       </div>
     );
   }

@@ -45,7 +45,7 @@ export function CheckoutPage() {
       <div className="ck ck-empty-page">
         <h1>Nothing to check out</h1>
         <p>Your cart is empty.</p>
-        <Link to="/" className="ck-primary">Explore SNS</Link>
+        <Link to="../city" className="ck-primary">Explore SNS</Link>
       </div>
     );
   }
