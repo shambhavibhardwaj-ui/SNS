@@ -45,6 +45,23 @@ export function FoodVideo({
     if (!node || !src) return;
 
     /*
+     * Muted, as an attribute as well as a property.
+     *
+     * React sets `muted` as a DOM *property* and never renders the attribute.
+     * The browser decides whether `autoplay` is permitted at parse time and
+     * reads the *attribute*, so `<video autoplay muted>` written in JSX
+     * arrives as autoplay-with-sound and is blocked — measured on the
+     * deployed site: `muted` true, `hasAttribute('muted')` false, fully
+     * buffered, visible, and paused. A manual `play()` then succeeds, because
+     * by then the property exists, which is what makes this look like an
+     * autoplay-policy problem rather than a markup one.
+     *
+     * Setting both here, before any play attempt, is the fix.
+     */
+    node.muted = true;
+    node.setAttribute('muted', '');
+
+    /*
      * Play while on screen, pause while not.
      *
      * A looping video behind a section nobody is looking at is decode work for
@@ -101,11 +118,17 @@ export function FoodVideo({
      * not ready when the observer first fired. One rejected promise otherwise
      * leaves the hero on a still frame for the rest of the session.
      */
+    /* And try immediately: the element may already be playable by the time
+       this effect runs, in which case no event is coming. */
+    tryPlay();
+
     node.addEventListener('canplay', tryPlay);
+    node.addEventListener('loadeddata', tryPlay);
     document.addEventListener('visibilitychange', tryPlay);
     return () => {
       io.disconnect();
       node.removeEventListener('canplay', tryPlay);
+      node.removeEventListener('loadeddata', tryPlay);
       document.removeEventListener('visibilitychange', tryPlay);
     };
   }, [src]);
