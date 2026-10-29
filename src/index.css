@@ -9955,8 +9955,8 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
    * corners of the image stay bright instead of the whole frame going muddy.
    */
   background:
-    radial-gradient(58% 48% at 50% 46%, rgb(4 12 26 / 0.62), transparent 72%),
-    linear-gradient(180deg, rgb(4 12 26 / 0.68) 0%, rgb(4 12 26 / 0.42) 42%, rgb(4 12 26 / 0.8) 100%);
+    radial-gradient(56% 46% at 50% 46%, rgb(4 12 26 / 0.46), transparent 72%),
+    linear-gradient(180deg, rgb(4 12 26 / 0.58) 0%, rgb(4 12 26 / 0.26) 42%, rgb(4 12 26 / 0.72) 100%);
 }
 
 .lp-hero-body {

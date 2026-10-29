@@ -122,6 +122,25 @@ export function FoodVideo({
        this effect runs, in which case no event is coming. */
     tryPlay();
 
+    /*
+     * Last resort: start on the first thing the person does.
+     *
+     * Safari can refuse muted autoplay outright — Low Power Mode does it, and
+     * so does the per-site "Auto-Play: Never" setting, which is a preference
+     * no amount of correct markup overrides. In that state every automatic
+     * attempt above is rejected and the hero sits on its poster, which is
+     * exactly what a frozen video looks like.
+     *
+     * A user gesture lifts the restriction, so one is borrowed from whatever
+     * the person does first. `once` on each, and they unbind as soon as one
+     * fires, so this costs nothing after the first scroll or tap.
+     */
+    const kick = () => { tryPlay(); };
+    const gestures = ['pointerdown', 'keydown', 'touchstart', 'scroll'] as const;
+    for (const g of gestures) {
+      window.addEventListener(g, kick, { once: true, passive: true });
+    }
+
     node.addEventListener('canplay', tryPlay);
     node.addEventListener('loadeddata', tryPlay);
     document.addEventListener('visibilitychange', tryPlay);
@@ -130,6 +149,7 @@ export function FoodVideo({
       node.removeEventListener('canplay', tryPlay);
       node.removeEventListener('loadeddata', tryPlay);
       document.removeEventListener('visibilitychange', tryPlay);
+      for (const g of gestures) window.removeEventListener(g, kick);
     };
   }, [src]);
 
