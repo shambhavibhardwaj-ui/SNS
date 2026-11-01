@@ -11333,3 +11333,79 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
   text-transform: uppercase;
   opacity: 0.66;
 }
+
+/* ======================================================================
+   The city on a phone
+   ======================================================================
+
+   Two things were wrong at 375px, and both were about what you see first.
+
+   The top bar wrapped into three rows and took 175px of an 812px screen —
+   a fifth of the phone spent on chrome before the city had a pixel. It is two
+   rows now: brand, nav and account across the top, search underneath. The
+   brand drops its "RestaurantOnboarding" sub-line, which is 209px of a 375px
+   screen spent on a word nobody reads twice.
+
+   And the map rendered *below* the sidebar, at y=1023 behind 848px of district
+   list. `order` moves the canvas above the panel without touching the DOM, so
+   the heading order a screen reader follows is unchanged.
+   ---------------------------------------------------------------------- */
+
+@media (max-width: 620px) {
+  .fc-topbar {
+    /*
+     * `minmax(0, …)` on every track, and `min-width: 0` on every child.
+     *
+     * The search spans all three columns, and a spanning item's min-content
+     * is distributed back into the tracks it crosses — so the 211px search
+     * pushed column one to 212px, the row to 411px, and the account button off
+     * a 375px screen. An `auto` track never shrinks below its content; these
+     * do.
+     */
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+    grid-template-areas:
+      'brand nav profile'
+      'search search search';
+    column-gap: 10px;
+    row-gap: 10px;
+    padding: 10px 14px;
+    align-items: center;
+  }
+
+  .fc-topbar > * { min-width: 0; }
+
+  .fc-topbar .fc-brand { grid-area: brand; }
+  .fc-topbar .fc-topnav { grid-area: nav; justify-self: end; }
+  .fc-topbar .fc-profile { grid-area: profile; }
+
+  .fc-topbar .fc-search {
+    grid-area: search;
+    grid-column: auto;
+    order: 0;
+  }
+
+  /* The sub-line is 209px of a 375px screen for a word read once. */
+  .fc-brand-sub { display: none; }
+
+  .fc-brand-name { font-size: 17px; }
+
+  .fc-topbar .fc-profile {
+    padding: 5px 10px 5px 5px;
+    font-size: 12.5px;
+  }
+
+  /*
+   * The city first.
+   *
+   * Stacked, the sidebar runs to roughly 850px of district list and the map
+   * sat below all of it — a long scroll past everything to reach the thing the
+   * page is about.
+   */
+  .fc-map-wrap {
+    order: -1;
+    height: min(58vh, 460px);
+    min-height: 320px;
+  }
+
+  .fc-aside { order: 0; }
+}
