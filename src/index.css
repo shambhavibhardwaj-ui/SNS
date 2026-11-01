@@ -11409,3 +11409,34 @@ li[data-state='done'] .ob-vstep-body strong { color: var(--app-ink); }
 
   .fc-aside { order: 0; }
 }
+
+/* The listing's not-found state. Centred and short: there is one thing to
+   read and one thing to press. */
+.rl-missing {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  min-height: 60vh;
+  padding: 40px max(16px, env(safe-area-inset-left, 0px));
+  text-align: center;
+}
+
+.rl-missing h1 {
+  margin: 0;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  color: var(--teal-800);
+}
+
+.rl-missing p {
+  margin: 0;
+  max-width: 38ch;
+  color: var(--ink-soft);
+  font-size: 14.5px;
+}
+
+.rl-missing .lp-btn.is-primary {
+  background: var(--teal-800);
+  color: var(--cream);
+}

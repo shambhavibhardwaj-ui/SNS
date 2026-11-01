@@ -38,7 +38,25 @@ export function RestaurantListing({
     [districtId, filters, sort],
   );
 
-  if (!district) return null;
+  /*
+   * An unknown district is a screen, not a blank.
+   *
+   * `?district=` became a real entry point when the landing page's cuisine
+   * cards started using it, so a stale link, a typo or a renamed id now lands
+   * someone here. Returning null drew the chrome and nothing else: no
+   * explanation and no way back, which is the worst thing a wrong URL can do.
+   */
+  if (!district) {
+    return (
+      <div className="rl rl-missing">
+        <h1>That neighbourhood does not exist.</h1>
+        <p>The link may be out of date, or the name may have changed.</p>
+        <button type="button" className="lp-btn is-primary" onClick={onBackToCity}>
+          Back to the city
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="rl" style={{ '--district-accent': district.theme.roof } as React.CSSProperties}>
